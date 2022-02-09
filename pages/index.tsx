@@ -2,11 +2,13 @@ import { Button } from "@material-ui/core";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { FrontDriveService } from "../service/drive.service";
 import styles from "../styles/Home.module.css";
-import { axiosRequest } from "../utils/axios";
 
 const Home: NextPage = () => {
-  const handleTextApi = async () => axiosRequest("GET", `api/files`);
+  const router = useRouter();
+  const handleTextApi = async () => FrontDriveService.authorize();
   return (
     <div className={styles.container}>
       <Head>
@@ -55,13 +57,22 @@ const Home: NextPage = () => {
           </a>
         </div>
         <Button
-          onClick={() =>
-            handleTextApi().then((value) => {
-              console.log({ value });
-            })
-          }
+          onClick={async () => {
+            if (window == null) return;
+
+            console.log({
+              url: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
+              client_id: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
+            });
+
+            try {
+              router.push(FrontDriveService.authorizeUrl);
+            } catch (error) {
+              console.log({ error });
+            }
+          }}
         >
-          files/index
+          Google Drive と連携
         </Button>
       </main>
 
