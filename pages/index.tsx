@@ -3,12 +3,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
+import { axiosRequest } from "../utils/axios";
 
 const Home: NextPage = () => {
-  const handleTextApi = async () => {
-    await fetch(`api/files`, { method: "GET" });
-  };
-
+  const handleTextApi = async () => axiosRequest("GET", `api/files`);
   return (
     <div className={styles.container}>
       <Head>
