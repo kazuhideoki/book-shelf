@@ -3,9 +3,9 @@ import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { ServerDriveService } from "../server/google-drive.service";
 import { FrontDriveService } from "../service/drive.service";
 import styles from "../styles/Home.module.css";
-import { axiosRequest } from "../utils/axios";
 
 interface P {
   code?: string;
@@ -61,6 +61,9 @@ const Home: NextPage<P> = ({ code }) => {
             </p>
           </a>
         </div>
+        <p>
+          TZ時間:{new Date().toTimeString()} TZ:{process.env.TZ}
+        </p>
         <Button
           onClick={async () => {
             if (window == null) return;
@@ -98,14 +101,16 @@ const Home: NextPage<P> = ({ code }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const code = context.params?.code as string;
-
-  console.log({ code });
+  const code = context.query?.code as string;
 
   if (code) {
-    const res = await axiosRequest("POST", "api/drive-auth/access-token");
+    try {
+      const res = await ServerDriveService.getAccessToken(code);
 
-    console.log({ res });
+      console.log({ res });
+    } catch (error) {
+      console.log({ error });
+    }
     return { props: { code } };
   }
   return { props: {} };
