@@ -2,6 +2,21 @@ import fs from "fs";
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
 import readline from "readline";
+import { axiosRequest } from "../utils/axios";
+
+export class ServerDriveService {
+  static async getAccessToken(code: string) {
+    return await axiosRequest("POST", "https://oauth2.googleapis.com/token", {
+      data: {
+        code,
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
+        client_secret: process.env.GOOGLE_DRIVE_API_CLIENT_SECRET,
+        redirect_uri: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
+        grant_type: "authorization_code",
+      },
+    });
+  }
+}
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly"];

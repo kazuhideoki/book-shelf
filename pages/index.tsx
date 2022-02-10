@@ -1,14 +1,19 @@
 import { Button } from "@material-ui/core";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FrontDriveService } from "../service/drive.service";
 import styles from "../styles/Home.module.css";
+import { axiosRequest } from "../utils/axios";
 
-const Home: NextPage = () => {
+interface P {
+  code?: string;
+}
+
+const Home: NextPage<P> = ({ code }) => {
   const router = useRouter();
-  const handleTextApi = async () => FrontDriveService.authorize();
+
   return (
     <div className={styles.container}>
       <Head>
@@ -90,6 +95,20 @@ const Home: NextPage = () => {
       </footer>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const code = context.params?.code as string;
+
+  console.log({ code });
+
+  if (code) {
+    const res = await axiosRequest("POST", "api/drive-auth/access-token");
+
+    console.log({ res });
+    return { props: { code } };
+  }
+  return { props: {} };
 };
 
 export default Home;
