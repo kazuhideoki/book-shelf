@@ -1,10 +1,10 @@
 import { Button } from "@material-ui/core";
+import { google } from "googleapis";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { ServerDriveService } from "../server/google-drive.service";
-import { FrontDriveService } from "../service/drive.service";
 import styles from "../styles/Home.module.css";
 
 interface P {
@@ -68,13 +68,8 @@ const Home: NextPage<P> = ({ code }) => {
           onClick={async () => {
             if (window == null) return;
 
-            console.log({
-              url: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
-              client_id: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
-            });
-
             try {
-              router.push(FrontDriveService.authorizeUrl);
+              // router.push(FrontDriveService.authorizeUrl);
             } catch (error) {
               console.log({ error });
             }
@@ -102,6 +97,27 @@ const Home: NextPage<P> = ({ code }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const code = context.query?.code as string;
+  if (!code) {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
+      process.env.GOOGLE_DRIVE_API_CLIENT_SECRET,
+      process.env.NEXT_PUBLIC_WEB_SERVICE_URL
+    );
+
+    const scopes = ["https://www.googleapis.com/auth/drive"];
+
+    const url = oauth2Client.generateAuthUrl({
+      // 'online' (default) or 'offline' (gets refresh_token)
+      access_type: "offline",
+      scope: scopes,
+    });
+
+    // const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_WEB_SERVICE_URL}&scope=https://www.googleapis.com/auth/drive&response_type=code&approval_prompt=force`;
+
+    context.res.setHeader("location", url);
+    context.res.statusCode = 302;
+    context.res.end();
+  }
 
   if (code) {
     try {
@@ -109,6 +125,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
       console.log({ res });
     } catch (error) {
+      console.log({ error: (error as any).message });
       console.log({ error });
     }
     return { props: { code } };

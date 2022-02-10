@@ -6,19 +6,27 @@ import { axiosRequest } from "../utils/axios";
 
 export class ServerDriveService {
   static async getAccessToken(code: string) {
+    const data = {
+      code,
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
+      client_secret: process.env.GOOGLE_DRIVE_API_CLIENT_SECRET,
+      redirect_uri: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
+      grant_type: "authorization_code",
+    };
+    console.log({
+      data,
+    });
+
     return await axiosRequest(
       "POST",
       "https://www.googleapis.com/oauth2/v4/token",
       {
-        data: {
-          code,
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
-          client_secret: process.env.GOOGLE_DRIVE_API_CLIENT_SECRET,
-          redirect_uri: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
-          grant_type: "authorization_code",
-        },
+        data,
+        // headers: {
+        //   "Content-Type": "application/x-www-form-urlencoded",
+        // },
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
       }
     );
