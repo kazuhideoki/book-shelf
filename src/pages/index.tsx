@@ -4,15 +4,20 @@ import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { ServerDriveService } from "../server/google-drive.service";
 import styles from "../styles/Home.module.css";
+import { AuthResponse, DriveResponse } from "../type/google-drive-api.type";
+import { axiosRequest } from "../utils/axios";
 
 interface P {
   code?: string;
+  authResponse?: AuthResponse;
 }
 
-const Home: NextPage<P> = ({ code }) => {
+const Home: NextPage<P> = ({ code, authResponse }) => {
   const router = useRouter();
+  const [data, setData] = useState<DriveResponse | null>();
 
   return (
     <div className={styles.container}>
@@ -61,22 +66,37 @@ const Home: NextPage<P> = ({ code }) => {
             </p>
           </a>
         </div>
-        <p>
-          TZ時間:{new Date().toTimeString()} TZ:{process.env.TZ}
-        </p>
+
         <Button
           onClick={async () => {
             if (window == null) return;
 
+            console.log({ authResponse });
+
             try {
-              // router.push(FrontDriveService.authorizeUrl);
+              const res = await axiosRequest<DriveResponse>(
+                "GET",
+                `api/files`,
+                {
+                  params: {
+                    access_token: authResponse?.access_token,
+                  },
+                }
+              );
+
+              console.log({ data: res });
+
+              setData(res);
             } catch (error) {
               console.log({ error });
             }
           }}
         >
-          Google Drive と連携
+          Get ScanSnap file list
         </Button>
+        {data?.files?.map((e: any, i: number) => (
+          <p key={i}>{e.name}</p>
+        ))}
       </main>
 
       <footer className={styles.footer}>
@@ -120,15 +140,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   if (code) {
+    let res: AuthResponse;
     try {
-      const res = await ServerDriveService.getAccessToken(code);
+      res = await ServerDriveService.getAccessToken(code);
 
       console.log({ res });
+      return { props: { code, authResponse: res } };
     } catch (error) {
       console.log({ error: (error as any).message });
       console.log({ error });
+      return { props: {} };
     }
-    return { props: { code } };
   }
   return { props: {} };
 };

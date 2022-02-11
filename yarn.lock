@@ -190,6 +190,11 @@
   "resolved" "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.2.tgz"
   "version" "1.0.2"
 
+"@types/gapi@^0.0.41":
+  "integrity" "sha512-tmHO66z/f91JZCDqinj/nNvQEszsz/hBT4+MvCSKT5sDzl5Ld/oXZ8WaecCBjRLw2uWKUInUHM9MhEXWkOiNjw=="
+  "resolved" "https://registry.npmjs.org/@types/gapi/-/gapi-0.0.41.tgz"
+  "version" "0.0.41"
+
 "@types/json5@^0.0.29":
   "integrity" "sha1-7ihweulOEdK4J7y+UnC86n8+ce4="
   "resolved" "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
