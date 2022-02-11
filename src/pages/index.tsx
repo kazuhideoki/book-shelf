@@ -2,7 +2,6 @@ import { Button } from "@material-ui/core";
 import { google } from "googleapis";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { ServerDriveService } from "../server/google-drive.service";
@@ -105,10 +104,7 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
+          Powered by <span className={styles.logo}>E Book Shelf</span>
         </a>
       </footer>
     </div>
