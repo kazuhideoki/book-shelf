@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { GetAccessToken } from "../../../../type/google-drive-api.type";
 import { ServerDriveService } from "../../../server/google-drive.service";
-import { GetAccessToken } from "../../../type/google-drive-api.type";
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
