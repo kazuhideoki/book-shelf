@@ -1,5 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
+import { axiosRequest } from "../../../utils/axios";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   console.log("api/files");
@@ -9,15 +10,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     console.log({ access_token });
 
-    const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files?access_token=${access_token}`
+    const testFileId = "1-ENsqeRnlXLypgVzaVWvuTXFGQr1nYeh";
+
+    // const response = await fetch(
+    //   `https://www.googleapis.com/drive/v3/files/${testFileId}?access_token=${access_token}`
+    // );
+    const response: any = await axiosRequest(
+      "GET",
+      `https://www.googleapis.com/drive/v3/files/${testFileId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
     );
 
-    const json = await response.json();
+    console.log({ response: response });
 
-    console.log({ DirveRes: response });
-
-    console.log({ files: json as any });
-    return res.status(200).json(json);
+    return res.status(200).json({ files: [response] });
   }
 };

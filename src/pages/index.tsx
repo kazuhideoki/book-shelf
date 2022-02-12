@@ -78,6 +78,7 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
                 `api/files`,
                 {
                   params: {
+                    authResponse,
                     access_token: authResponse?.access_token,
                   },
                 }
