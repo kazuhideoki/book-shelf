@@ -4,10 +4,14 @@ import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
 import { ServerDriveService } from "../server/google-drive.service";
 import styles from "../styles/Home.module.css";
 import { AuthResponse, DriveResponse } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+// pdfjs.GlobalWorkerOptions.workerSrc = "pdf.worker.min.js";
 
 interface P {
   code?: string;
@@ -94,9 +98,15 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
         >
           Get ScanSnap file list
         </Button>
-        {data?.files?.map((e: any, i: number) => (
+        {/* {data?.files?.map((e: any, i: number) => (
           <p key={i}>{e.name}</p>
-        ))}
+        ))} */}
+        <Document
+          file={"/selfish_gene.pdf"}
+          onLoadSuccess={() => console.log("success load pdf")}
+        >
+          <Page pageNumber={1} />
+        </Document>
       </main>
 
       <footer className={styles.footer}>
