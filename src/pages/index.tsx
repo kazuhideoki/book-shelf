@@ -7,11 +7,11 @@ import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { ServerDriveService } from "../server/google-drive.service";
 import styles from "../styles/Home.module.css";
-import { AuthResponse, DriveResponse } from "../type/google-drive-api.type";
+import { AuthResponse } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-// pdfjs.GlobalWorkerOptions.workerSrc = "pdf.worker.min.js";
+const testFileId = "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb";
 
 interface P {
   code?: string;
@@ -20,7 +20,7 @@ interface P {
 
 const Home: NextPage<P> = ({ code, authResponse }) => {
   const router = useRouter();
-  const [data, setData] = useState<DriveResponse | null>();
+  const [data, setData] = useState<any>();
 
   return (
     <div className={styles.container}>
@@ -77,18 +77,31 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
             console.log({ authResponse });
 
             try {
-              const res = await axiosRequest<DriveResponse>(
-                "GET",
-                `api/files`,
-                {
-                  params: {
-                    authResponse,
-                    access_token: authResponse?.access_token,
-                  },
-                }
-              );
+              const res: any = await axiosRequest("GET", `api/files`, {
+                params: {
+                  authResponse,
+                  access_token: authResponse?.access_token,
+                },
+              });
+              // const res: any = await axiosRequest(
+              //   "GET",
+              //   `https://www.googleapis.com/drive/v3/files/${testFileId}?alt=media`,
+              //   {
+              //     headers: {
+              //       Authorization: `Bearer ${authResponse?.access_token}`,
+              //       Accept: "application/pdf",
+              //     },
+              //   }
+              // );
 
               console.log({ data: res });
+
+              // const pdfDoc = await PDFDocument.load(res);
+              // console.log(pdfDoc.context.header.toString());
+              // var bytes = new Uint8Array(res);
+              // const pdfDoc = await PDFDocument.load(bytes, {
+              //   ignoreEncryption: true,
+              // });
 
               setData(res);
             } catch (error) {
@@ -101,12 +114,16 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
         {/* {data?.files?.map((e: any, i: number) => (
           <p key={i}>{e.name}</p>
         ))} */}
-        <Document
-          file={"/selfish_gene.pdf"}
-          onLoadSuccess={() => console.log("success load pdf")}
-        >
-          <Page pageNumber={1} />
-        </Document>
+        {data && (
+          <Document
+            file={data.data}
+            onSourceError={(e) => `error occurred when pdf file source : ${e}`}
+            onLoadError={(e) => `error occurred when pdf file loading : ${e}`}
+            onLoadSuccess={() => console.log("success load pdf")}
+          >
+            <Page pageNumber={1} />
+          </Document>
+        )}
       </main>
 
       <footer className={styles.footer}>
