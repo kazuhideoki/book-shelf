@@ -1,17 +1,15 @@
 import { Button } from "@material-ui/core";
-import { google } from "googleapis";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { ServerDriveService } from "../server/google-drive.service";
 import styles from "../styles/Home.module.css";
 import { AuthResponse } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
+import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
+import { getAuthUrl } from "../utils/get-auth-url";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
-const fileId = "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb";
 
 interface P {
   code?: string;
@@ -19,7 +17,6 @@ interface P {
 }
 
 const Home: NextPage<P> = ({ code, authResponse }) => {
-  const router = useRouter();
   const [data, setData] = useState<any>();
 
   return (
@@ -50,24 +47,6 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
             <h2>Learn &rarr;</h2>
             <p>Learn about Next.js in an interactive course with quizzes!</p>
           </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
         </div>
 
         <Button
@@ -82,34 +61,6 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
                   ...authResponse,
                 },
               });
-              // const res: any = await axiosRequest(
-              //   "GET",
-              //   `https://www.googleapis.com/drive/v3/files/${testFileId}?alt=media`,
-              //   {
-              //     headers: {
-              //       Authorization: `Bearer ${authResponse?.access_token}`,
-              //       Accept: "application/pdf",
-              //     },
-              //   }
-              // );
-              // const res: any = await axiosRequest("GET", `./selfish_gene.pdf`);
-
-              console.log({ res });
-
-              // const pdfDoc = await PDFDocument.load(res);
-              // console.log(pdfDoc.context.header.toString());
-              // var bytes = new Uint8Array(res);
-              // const pdfDoc = await PDFDocument.load(bytes, {
-              //   ignoreEncryption: true,
-              // });
-
-              // fs.writeFileSync(
-              //   `./files/${fileId}_front.pdf`,
-              //   res.data as string
-              // );
-
-              //  res = fs.readFileSync(`./files/${fileId}_front.pdf`);
-              // res = new Uint8Array(res).buffer;
 
               setData(base64ToArrayBuffer(res));
             } catch (error) {
@@ -119,22 +70,8 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
         >
           Get ScanSnap file list
         </Button>
-        {/* {data?.files?.map((e: any, i: number) => (
-          <p key={i}>{e.name}</p>
-        ))} */}
         {
-          <Document
-            // file={new Uint8Array(data[0])}
-            // file={`14y_If6OunynA-KMIYiTPGNldfZ3z8WEb00001111.pdf`}
-            // file={`selfish_gene.pdf`}
-            file={data}
-            // onSourceError={(e) => `error occurred when pdf file source : ${e}`}
-            // onLoadError={(e) => `error occurred when pdf file loading : ${e}`}
-            // onLoadSuccess={() => console.log("success load pdf")}
-          >
-            {/* {Array.from(new Array([1, 2, 3]), (el, index) => (
-              <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-            ))} */}
+          <Document file={data}>
             {<Page key={`page_${1}`} pageNumber={1} />}
           </Document>
         }
@@ -156,28 +93,12 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const code = context.query?.code as string;
   if (!code) {
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
-      process.env.GOOGLE_DRIVE_API_CLIENT_SECRET,
-      process.env.NEXT_PUBLIC_WEB_SERVICE_URL
-    );
-
-    const scopes = ["https://www.googleapis.com/auth/drive"];
-
-    const url = oauth2Client.generateAuthUrl({
-      // 'online' (default) or 'offline' (gets refresh_token)
-      access_type: "offline",
-      scope: scopes,
-    });
-
-    // const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_WEB_SERVICE_URL}&scope=https://www.googleapis.com/auth/drive&response_type=code&approval_prompt=force`;
-
+    const url = getAuthUrl();
     context.res.setHeader("location", url);
     context.res.statusCode = 302;
     context.res.end();
-  }
-
-  if (code) {
+    return { props: {} };
+  } else {
     let res: AuthResponse;
     try {
       res = await ServerDriveService.getAccessToken(code);
@@ -190,17 +111,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       return { props: {} };
     }
   }
-  return { props: {} };
 };
 
 export default Home;
-
-function base64ToArrayBuffer(base64: string) {
-  var binary_string = window.atob(base64);
-  var len = binary_string.length;
-  var bytes = new Uint8Array(len);
-  for (var i = 0; i < len; i++) {
-    bytes[i] = binary_string.charCodeAt(i);
-  }
-  return bytes.buffer;
-}
