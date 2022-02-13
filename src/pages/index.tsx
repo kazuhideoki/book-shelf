@@ -11,7 +11,7 @@ import { AuthResponse } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const testFileId = "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb";
+const fileId = "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb";
 
 interface P {
   code?: string;
@@ -77,10 +77,9 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
             console.log({ authResponse });
 
             try {
-              const res: any = await axiosRequest("GET", `api/files`, {
+              let res: any = await axiosRequest("GET", `api/files`, {
                 params: {
-                  authResponse,
-                  access_token: authResponse?.access_token,
+                  ...authResponse,
                 },
               });
               // const res: any = await axiosRequest(
@@ -93,8 +92,9 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
               //     },
               //   }
               // );
+              // const res: any = await axiosRequest("GET", `./selfish_gene.pdf`);
 
-              console.log({ data: res });
+              console.log({ res });
 
               // const pdfDoc = await PDFDocument.load(res);
               // console.log(pdfDoc.context.header.toString());
@@ -103,7 +103,15 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
               //   ignoreEncryption: true,
               // });
 
-              setData(res);
+              // fs.writeFileSync(
+              //   `./files/${fileId}_front.pdf`,
+              //   res.data as string
+              // );
+
+              //  res = fs.readFileSync(`./files/${fileId}_front.pdf`);
+              // res = new Uint8Array(res).buffer;
+
+              setData(base64ToArrayBuffer(res));
             } catch (error) {
               console.log({ error });
             }
@@ -114,16 +122,22 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
         {/* {data?.files?.map((e: any, i: number) => (
           <p key={i}>{e.name}</p>
         ))} */}
-        {data && (
+        {
           <Document
-            file={data.data}
-            onSourceError={(e) => `error occurred when pdf file source : ${e}`}
-            onLoadError={(e) => `error occurred when pdf file loading : ${e}`}
-            onLoadSuccess={() => console.log("success load pdf")}
+            // file={new Uint8Array(data[0])}
+            // file={`14y_If6OunynA-KMIYiTPGNldfZ3z8WEb00001111.pdf`}
+            // file={`selfish_gene.pdf`}
+            file={data}
+            // onSourceError={(e) => `error occurred when pdf file source : ${e}`}
+            // onLoadError={(e) => `error occurred when pdf file loading : ${e}`}
+            // onLoadSuccess={() => console.log("success load pdf")}
           >
-            <Page pageNumber={1} />
+            {/* {Array.from(new Array([1, 2, 3]), (el, index) => (
+              <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+            ))} */}
+            {<Page key={`page_${1}`} pageNumber={1} />}
           </Document>
-        )}
+        }
       </main>
 
       <footer className={styles.footer}>
@@ -180,3 +194,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default Home;
+
+function base64ToArrayBuffer(base64: string) {
+  var binary_string = window.atob(base64);
+  var len = binary_string.length;
+  var bytes = new Uint8Array(len);
+  for (var i = 0; i < len; i++) {
+    bytes[i] = binary_string.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
