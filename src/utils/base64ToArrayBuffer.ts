@@ -7,3 +7,7 @@ export function base64ToArrayBuffer(base64: string) {
   }
   return bytes.buffer;
 }
+
+export const uint8ArrayToBase64 = (u8: Uint8Array) => {
+  return Buffer.from(u8).toString("base64");
+};

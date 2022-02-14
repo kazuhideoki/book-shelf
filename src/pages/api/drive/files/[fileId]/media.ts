@@ -1,6 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
+import { PDFDocument } from "pdf-lib";
 import { axiosRequest } from "../../../../../utils/axios";
+import { uint8ArrayToBase64 } from "../../../../../utils/base64ToArrayBuffer";
 
 const fileId = "1etL4N_wtxozkzGoKcMlmY_md0jGrDwmK";
 
@@ -15,11 +17,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
+
         responseEncoding: "base64",
       }
     );
 
-    return res.status(200).json(response);
-    1;
+    const pdfDoc = await PDFDocument.load(response);
+
+    const firstPage = pdfDoc.getPages()[0];
+    const result = await firstPage.doc.save();
+
+    return res.status(200).json(uint8ArrayToBase64(result));
   }
 };
