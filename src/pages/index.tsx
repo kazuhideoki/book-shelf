@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
@@ -57,7 +57,7 @@ const Home: NextPage<P> = ({ code }) => {
   );
 
   useEffect(() => {
-    if (code) {
+    if (code && !authResponse) {
       axiosRequest<AuthResponse>("GET", `api/drive/token`, {
         params: {
           code,
@@ -76,7 +76,7 @@ const Home: NextPage<P> = ({ code }) => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to <a href="https://nextjs.org">E Book Shelf!</a>
         </h1>
 
         <Grid container direction="column" spacing={1}>
@@ -85,7 +85,6 @@ const Home: NextPage<P> = ({ code }) => {
               ファイル一覧取得
             </Button>
           </Grid>
-          <Box mt={1} />
           <Grid item container spacing={1}>
             {driveFiles?.files.map((file, i) => {
               return (

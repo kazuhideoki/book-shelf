@@ -12,9 +12,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "GET") {
     const { access_token } = req.query as AuthResponse;
 
-    console.log({ query: req.query });
-    console.log({ access_token });
-
     try {
       const response = await axiosRequest<DriveFiles>(
         "GET",
@@ -23,10 +20,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
+          params: {
+            q: "mimeType='application/pdf'",
+          },
         }
       );
-
-      console.log({ response });
 
       return res.status(200).json(response);
     } catch (error) {
