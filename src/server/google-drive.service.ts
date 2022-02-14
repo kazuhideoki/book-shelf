@@ -2,7 +2,7 @@ import fs from "fs";
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
 import readline from "readline";
-import { AuthResponse } from "../type/google-drive-api.type";
+import { AuthResponse } from "../recoil/atom/drive-auth";
 import { axiosRequest } from "../utils/axios";
 
 export class ServerDriveService {

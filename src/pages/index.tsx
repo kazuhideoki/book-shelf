@@ -3,9 +3,9 @@ import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { AuthResponse } from "../recoil/atom/drive-auth";
 import { ServerDriveService } from "../server/google-drive.service";
 import styles from "../styles/Home.module.css";
-import { AuthResponse } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { getAuthUrl } from "../utils/get-auth-url";
@@ -56,7 +56,7 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
             console.log({ authResponse });
 
             try {
-              let res: any = await axiosRequest("GET", `api/files`, {
+              let res: any = await axiosRequest("GET", `api/drive/files`, {
                 params: {
                   ...authResponse,
                 },

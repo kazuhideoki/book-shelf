@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { AuthResponse } from "../../../type/google-drive-api.type";
-import { axiosRequest } from "../../../utils/axios";
+import { AuthResponse } from "../../../../recoil/atom/drive-auth";
+import { axiosRequest } from "../../../../utils/axios";
 
 const fileId = "1etL4N_wtxozkzGoKcMlmY_md0jGrDwmK";
 
@@ -21,5 +21,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     );
 
     return res.status(200).json(response);
+    1;
   }
 };

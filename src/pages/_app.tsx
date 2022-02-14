@@ -2,7 +2,7 @@ import { AppProps } from "next/app";
 import { useEffect } from "react";
 import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 import { SignIn } from "../components/Signin";
-import { authState } from "../recoil/atom/auth";
+import { userAuthState } from "../recoil/atom/user-auth";
 import { FrontFirebaseHelper } from "../utils/front-firebase";
 
 export default function App(props: AppProps) {
@@ -14,7 +14,7 @@ export default function App(props: AppProps) {
 }
 
 function _App({ Component, pageProps }: AppProps) {
-  const setAuthState = useSetRecoilState(authState);
+  const setAuthState = useSetRecoilState(userAuthState);
   useEffect(() => {
     // FrontAuth.
     return FrontFirebaseHelper.listenFirebaseAuth((credential) =>
@@ -29,7 +29,7 @@ function _App({ Component, pageProps }: AppProps) {
     }
   }, []);
 
-  const auth = useRecoilValue(authState);
+  const auth = useRecoilValue(userAuthState);
 
   if (!auth) {
     return <SignIn />;
