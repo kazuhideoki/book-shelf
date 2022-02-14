@@ -14,22 +14,15 @@ export default function App(props: AppProps) {
 }
 
 function _App({ Component, pageProps }: AppProps) {
-  const setAuthState = useSetRecoilState(userAuthState);
-  useEffect(() => {
-    // FrontAuth.
-    return FrontFirebaseHelper.listenFirebaseAuth((credential) =>
-      setAuthState(credential)
-    );
-  }, []);
-
-  useEffect(() => {
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement?.removeChild(jssStyles);
-    }
-  }, []);
-
   const auth = useRecoilValue(userAuthState);
+  const setAuthState = useSetRecoilState(userAuthState);
+
+  useEffect(() => {
+    return FrontFirebaseHelper.listenFirebaseAuth(
+      // (user) => setAuthState({ ...user })
+      (user) => console.log({ user })
+    );
+  }, [auth, setAuthState]);
 
   if (!auth) {
     return <SignIn />;

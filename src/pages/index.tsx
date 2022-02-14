@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Box, Button, Grid } from "@material-ui/core";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
@@ -9,10 +9,9 @@ import styles from "../styles/Home.module.css";
 import { DriveFiles } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
+import { FrontAuth } from "../utils/front-firebase";
 import { getAuthUrl } from "../utils/get-auth-url";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
-const fileId = "1etL4N_wtxozkzGoKcMlmY_md0jGrDwmK";
 
 interface P {
   code?: string;
@@ -80,50 +79,41 @@ const Home: NextPage<P> = ({ code }) => {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
-        <Button variant="contained" onClick={handleFetchFileList}>
-          ファイル一覧取得
-        </Button>
-
-        {driveFiles?.files.map((file, i) => {
-          return (
-            <Button
-              variant="outlined"
-              key={i}
-              onClick={() => handleFetchFile(file.id)}
-            >
-              {file.name}
+        <Grid container direction="column" spacing={1}>
+          <Grid item>
+            <Button variant="contained" onClick={handleFetchFileList}>
+              ファイル一覧取得
             </Button>
-          );
-        })}
-
-        <Button
-          onClick={async () => {
-            if (window == null) return;
-
-            try {
-              let res = await axiosRequest<string>(
-                "GET",
-                `api/drive/files/${fileId}/media`,
-                {
-                  params: {
-                    ...authResponse,
-                  },
-                }
+          </Grid>
+          <Box mt={1} />
+          <Grid item container spacing={1}>
+            {driveFiles?.files.map((file, i) => {
+              return (
+                <Grid item key={i}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleFetchFile(file.id)}
+                  >
+                    {file.name}
+                  </Button>
+                </Grid>
               );
+            })}
+          </Grid>
 
-              setFile(base64ToArrayBuffer(res));
-            } catch (error) {
-              console.log({ error });
-            }
-          }}
-        >
-          Get ScanSnap file test
-        </Button>
-        {
-          <Document file={file}>
-            {<Page key={`page_${1}`} pageNumber={1} />}
-          </Document>
-        }
+          {
+            <Grid item>
+              <Document file={file}>
+                {<Page key={`page_${1}`} pageNumber={1} />}
+              </Document>
+            </Grid>
+          }
+          <Grid item>
+            <Button onClick={async () => FrontAuth.signOut()}>
+              サインアウト
+            </Button>
+          </Grid>
+        </Grid>
       </main>
     </div>
   );
