@@ -7,7 +7,11 @@ export const getAuthUrl = () => {
     process.env.NEXT_PUBLIC_WEB_SERVICE_URL
   );
 
-  const scopes = ["https://www.googleapis.com/auth/drive"];
+  const scopes = [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/firebase",
+    "https://www.googleapis.com/auth/cloud-platform",
+  ];
 
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
