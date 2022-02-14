@@ -3,8 +3,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { Env } from "./front-env";
 
-console.log({ config: process.env.NEXT_PUBLIC_FIREBASE_CONFIG! });
-
 const app = initializeApp(Env.NEXT_PUBLIC_FIREBASE_CONFIG);
 
 export const FrontAuth = getAuth(app);

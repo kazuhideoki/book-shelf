@@ -1,15 +1,18 @@
 import { Button } from "@material-ui/core";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { AuthResponse, driveAuthState } from "../recoil/atom/drive-auth";
 import styles from "../styles/Home.module.css";
+import { DriveFiles } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { getAuthUrl } from "../utils/get-auth-url";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+const fileId = "1etL4N_wtxozkzGoKcMlmY_md0jGrDwmK";
 
 interface P {
   code?: string;
@@ -17,9 +20,42 @@ interface P {
 }
 
 const Home: NextPage<P> = ({ code }) => {
-  const [data, setData] = useState<any>();
+  const [driveFiles, setDriveFiles] = useState<DriveFiles | null>(null);
+  const [file, setFile] = useState<any>(null);
   const authResponse = useRecoilValue(driveAuthState);
   const setDriveAuth = useSetRecoilState(driveAuthState);
+
+  const handleFetchFileList = useCallback(async () => {
+    console.log({ frontAccessToken: authResponse?.access_token });
+
+    const res = await axiosRequest<DriveFiles>("GET", `api/drive/files`, {
+      params: {
+        ...authResponse,
+      },
+    });
+
+    console.log({ res });
+
+    setDriveFiles(res);
+  }, [authResponse]);
+
+  const handleFetchFile = useCallback(
+    async (fileId: string) => {
+      const res = await axiosRequest<string>(
+        "GET",
+        `api/drive/files/${fileId}/media`,
+        {
+          params: {
+            ...authResponse,
+            fileId,
+          },
+        }
+      );
+
+      setFile(base64ToArrayBuffer(res));
+    },
+    [authResponse]
+  );
 
   useEffect(() => {
     if (code) {
@@ -44,60 +80,51 @@ const Home: NextPage<P> = ({ code }) => {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
+        <Button variant="contained" onClick={handleFetchFileList}>
+          ファイル一覧取得
+        </Button>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-        </div>
+        {driveFiles?.files.map((file, i) => {
+          return (
+            <Button
+              variant="outlined"
+              key={i}
+              onClick={() => handleFetchFile(file.id)}
+            >
+              {file.name}
+            </Button>
+          );
+        })}
 
         <Button
           onClick={async () => {
             if (window == null) return;
 
-            console.log({ authResponse });
-
             try {
-              let res: any = await axiosRequest("GET", `api/drive/files`, {
-                params: {
-                  ...authResponse,
-                },
-              });
+              let res = await axiosRequest<string>(
+                "GET",
+                `api/drive/files/${fileId}/media`,
+                {
+                  params: {
+                    ...authResponse,
+                  },
+                }
+              );
 
-              setData(base64ToArrayBuffer(res));
+              setFile(base64ToArrayBuffer(res));
             } catch (error) {
               console.log({ error });
             }
           }}
         >
-          Get ScanSnap file list
+          Get ScanSnap file test
         </Button>
         {
-          <Document file={data}>
+          <Document file={file}>
             {<Page key={`page_${1}`} pageNumber={1} />}
           </Document>
         }
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by <span className={styles.logo}>E Book Shelf</span>
-        </a>
-      </footer>
     </div>
   );
 };
