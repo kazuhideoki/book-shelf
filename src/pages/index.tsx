@@ -1,10 +1,10 @@
 import { Button } from "@material-ui/core";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { AuthResponse } from "../recoil/atom/drive-auth";
-import { ServerDriveService } from "../server/google-drive.service";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { AuthResponse, driveAuthState } from "../recoil/atom/drive-auth";
 import styles from "../styles/Home.module.css";
 import { axiosRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
@@ -13,11 +13,23 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 interface P {
   code?: string;
-  authResponse?: AuthResponse;
+  // authResponse?: AuthResponse;
 }
 
-const Home: NextPage<P> = ({ code, authResponse }) => {
+const Home: NextPage<P> = ({ code }) => {
   const [data, setData] = useState<any>();
+  const authResponse = useRecoilValue(driveAuthState);
+  const setDriveAuth = useSetRecoilState(driveAuthState);
+
+  useEffect(() => {
+    if (code) {
+      axiosRequest<AuthResponse>("GET", `api/drive/token`, {
+        params: {
+          code,
+        },
+      }).then((authResponse) => setDriveAuth(authResponse));
+    }
+  }, [code]);
 
   return (
     <div className={styles.container}>
@@ -92,25 +104,16 @@ const Home: NextPage<P> = ({ code, authResponse }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const code = context.query?.code as string;
+
   if (!code) {
     const url = getAuthUrl();
     context.res.setHeader("location", url);
     context.res.statusCode = 302;
     context.res.end();
     return { props: {} };
-  } else {
-    let res: AuthResponse;
-    try {
-      res = await ServerDriveService.getAccessToken(code);
-
-      console.log({ res });
-      return { props: { code, authResponse: res } };
-    } catch (error) {
-      console.log({ error: (error as any).message });
-      console.log({ error });
-      return { props: {} };
-    }
   }
+
+  return { props: { code } };
 };
 
 export default Home;
