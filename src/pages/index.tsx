@@ -18,11 +18,43 @@ interface P {
   // authResponse?: AuthResponse;
 }
 
+const sampleIds = [
+  "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb",
+  "1gURMeOUJ1rtQ8ZYteWu_UZcoYv_fbQJu",
+  "1-xVrIdceiJWuBTkYmq6HWar86owU98St",
+];
+
 const Home: NextPage<P> = ({ code }) => {
   const [driveFiles, setDriveFiles] = useState<DriveFiles | null>(null);
   const [file, setFile] = useState<any>(null);
+  const [multipleFiles, setMultipleFiles] = useState<any[]>([]);
+  const [displayedFile, setDisplayedFile] = useState<any>(null);
   const authResponse = useRecoilValue(driveAuthState);
   const setDriveAuth = useSetRecoilState(driveAuthState);
+
+  console.log({ displayedFile });
+
+  useEffect(() => {
+    let count = 1;
+    const timer = setInterval(() => {
+      console.log({
+        count,
+      });
+      console.log({
+        fileLength: multipleFiles?.length,
+      });
+
+      const fileNumber = count % (multipleFiles?.length || 3);
+      // const fileNumber = count % 3;
+      console.log({ fileNumber });
+      console.log({ targetFile: multipleFiles[fileNumber] });
+      setDisplayedFile(multipleFiles[fileNumber]);
+
+      count++;
+    }, 6000);
+
+    return () => clearInterval(timer);
+  }, [multipleFiles]);
 
   const handleFetchFileList = useCallback(async () => {
     console.log({ frontAccessToken: authResponse?.access_token });
@@ -56,6 +88,27 @@ const Home: NextPage<P> = ({ code }) => {
     [authResponse]
   );
 
+  const handleFetch3files = useCallback(async () => {
+    console.log("handleFetch3files");
+
+    const res = await Promise.all([
+      ...sampleIds.map((fileId) =>
+        axiosRequest<string>("GET", `api/drive/files/${fileId}/media`, {
+          params: {
+            ...authResponse,
+            fileId,
+            // mediaType: MediaType.IMAGE,
+          },
+        })
+      ),
+    ]);
+
+    console.log({ handleFetch3filesRes: res });
+
+    setMultipleFiles(res.map((e) => base64ToArrayBuffer(e)));
+    // setMultipleFiles(res);
+  }, [authResponse]);
+
   useEffect(() => {
     if (code && !authResponse) {
       axiosRequest<AuthResponse>("GET", `api/drive/token`, {
@@ -79,13 +132,38 @@ const Home: NextPage<P> = ({ code }) => {
           Welcome to <a href="https://nextjs.org">E Book Shelf!</a>
         </h1>
 
+        <Grid item>
+          <div style={{ height: 400 }}>
+            <Document file={displayedFile}>
+              {<Page key={`page_${1}`} pageNumber={1} height={400} />}
+            </Document>
+          </div>
+          {/* <img src={displayedFile} width={400} height={400} /> */}
+        </Grid>
+
         <Grid container direction="column" spacing={1}>
           <Grid item>
             <Button variant="contained" onClick={handleFetchFileList}>
               ファイル一覧取得
             </Button>
+            <Button variant="contained" onClick={handleFetch3files}>
+              3ファイル取得
+            </Button>
           </Grid>
           <Grid item container spacing={1}>
+            {driveFiles?.files.map((file, i) => {
+              return (
+                <Grid item key={i}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleFetchFile(file.id)}
+                  >
+                    {file.name}
+                  </Button>
+                  【{file.id}】
+                </Grid>
+              );
+            })}
             {driveFiles?.files.map((file, i) => {
               return (
                 <Grid item key={i}>
@@ -100,13 +178,12 @@ const Home: NextPage<P> = ({ code }) => {
             })}
           </Grid>
 
-          {
-            <Grid item>
-              <Document file={file}>
-                {<Page key={`page_${1}`} pageNumber={1} />}
-              </Document>
-            </Grid>
-          }
+          <Grid item>
+            <Document file={file}>
+              {<Page key={`page_${1}`} pageNumber={1} />}
+            </Document>
+          </Grid>
+
           <Grid item>
             <Button onClick={async () => FrontAuth.signOut()}>
               サインアウト

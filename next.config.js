@@ -11,6 +11,9 @@ module.exports = (phase, { defaultConfig }) => {
    */
   const nextConfig = {
     reactStrictMode: true,
+    experimental: {
+      esmExternals: false,
+    },
   };
   return nextConfig;
 };

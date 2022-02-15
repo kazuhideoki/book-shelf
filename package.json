@@ -2,7 +2,7 @@
   "name": "book-shelf",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "NODE_OPTIONS='--inspect --max-old-space-size=10000' next dev",
     "node:api": "npx ts-node-dev server/google-drive.service.ts",
     "build": "next build",
     "start": "next start",
@@ -18,6 +18,7 @@
     "googleapis": "^39.2.0",
     "next": "12.0.10",
     "pdf-lib": "^1.17.1",
+    "pdf2pic": "^2.1.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-firebaseui": "^6.0.0",

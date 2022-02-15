@@ -22,3 +22,8 @@ export type DriveFile = {
   name: string;
   mimeType: string;
 };
+
+export enum MediaType {
+  PDF = "PDF",
+  IMAGE = "IMAGE",
+}
