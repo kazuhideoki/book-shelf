@@ -129,7 +129,8 @@ const Home: NextPage<P> = ({ code }) => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">E Book Shelf!</a>
+          Welcome to{" "}
+          <a href={process.env.NEXT_PUBLIC_WEB_SERVICE_URL}>E Book Shelf!</a>
         </h1>
 
         <Grid item>
