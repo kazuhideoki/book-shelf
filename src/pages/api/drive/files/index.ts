@@ -22,6 +22,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           params: {
             q: "mimeType='application/pdf'",
+            pageSize: 10,
           },
         }
       );
