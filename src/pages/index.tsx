@@ -13,10 +13,7 @@ import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-interface P {
-  code?: string;
-  // authResponse?: AuthResponse;
-}
+interface P {}
 
 const sampleIds = [
   "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb",
@@ -24,7 +21,7 @@ const sampleIds = [
   "1-xVrIdceiJWuBTkYmq6HWar86owU98St",
 ];
 
-const Home: NextPage<P> = ({ code }) => {
+const Home: NextPage<P> = () => {
   const [driveFiles, setDriveFiles] = useState<DriveFiles | null>(null);
   const [file, setFile] = useState<any>(null);
   const [multipleFiles, setMultipleFiles] = useState<any[]>([]);
@@ -97,7 +94,6 @@ const Home: NextPage<P> = ({ code }) => {
           params: {
             ...authResponse,
             fileId,
-            // mediaType: MediaType.IMAGE,
           },
         })
       ),
@@ -106,18 +102,7 @@ const Home: NextPage<P> = ({ code }) => {
     console.log({ handleFetch3filesRes: res });
 
     setMultipleFiles(res.map((e) => base64ToArrayBuffer(e)));
-    // setMultipleFiles(res);
   }, [authResponse]);
-
-  // useEffect(() => {
-  //   if (code && !authResponse) {
-  //     axiosRequest<DriveAuth>("GET", `api/drive/token`, {
-  //       params: {
-  //         code,
-  //       },
-  //     }).then((authResponse) => setDriveAuth(authResponse));
-  //   }
-  // }, [code]);
 
   return (
     <div className={styles.container}>
@@ -196,19 +181,5 @@ const Home: NextPage<P> = ({ code }) => {
     </div>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const code = context.query?.code as string;
-
-//   if (!code) {
-//     const url = getAuthUrl();
-//     context.res.setHeader("location", url);
-//     context.res.statusCode = 302;
-//     context.res.end();
-//     return { props: {} };
-//   }
-
-//   return { props: { code } };
-// };
 
 export default Home;

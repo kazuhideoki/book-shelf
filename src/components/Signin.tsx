@@ -32,6 +32,7 @@ export const SignIn: NextComponentType<
 
   const handleDriveAuth = async () => {
     const url = await axiosRequest<string>("GET", `/api/drive/auth`);
+
     Router.push(url);
   };
 

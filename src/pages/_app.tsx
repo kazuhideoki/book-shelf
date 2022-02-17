@@ -1,9 +1,11 @@
+import { Box, CircularProgress } from "@material-ui/core";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 import { SignIn } from "../components/Signin";
 import { driveAuthState } from "../recoil/atom/drive-auth";
+import { loadingState } from "../recoil/atom/loading";
 import { userAuthState } from "../recoil/atom/user-auth";
 import { FrontFirebaseHelper } from "../utils/front-firebase";
 
@@ -22,6 +24,7 @@ export default function App(props: AppProps) {
 function _App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
+  const loading = useRecoilValue(loadingState);
   const auth = useRecoilValue(userAuthState);
   const authResponse = useRecoilValue(driveAuthState);
   const setDriveAuth = useSetRecoilState(driveAuthState);
@@ -32,6 +35,23 @@ function _App({ Component, pageProps }: AppProps) {
       console.log({ user })
     );
   }, [auth, setAuthState]);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress size={96} />
+      </Box>
+    );
+  }
 
   if (!auth || !authResponse) {
     return <SignIn />;
