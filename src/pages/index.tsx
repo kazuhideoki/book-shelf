@@ -4,11 +4,9 @@ import Head from "next/head";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { driveAuthState } from "../recoil/atom/drive-auth";
 import styles from "../styles/Home.module.css";
 import { DriveFiles } from "../type/google-drive-api.type";
-import { axiosRequest } from "../utils/axios";
+import { useRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -26,8 +24,7 @@ const Home: NextPage<P> = () => {
   const [file, setFile] = useState<any>(null);
   const [multipleFiles, setMultipleFiles] = useState<any[]>([]);
   const [displayedFile, setDisplayedFile] = useState<any>(null);
-  const authResponse = useRecoilValue(driveAuthState);
-  const setDriveAuth = useSetRecoilState(driveAuthState);
+  const request = useRequest();
 
   console.log({ displayedFile });
 
@@ -54,45 +51,34 @@ const Home: NextPage<P> = () => {
   }, [multipleFiles]);
 
   const handleFetchFileList = useCallback(async () => {
-    console.log({ frontAccessToken: authResponse?.access_token });
-
-    const res = await axiosRequest<DriveFiles>("GET", `api/drive/files`, {
-      params: {
-        ...authResponse,
-      },
-    });
+    const res = await request<DriveFiles>("GET", `api/drive/files`);
 
     console.log({ res });
 
     setDriveFiles(res);
-  }, [authResponse]);
+  }, []);
 
-  const handleFetchFile = useCallback(
-    async (fileId: string) => {
-      const res = await axiosRequest<string>(
-        "GET",
-        `api/drive/files/${fileId}/media`,
-        {
-          params: {
-            ...authResponse,
-            fileId,
-          },
-        }
-      );
+  const handleFetchFile = useCallback(async (fileId: string) => {
+    const res = await request<string>(
+      "GET",
+      `api/drive/files/${fileId}/media`,
+      {
+        params: {
+          fileId,
+        },
+      }
+    );
 
-      setFile(base64ToArrayBuffer(res));
-    },
-    [authResponse]
-  );
+    setFile(base64ToArrayBuffer(res));
+  }, []);
 
   const handleFetch3files = useCallback(async () => {
     console.log("handleFetch3files");
 
     const res = await Promise.all([
       ...sampleIds.map((fileId) =>
-        axiosRequest<string>("GET", `api/drive/files/${fileId}/media`, {
+        request<string>("GET", `api/drive/files/${fileId}/media`, {
           params: {
-            ...authResponse,
             fileId,
           },
         })
@@ -102,7 +88,7 @@ const Home: NextPage<P> = () => {
     console.log({ handleFetch3filesRes: res });
 
     setMultipleFiles(res.map((e) => base64ToArrayBuffer(e)));
-  }, [authResponse]);
+  }, []);
 
   return (
     <div className={styles.container}>

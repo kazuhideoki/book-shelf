@@ -1,7 +1,8 @@
 import { AxiosRequestConfig, default as axios, Method } from "axios";
+import { useRecoilValue } from "recoil";
+import { driveAuthState } from "../recoil/atom/drive-auth";
 const instance = axios.create();
 
-// reduxのauthがセットされる前に利用できるように抽出
 export async function axiosRequest<T>(
   method: Method,
   url: string,
@@ -17,3 +18,13 @@ export async function axiosRequest<T>(
 
   return res;
 }
+
+export const useRequest = () => {
+  const driveAuth = useRecoilValue(driveAuthState);
+
+  return <T>(method: Method, url: string, config?: any) =>
+    axiosRequest<T>(method, url, {
+      ...config,
+      headers: { ...config?.headers, ...driveAuth },
+    });
+};

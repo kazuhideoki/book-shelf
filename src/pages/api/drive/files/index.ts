@@ -10,7 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   console.log(`⭐ api/drive/files`);
 
   if (req.method === "GET") {
-    const { access_token } = req.query as DriveAuth;
+    const { access_token } = req.headers as DriveAuth;
 
     try {
       const response = await axiosRequest<DriveFiles>(
