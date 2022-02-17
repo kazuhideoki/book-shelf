@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export type AuthResponse = {
+export type DriveAuth = {
   access_token: string;
   expires_in: string;
   refresh_token: string;
@@ -8,7 +8,7 @@ export type AuthResponse = {
   token_type: string;
 };
 
-export const driveAuthState = atom<AuthResponse | null>({
+export const driveAuthState = atom<DriveAuth | null>({
   key: "driveAuth",
   default: null,
 });

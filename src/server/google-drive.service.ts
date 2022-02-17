@@ -2,7 +2,7 @@ import fs from "fs";
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
 import readline from "readline";
-import { AuthResponse } from "../recoil/atom/drive-auth";
+import { DriveAuth } from "../recoil/atom/drive-auth";
 import { axiosRequest } from "../utils/axios";
 
 export class ServerDriveService {
@@ -15,7 +15,7 @@ export class ServerDriveService {
       grant_type: "authorization_code",
     };
 
-    return await axiosRequest<AuthResponse>(
+    return await axiosRequest<DriveAuth>(
       "POST",
       "https://www.googleapis.com/oauth2/v4/token",
       {

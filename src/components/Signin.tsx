@@ -8,7 +8,7 @@ import { NextComponentType, NextPageContext } from "next";
 import Router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
-import { AuthResponse, driveAuthState } from "../recoil/atom/drive-auth";
+import { DriveAuth, driveAuthState } from "../recoil/atom/drive-auth";
 import { axiosRequest } from "../utils/axios";
 import { FrontAuth } from "../utils/front-firebase";
 
@@ -38,7 +38,7 @@ export const SignIn: NextComponentType<
   const code = router.query.code;
   useEffect(() => {
     if (code) {
-      axiosRequest<AuthResponse>("GET", `/api/drive/token`, {
+      axiosRequest<DriveAuth>("GET", `/api/drive/token`, {
         params: { code },
       }).then((res) => setDriveAuth(res));
     }

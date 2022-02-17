@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { AuthResponse, driveAuthState } from "../recoil/atom/drive-auth";
+import { driveAuthState } from "../recoil/atom/drive-auth";
 import styles from "../styles/Home.module.css";
 import { DriveFiles } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
@@ -109,15 +109,15 @@ const Home: NextPage<P> = ({ code }) => {
     // setMultipleFiles(res);
   }, [authResponse]);
 
-  useEffect(() => {
-    if (code && !authResponse) {
-      axiosRequest<AuthResponse>("GET", `api/drive/token`, {
-        params: {
-          code,
-        },
-      }).then((authResponse) => setDriveAuth(authResponse));
-    }
-  }, [code]);
+  // useEffect(() => {
+  //   if (code && !authResponse) {
+  //     axiosRequest<DriveAuth>("GET", `api/drive/token`, {
+  //       params: {
+  //         code,
+  //       },
+  //     }).then((authResponse) => setDriveAuth(authResponse));
+  //   }
+  // }, [code]);
 
   return (
     <div className={styles.container}>

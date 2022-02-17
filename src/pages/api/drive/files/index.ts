@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { AuthResponse } from "../../../../recoil/atom/drive-auth";
+import { DriveAuth } from "../../../../recoil/atom/drive-auth";
 import { DriveFiles } from "../../../../type/google-drive-api.type";
 import { axiosRequest } from "../../../../utils/axios";
 
@@ -10,7 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   console.log(`⭐ api/drive/files`);
 
   if (req.method === "GET") {
-    const { access_token } = req.query as AuthResponse;
+    const { access_token } = req.query as DriveAuth;
 
     try {
       const response = await axiosRequest<DriveFiles>(
