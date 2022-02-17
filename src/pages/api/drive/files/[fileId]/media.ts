@@ -2,14 +2,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
 import { MediaType } from "../../../../../type/google-drive-api.type";
-import { axiosDrive } from "../../../../../utils/axios-drive";
+import { daxiosRequest } from "../../../../../utils/axios-drive";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "GET") {
     const { access_token } = req.headers;
     const { fileId, mediaType } = req.query as any;
 
-    const response = await axiosDrive<string>(
+    const response = await daxiosRequest<string>(
       "GET",
       `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
       access_token as string,

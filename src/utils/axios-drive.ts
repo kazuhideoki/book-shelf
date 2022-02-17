@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, Method } from "axios";
 import { axiosRequest } from "./axios";
 
-export async function axiosDrive<T>(
+export async function daxiosRequest<T>(
   method: Method,
   url: string,
   access_token: string,

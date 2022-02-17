@@ -1,25 +1,17 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { DriveAuth } from "../../../../recoil/atom/drive-auth";
+import { ApiHelper } from "../../../../server/helper/api-helper";
 import { DriveFiles } from "../../../../type/google-drive-api.type";
-import { axiosRequest } from "../../../../utils/axios";
-
-const fileId = "1etL4N_wtxozkzGoKcMlmY_md0jGrDwmK";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log(`⭐ api/drive/files`);
+  const apiHelper = new ApiHelper(req, res);
 
-  if (req.method === "GET") {
-    const { access_token } = req.headers as DriveAuth;
-
-    try {
-      const response = await axiosRequest<DriveFiles>(
+  apiHelper.handler({
+    get: async () => {
+      const response = await apiHelper.daxiosRequest<DriveFiles>(
         "GET",
         `https://www.googleapis.com/drive/v3/files/`,
         {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
           params: {
             q: "mimeType='application/pdf'",
             pageSize: 10,
@@ -28,11 +20,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       );
 
       return res.status(200).json(response);
-    } catch (error) {
-      console.log({ error });
-      res.status(500);
-      return res.end();
-    }
-    1;
-  }
+    },
+  });
 };
