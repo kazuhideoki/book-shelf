@@ -14,9 +14,6 @@ export class ServerDriveService {
       redirect_uri: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
       grant_type: "authorization_code",
     };
-    console.log({
-      data,
-    });
 
     return await axiosRequest<AuthResponse>(
       "POST",

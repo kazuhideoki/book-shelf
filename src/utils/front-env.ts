@@ -2,7 +2,7 @@ export const Env = {
   STAGE: "development",
 
   NEXT_PUBLIC_WEB_SERVICE_URL: "http://localhost:3000",
-  NEXT_PUBLIC_TOKEN_REDIRECT_URL: "http://localhost:3000/api/auth/token",
+  NEXT_PUBLIC_TOKEN_REDIRECT_URL: "http://localhost:3000/api/drive/token",
   NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID:
     "682577732317-0rs7hh9dj90l901mji4sgkvigg4b17s5.apps.googleusercontent.com",
 
