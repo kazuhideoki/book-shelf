@@ -7,9 +7,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "GET") {
     const { code } = req.query as GetAccessToken;
 
-    const response = await ServerDriveService.getAccessToken(code);
+    let response;
+    try {
+      response = await ServerDriveService.getAccessToken(code);
+    } catch (e) {
+      console.log({ e });
+    }
 
-    return res.status(200).json(response);
-    1;
+    res.json(response);
   }
 };

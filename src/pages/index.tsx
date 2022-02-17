@@ -1,6 +1,7 @@
 import { Button, Grid } from "@material-ui/core";
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -10,7 +11,6 @@ import { DriveFiles } from "../type/google-drive-api.type";
 import { axiosRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";
-import { getAuthUrl } from "../utils/get-auth-url";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {
@@ -192,22 +192,23 @@ const Home: NextPage<P> = ({ code }) => {
           </Grid>
         </Grid>
       </main>
+      <Link href={`/settings`}>設定ページへ</Link>
     </div>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const code = context.query?.code as string;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const code = context.query?.code as string;
 
-  if (!code) {
-    const url = getAuthUrl();
-    context.res.setHeader("location", url);
-    context.res.statusCode = 302;
-    context.res.end();
-    return { props: {} };
-  }
+//   if (!code) {
+//     const url = getAuthUrl();
+//     context.res.setHeader("location", url);
+//     context.res.statusCode = 302;
+//     context.res.end();
+//     return { props: {} };
+//   }
 
-  return { props: { code } };
-};
+//   return { props: { code } };
+// };
 
 export default Home;
