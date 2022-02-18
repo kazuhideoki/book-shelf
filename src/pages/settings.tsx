@@ -18,7 +18,7 @@ const Settings: NextPage<P> = () => {
   console.log({ fileList });
 
   const handleFetchFileList = useCallback(async () => {
-    const res = await request<DriveFiles>("GET", `api/drive/files`, {});
+    const res = await request<DriveFiles>("GET", `api/files`, {});
 
     console.log({ res });
 

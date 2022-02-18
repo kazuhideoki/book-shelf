@@ -1,9 +1,9 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
-import { ApiHelper } from "../../../../../server/helper/api-helper";
-import { Path } from "../../../../../server/helper/const";
-import { MediaType } from "../../../../../type/google-drive-api.type";
+import { ApiHelper } from "../../../../server/helper/api-helper";
+import { Path } from "../../../../server/helper/const";
+import { MediaType } from "../../../../type/google-drive-api.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const api = new ApiHelper(req, res);

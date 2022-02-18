@@ -51,7 +51,7 @@ const Home: NextPage<P> = () => {
   }, [multipleFiles]);
 
   const handleFetchFileList = useCallback(async () => {
-    const res = await request<DriveFiles>("GET", `api/drive/files`);
+    const res = await request<DriveFiles>("GET", `api/files`);
 
     console.log({ res });
 
@@ -59,15 +59,11 @@ const Home: NextPage<P> = () => {
   }, []);
 
   const handleFetchFile = useCallback(async (fileId: string) => {
-    const res = await request<string>(
-      "GET",
-      `api/drive/files/${fileId}/media`,
-      {
-        params: {
-          fileId,
-        },
-      }
-    );
+    const res = await request<string>("GET", `api/files/${fileId}/media`, {
+      params: {
+        fileId,
+      },
+    });
 
     setFile(base64ToArrayBuffer(res));
   }, []);
@@ -77,7 +73,7 @@ const Home: NextPage<P> = () => {
 
     const res = await Promise.all([
       ...sampleIds.map((fileId) =>
-        request<string>("GET", `api/drive/files/${fileId}/media`, {
+        request<string>("GET", `api/files/${fileId}/media`, {
           params: {
             fileId,
           },

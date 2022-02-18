@@ -1,4 +1,4 @@
-export type CacheFile = {
+export type ImageSet = {
   accountId: string;
   fileId: string;
   path: string;
