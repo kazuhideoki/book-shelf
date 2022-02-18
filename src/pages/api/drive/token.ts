@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { DriveAuth } from "../../../recoil/atom/drive-auth";
 import { ApiHelper } from "../../../server/helper/api-helper";
 import { Path } from "../../../server/helper/const";
-import { GetAccessToken } from "../../../type/google-drive-api.type";
 import { axiosRequest } from "../../../utils/axios";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -11,7 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   return api.handler({
     get: async () => {
-      const { code } = api.query<GetAccessToken>();
+      const { code } = api.query;
 
       const data = {
         code,

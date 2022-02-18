@@ -2,7 +2,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
+import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
 import { SignIn } from "../components/Signin";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { loadingState } from "../recoil/atom/loading";
@@ -25,16 +25,15 @@ function _App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   const loading = useRecoilValue(loadingState);
-  const auth = useRecoilValue(userAuthState);
-  const authResponse = useRecoilValue(driveAuthState);
-  const setDriveAuth = useSetRecoilState(driveAuthState);
-  const setAuthState = useSetRecoilState(userAuthState);
+  const [userAuth, setAuthState] = useRecoilState(userAuthState);
+  const driveAuth = useRecoilValue(driveAuthState);
 
   useEffect(() => {
-    return FrontFirebaseHelper.listenFirebaseAuth((user) =>
-      console.log({ user })
-    );
-  }, [auth, setAuthState]);
+    return FrontFirebaseHelper.listenFirebaseAuth((user) => {
+      console.log("front!!!!!!!!!!");
+      setAuthState(user);
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -53,7 +52,7 @@ function _App({ Component, pageProps }: AppProps) {
     );
   }
 
-  if (!auth || !authResponse) {
+  if (!userAuth || !driveAuth) {
     return <SignIn />;
   }
 

@@ -25,7 +25,6 @@ export class FrontFirebaseHelper {
           console.log({ user });
 
           setAuth(user);
-          console.log(`done listenFirebaseAuth`);
         }
       },
       (error) => {}

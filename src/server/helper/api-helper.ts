@@ -11,8 +11,12 @@ export class ApiHelper {
     this.res = res;
   }
 
-  query<T extends any>(): T {
-    return this.req.query as T;
+  get query() {
+    return this.req.query as any;
+  }
+
+  get userId() {
+    return this.req.headers.userid; // headers経由でキャメルケースが小文字になる
   }
 
   /**
