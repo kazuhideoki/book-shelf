@@ -11,6 +11,10 @@ export class ApiHelper {
     this.res = res;
   }
 
+  query<T extends any>(): T {
+    return this.req.query as T;
+  }
+
   /**
    *  Google Drive APIへのリクエスト
    */
