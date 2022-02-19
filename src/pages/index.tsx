@@ -1,11 +1,12 @@
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Link, Typography } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { FrontPath } from "../server/helper/const";
+import { FrontPath, ServerPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
+import { DisplaySet } from "../type/model/firestore-display-set.type";
+import { useRequest } from "../utils/axios";
 import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -18,9 +19,22 @@ const sampleIds = [
 ];
 
 const Home: NextPage<P> = () => {
-  const [multipleFiles, setMultipleFiles] = useState<any[]>([]);
-  const [displayedFile, setDisplayedFile] = useState<any>(null);
+  const request = useRequest();
+  const [displaySets, setDisplaySets] = useState<DisplaySet | null>(null);
+  const [pdfs, setPdfs] = useState<any[]>([]);
+  const [targetPDF, setTargetPDF] = useState<any>(null);
 
+  useEffect(() => {
+    try {
+      request<DisplaySet>("GET", ServerPath.displaySets).then((res) => {
+        setDisplaySets(res);
+      });
+    } catch (error) {
+      console.log(`Error occurred: ${error}`);
+    }
+  }, []);
+
+  // 表示する画像を一定間隔で入れ替える
   useEffect(() => {
     let count = 1;
     const timer = setInterval(() => {
@@ -28,19 +42,19 @@ const Home: NextPage<P> = () => {
         count,
       });
       console.log({
-        fileLength: multipleFiles?.length,
+        fileLength: pdfs?.length,
       });
 
-      const fileNumber = count % (multipleFiles?.length || 3);
+      const fileNumber = count % (pdfs?.length || 3);
       console.log({ fileNumber });
-      console.log({ targetFile: multipleFiles[fileNumber] });
-      setDisplayedFile(multipleFiles[fileNumber]);
+      console.log({ targetFile: pdfs[fileNumber] });
+      setTargetPDF(pdfs[fileNumber]);
 
       count++;
     }, 6000);
 
     return () => clearInterval(timer);
-  }, [multipleFiles]);
+  }, [pdfs]);
 
   return (
     <div className={styles.container}>
@@ -51,18 +65,22 @@ const Home: NextPage<P> = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
+        <Typography variant="h6">
           Welcome to{" "}
-          <a href={process.env.NEXT_PUBLIC_WEB_SERVICE_URL}>E Book Shelf!</a>
-        </h1>
+          <Link href={process.env.NEXT_PUBLIC_WEB_SERVICE_URL}>
+            E Book Shelf!
+          </Link>
+        </Typography>
 
-        <Grid item>
-          <div style={{ height: 400 }}>
-            <Document file={displayedFile}>
-              {<Page key={`page_${1}`} pageNumber={1} height={400} />}
-            </Document>
-          </div>
-        </Grid>
+        <Box style={{ height: 400 }}>
+          <Grid item container>
+            <Grid item justifyContent="center" direction="column">
+              <Document file={targetPDF}>
+                {<Page key={`page_${1}`} pageNumber={1} height={400} />}
+              </Document>
+            </Grid>
+          </Grid>
+        </Box>
 
         <Grid container direction="column" spacing={1}>
           <Grid item>
