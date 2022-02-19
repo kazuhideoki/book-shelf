@@ -14,6 +14,9 @@ export class ApiHelper {
   get query() {
     return this.req.query as any;
   }
+  get data() {
+    return this.req.body as any;
+  }
 
   get userId() {
     return this.req.headers.userid as string; // headers経由でキャメルケースが小文字になる
@@ -40,9 +43,11 @@ export class ApiHelper {
   async handler(p: {
     get?: () => Promise<void>;
     post?: () => Promise<void>;
+    patch?: () => Promise<void>;
+    delete?: () => Promise<void>;
     error?: () => never;
   }): Promise<void> {
-    const { get, post, error } = p;
+    const { get, post, patch, delete: Delete, error } = p;
     console.log(`⭐  ${this.req.url}`);
 
     try {
@@ -52,6 +57,12 @@ export class ApiHelper {
           break;
         case "POST":
           await post?.();
+          break;
+        case "PATCH":
+          await patch?.();
+          break;
+        case "DELETE":
+          await Delete?.();
           break;
 
         default:

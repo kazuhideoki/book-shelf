@@ -17,7 +17,7 @@ export const db = getFirestore();
 export const firestore = app.firestore;
 export const collection = (collectionName: CollectionName) =>
   firebaseCollection(db, collectionName);
-export type CollectionName = "ImageSets";
+export type CollectionName = "ImageSets" | "DisplaySets";
 
 export const bucket = app
   .storage()

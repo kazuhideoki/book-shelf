@@ -13,6 +13,7 @@ import type { NextPage } from "next";
 import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { ServerPath } from "../server/helper/const";
+import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
 import { DriveFile, DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
@@ -30,7 +31,7 @@ const Settings: NextPage<P> = () => {
       folders: (DriveFile & { files?: DriveFile[]; pageToken?: string })[];
       pageToken: string;
     } | null;
-    selectedFiles: DriveFile[];
+    selectedFiles: { file: DriveFile; index: number }[];
   }>({
     folderData: null,
     selectedFiles: [],
@@ -39,28 +40,30 @@ const Settings: NextPage<P> = () => {
   console.log({ values });
 
   const handleFetchFolderList = useCallback(async () => {
-    const res = await request<DriveFiles, ListDriveFiles>(
-      "GET",
-      ServerPath.files,
-      {
-        params: {
-          q: "mimeType = 'application/vnd.google-apps.folder'",
-          pageToken: values.folderData?.pageToken,
+    try {
+      const res = await request<DriveFiles, ListDriveFiles>(
+        "GET",
+        ServerPath.files,
+        {
+          params: {
+            q: "mimeType = 'application/vnd.google-apps.folder'",
+            pageToken: values.folderData?.pageToken,
+          },
+        }
+      );
+
+      setValues({
+        ...values,
+        folderData: {
+          folders: values.folderData?.folders
+            ? [...values.folderData?.folders, ...res.files]
+            : res.files,
+          pageToken: res.nextPageToken,
         },
-      }
-    );
-
-    console.log({ res });
-
-    setValues({
-      ...values,
-      folderData: {
-        folders: values.folderData?.folders
-          ? [...values.folderData?.folders, ...res.files]
-          : res.files,
-        pageToken: res.nextPageToken,
-      },
-    });
+      });
+    } catch (error) {
+      console.log(`Error occurred ${error}`);
+    }
   }, [values]);
 
   const handleFetchFileList = useCallback(
@@ -69,50 +72,65 @@ const Settings: NextPage<P> = () => {
         (e) => e.id === folder.id
       )!;
 
-      console.log({ targetFolder });
+      try {
+        const res = await request<DriveFiles, ListDriveFiles>(
+          "GET",
+          ServerPath.files,
+          {
+            params: {
+              q: `mimeType = 'application/pdf' and '${folder.id}' in parents`,
+              pageToken: targetFolder?.pageToken,
+            },
+          }
+        );
 
-      const res = await request<DriveFiles, ListDriveFiles>(
-        "GET",
-        ServerPath.files,
-        {
-          params: {
-            q: `mimeType = 'application/pdf' and '${folder.id}' in parents`,
-            pageToken: targetFolder?.pageToken,
+        const files = targetFolder?.files
+          ? [...targetFolder.files, ...res.files]
+          : res.files;
+
+        // folderのfileを追加
+        const updatedFolders: (DriveFile & {
+          files?: DriveFile[];
+          pageToken?: string;
+        })[] = values.folderData?.folders.map((folder) => {
+          if (folder.id === targetFolder.id) {
+            return {
+              ...folder,
+              files: files,
+              pageToken: res.nextPageToken,
+            };
+          }
+          return folder;
+        })!;
+
+        setValues({
+          ...values,
+          folderData: {
+            ...values.folderData!,
+            folders: updatedFolders,
           },
-        }
-      );
-
-      console.log({ res });
-
-      const files = targetFolder?.files
-        ? [...targetFolder.files, ...res.files]
-        : res.files;
-
-      // folderのfileを追加
-      const updatedFolders: (DriveFile & {
-        files?: DriveFile[];
-        pageToken?: string;
-      })[] = values.folderData?.folders.map((folder) => {
-        if (folder.id === targetFolder.id) {
-          return {
-            ...folder,
-            files: files,
-            pageToken: res.nextPageToken,
-          };
-        }
-        return folder;
-      })!;
-
-      setValues({
-        ...values,
-        folderData: {
-          ...values.folderData!,
-          folders: updatedFolders,
-        },
-      });
+        });
+      } catch (error) {
+        console.log(`Error occurred: ${error}`);
+      }
     },
     [values]
   );
+
+  const handleSubmitDisplaySets = useCallback(async () => {
+    try {
+      await request<any, RegisterDispalySet[]>("POST", ServerPath.displaySets, {
+        data: values.selectedFiles.map((e) => ({
+          fileId: e.file.id,
+          index: e.index,
+        })),
+      });
+
+      console.log("Successfully saved display set!");
+    } catch (error) {
+      console.log(`Error occurred: ${error}`);
+    }
+  }, []);
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -162,16 +180,18 @@ const Settings: NextPage<P> = () => {
                         <FormControlLabel
                           key={i}
                           control={<Checkbox />}
-                          onClick={(e) =>
+                          onClick={(e) => {
+                            const index = values.selectedFiles.length + 1;
+
                             setValues({
                               ...values,
                               selectedFiles: (e.target as any).checked
-                                ? [...values.selectedFiles, file]
+                                ? [...values.selectedFiles, { file, index }]
                                 : values.selectedFiles.filter(
-                                    (e) => e.id !== file.id
+                                    (e) => e.file.id !== file.id
                                   ),
-                            })
-                          }
+                            });
+                          }}
                           label={file.name}
                         />
                       ))}
@@ -181,6 +201,11 @@ const Settings: NextPage<P> = () => {
               </Grid>
             );
           })}
+      </Grid>
+      <Grid item>
+        <Button variant="contained" onClick={handleSubmitDisplaySets}>
+          設定を登録
+        </Button>
       </Grid>
     </Grid>
   );

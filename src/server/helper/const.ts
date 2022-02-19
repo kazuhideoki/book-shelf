@@ -1,5 +1,6 @@
 export class ServerPath {
   static files = `api/files`;
+  static displaySets = `api/display-sets`;
 }
 
 export class ExternalPath {
