@@ -1,13 +1,16 @@
+import { FolderOpen } from "@mui/icons-material";
+import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import {
   Button,
   Checkbox,
   FormControlLabel,
   FormGroup,
   Grid,
+  Icon,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import type { NextPage } from "next";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { ServerPath } from "../server/helper/const";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
@@ -111,55 +114,69 @@ const Settings: NextPage<P> = () => {
     [values]
   );
 
-  useEffect(() => {
-    handleFetchFolderList();
-  }, []);
-
   return (
     <Grid container direction="column" spacing={2}>
-      <Grid item>
-        <Typography variant="h4">表示設定</Typography>
+      <Grid item container spacing={1}>
+        <Grid item>
+          <Icon sx={{ fontSize: 40 }}>
+            <SettingsApplicationsIcon sx={{ fontSize: 40 }} />
+          </Icon>
+        </Grid>
+        <Grid item>
+          <Typography variant="h3">表示設定</Typography>
+        </Grid>
       </Grid>
       <Grid item>
-        <Typography variant="h5">フォルダー設定</Typography>
+        <Button variant="contained" onClick={handleFetchFolderList}>
+          フォルダーの読み込み
+        </Button>
       </Grid>
-      <Button onClick={handleFetchFolderList}>Fetch more!</Button>
-      <Grid item container direction="column">
+      <Grid item container direction="column" spacing={1}>
         {values.folderData &&
           values.folderData.folders.map((folder, i) => {
             const files = values.folderData?.folders.find(
               (e) => e.id === folder.id
             )?.files;
             return (
-              <Grid item key={i}>
-                <Button onClick={() => handleFetchFileList(folder)}>
-                  {folder.name} Fetch file!
-                </Button>
+              <Grid item container key={i} spacing={2}>
+                <Grid item>
+                  <Icon>
+                    <FolderOpen />
+                  </Icon>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h5">{folder.name}</Typography>
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleFetchFileList(folder)}
+                  >
+                    ファイルの読み込み
+                  </Button>
+                </Grid>
                 {files?.length && (
-                  <>
-                    <Typography variant="h5">ファイル選択</Typography>
-                    <Grid item container direction="column">
-                      <FormGroup>
-                        {files?.map((file, i) => (
-                          <FormControlLabel
-                            key={i}
-                            control={<Checkbox />}
-                            onClick={(e) =>
-                              setValues({
-                                ...values,
-                                selectedFiles: (e.target as any).checked
-                                  ? [...values.selectedFiles, file]
-                                  : values.selectedFiles.filter(
-                                      (e) => e.id !== file.id
-                                    ),
-                              })
-                            }
-                            label={file.name}
-                          />
-                        ))}
-                      </FormGroup>
-                    </Grid>
-                  </>
+                  <Grid item container direction="column">
+                    <FormGroup>
+                      {files?.map((file, i) => (
+                        <FormControlLabel
+                          key={i}
+                          control={<Checkbox />}
+                          onClick={(e) =>
+                            setValues({
+                              ...values,
+                              selectedFiles: (e.target as any).checked
+                                ? [...values.selectedFiles, file]
+                                : values.selectedFiles.filter(
+                                    (e) => e.id !== file.id
+                                  ),
+                            })
+                          }
+                          label={file.name}
+                        />
+                      ))}
+                    </FormGroup>
+                  </Grid>
                 )}
               </Grid>
             );

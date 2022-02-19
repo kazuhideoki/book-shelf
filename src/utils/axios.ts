@@ -29,7 +29,7 @@ export const useRequest = () => {
   return async function <T, U = any>(
     method: Method,
     url: string,
-    config: {
+    config?: {
       params?: U;
       data?: U;
     }

@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@material-ui/core";
+import { Box, CircularProgress } from "@mui/material";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -61,17 +61,3 @@ function _App({ Component, pageProps }: AppProps) {
     </>
   );
 }
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const code = context.query?.code as string;
-
-//   if (!code) {
-//     const url = getAuthUrl();
-//     context.res.setHeader("location", url);
-//     context.res.statusCode = 302;
-//     context.res.end();
-//     return { props: {} };
-//   }
-
-//   return { props: { code } };
-// };
