@@ -61,16 +61,19 @@ const Settings: NextPage<P> = () => {
   }, [values]);
 
   const handleFetchFileList = useCallback(
-    async (folderId: string) => {
+    async (folder: DriveFile) => {
       const targetFolder = values.folderData?.folders.find(
-        (e) => e.id === folderId
-      );
+        (e) => e.id === folder.id
+      )!;
+
+      console.log({ targetFolder });
+
       const res = await request<DriveFiles, ListDriveFiles>(
         "GET",
         ServerPath.files,
         {
           params: {
-            q: "mimeType = 'application/pdf'",
+            q: `mimeType = 'application/pdf' and '${folder.id}' in parents`,
             pageToken: targetFolder?.pageToken,
           },
         }
@@ -87,7 +90,7 @@ const Settings: NextPage<P> = () => {
         files?: DriveFile[];
         pageToken?: string;
       })[] = values.folderData?.folders.map((folder) => {
-        if (folder.id === folderId) {
+        if (folder.id === targetFolder.id) {
           return {
             ...folder,
             files: files,
@@ -128,8 +131,8 @@ const Settings: NextPage<P> = () => {
               (e) => e.id === folder.id
             )?.files;
             return (
-              <>
-                <Button onClick={() => handleFetchFileList(folder.id)}>
+              <Grid item key={i}>
+                <Button onClick={() => handleFetchFileList(folder)}>
                   {folder.name} Fetch file!
                 </Button>
                 {files?.length && (
@@ -158,7 +161,7 @@ const Settings: NextPage<P> = () => {
                     </Grid>
                   </>
                 )}
-              </>
+              </Grid>
             );
           })}
       </Grid>
