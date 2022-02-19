@@ -37,21 +37,21 @@ export class ApiHelper {
     return res;
   }
 
-  handler(p: {
-    get?: () => void;
-    post?: () => void;
+  async handler(p: {
+    get?: () => Promise<void>;
+    post?: () => Promise<void>;
     error?: () => never;
-  }): void {
+  }): Promise<void> {
     const { get, post, error } = p;
     console.log(`⭐  ${this.req.url}`);
 
     try {
       switch (this.req.method) {
         case "GET":
-          get?.();
+          await get?.();
           break;
         case "POST":
-          post?.();
+          await post?.();
           break;
 
         default:

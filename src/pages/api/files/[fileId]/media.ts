@@ -1,6 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { PDFDocument } from "pdf-lib";
 import { bucket, collection } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { Path, StoragePath } from "../../../../server/helper/const";
@@ -19,36 +20,34 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       ).data() as ImageSet;
 
       if (imageSet) {
-        console.log(`imageSet is null`);
+        console.log(`imageSet exists`);
 
-        const response = await bucket.file(imageSet.path).get();
+        const response = await bucket.file(imageSet.path).download();
 
-        console.log(typeof response);
-        console.log({ response });
+        console.log(`1 page of PDF downloaded from Firebase Storage`);
 
-        return res.status(200).json(response[0]);
+        const result = response[0].toString();
+
+        return res.status(200).json(result);
       }
-      console.log(`imageSet found`);
+      console.log(`imageSet not found`);
 
       const response = await api.daxiosRequest<any>("GET", Path.file(fileId), {
         params: {
           alt: "media",
         },
-        // responseEncoding: "base64",
+        responseEncoding: "base64",
       });
 
-      console.log(typeof response);
+      console.log(`PDF downloaded from Google Drive`);
 
-      console.log({ response });
+      const pdfDoc = await PDFDocument.load(response);
+      const firstPage = pdfDoc.getPages()[0];
+      const result = await firstPage.doc.saveAsBase64();
 
-      // const pdfDoc = await PDFDocument.load(response);
-      // const firstPage = pdfDoc.getPages()[0];
-      // const result = await firstPage.doc.saveAsBase64();
+      await bucket.file(StoragePath.pdfFile(api.userId, fileId)).save(result);
 
-      await bucket
-        .file(StoragePath.pdfFile(api.userId, fileId))
-        .save(response)
-        .catch((e) => console.log(`3 ${e}`));
+      console.log(`1 page of PDF saved in Firebase Storage`);
 
       const data: ImageSet = {
         userId: api.userId,
@@ -58,14 +57,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         updatedAt: new Date(),
       };
 
-      console.log({ data });
-
       await setDoc(doc(collection("ImageSets"), fileId), data);
 
       if (mediaType === MediaType.IMAGE) {
         throw new Error("Not implemented");
       } else if (mediaType === MediaType.PDF || mediaType === undefined) {
-        return res.status(200).json({});
+        return res.status(200).json((result as any).toString("base64"));
       }
     },
   });
