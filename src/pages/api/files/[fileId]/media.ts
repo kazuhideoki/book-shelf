@@ -1,8 +1,10 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { bucket } from "../../../../server/firebase-service";
+import { bucket, collection } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
-import { Path } from "../../../../server/helper/const";
+import { Path, StoragePath } from "../../../../server/helper/const";
+import { ImageSet } from "../../../../type/firestore-image-set.type";
 import { MediaType } from "../../../../type/google-drive-api.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -12,29 +14,53 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId, mediaType } = api.query;
 
-      const response = await api.daxiosRequest<string>(
-        "GET",
-        Path.file(fileId),
-        {
-          params: {
-            alt: "media",
-          },
-          // responseEncoding: "base64",
-        }
-      );
+      const imageSet = (
+        await getDoc(doc(collection("ImageSets"), fileId))
+      ).data() as ImageSet;
+
+      if (imageSet) {
+        console.log(`imageSet is null`);
+
+        const response = await bucket.file(imageSet.path).get();
+
+        console.log(typeof response);
+        console.log({ response });
+
+        return res.status(200).json(response[0]);
+      }
+      console.log(`imageSet found`);
+
+      const response = await api.daxiosRequest<any>("GET", Path.file(fileId), {
+        params: {
+          alt: "media",
+        },
+        // responseEncoding: "base64",
+      });
+
+      console.log(typeof response);
+
+      console.log({ response });
 
       // const pdfDoc = await PDFDocument.load(response);
       // const firstPage = pdfDoc.getPages()[0];
       // const result = await firstPage.doc.saveAsBase64();
 
-      console.log("1");
-
       await bucket
-        .file(`files/${api.userId}/${fileId}.pdf`)
+        .file(StoragePath.pdfFile(api.userId, fileId))
         .save(response)
         .catch((e) => console.log(`3 ${e}`));
 
-      console.log("2");
+      const data: ImageSet = {
+        userId: api.userId,
+        fileId,
+        path: StoragePath.pdfFile(api.userId, fileId),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      console.log({ data });
+
+      await setDoc(doc(collection("ImageSets"), fileId), data);
 
       if (mediaType === MediaType.IMAGE) {
         throw new Error("Not implemented");

@@ -1,5 +1,5 @@
 export type ImageSet = {
-  accountId: string;
+  userId: string;
   fileId: string;
   path: string;
   createdAt: Date;

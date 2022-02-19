@@ -6,3 +6,8 @@ export class Path {
   static files = `${Path.driveRoute}/files`;
   static file = (fileId: string) => `${Path.files}/${fileId}`;
 }
+
+export class StoragePath {
+  static pdfFile = (userId: string, fileId: string) =>
+    `files/${userId}/${fileId}.pdf`;
+}

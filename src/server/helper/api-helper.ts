@@ -16,7 +16,7 @@ export class ApiHelper {
   }
 
   get userId() {
-    return this.req.headers.userid; // headers経由でキャメルケースが小文字になる
+    return this.req.headers.userid as string; // headers経由でキャメルケースが小文字になる
   }
 
   /**
