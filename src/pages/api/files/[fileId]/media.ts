@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
 import { bucket, collection } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
-import { Path, StoragePath } from "../../../../server/helper/const";
+import { ExternalPath, StoragePath } from "../../../../server/helper/const";
 import { MediaType } from "../../../../type/api/google-drive-api.type";
 import { ImageSet } from "../../../../type/model/firestore-image-set.type";
 
@@ -33,12 +33,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
       console.log(`imageSet not found`);
 
-      const response = await api.daxiosRequest<any>("GET", Path.file(fileId), {
-        params: {
-          alt: "media",
-        },
-        responseEncoding: "base64",
-      });
+      const response = await api.daxiosRequest<any>(
+        "GET",
+        ExternalPath.file(fileId),
+        {
+          params: {
+            alt: "media",
+          },
+          responseEncoding: "base64",
+        }
+      );
 
       // TODO できれば表紙は画像ファイルで格納したい 方法模索中
       console.log(`PDF downloaded from Google Drive`);

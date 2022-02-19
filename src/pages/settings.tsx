@@ -9,6 +9,7 @@ import {
 import type { NextPage } from "next";
 import { useCallback, useEffect, useState } from "react";
 import { pdfjs } from "react-pdf";
+import { ServerPath } from "../server/helper/const";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
 import { DriveFile, DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
@@ -21,33 +22,75 @@ interface P {
 const Settings: NextPage<P> = () => {
   const request = useRequest();
 
-  const [folderList, setFolderList] = useState<{
-    files: DriveFile[];
-    pageToken: string;
-  } | null>(null);
+  const [values, setValues] = useState<{
+    folders: {
+      list: DriveFile[];
+      pageToken: string;
+    } | null;
+    files: {
+      list: DriveFile[];
+      pageToken: string;
+    } | null;
+    selectedFolders: DriveFile[];
+    selectedFiles: DriveFile[];
+  }>({
+    folders: null,
+    files: null,
+    selectedFolders: [],
+    selectedFiles: [],
+  });
 
-  console.log({ fileList: folderList });
+  console.log({ values });
 
   const handleFetchFolderList = useCallback(async () => {
-    const res = await request<DriveFiles, ListDriveFiles>("GET", `api/files`, {
-      params: {
-        q: "mimeType = 'application/vnd.google-apps.folder'",
-        pageToken: folderList?.pageToken,
-      },
-    });
+    const res = await request<DriveFiles, ListDriveFiles>(
+      "GET",
+      ServerPath.files,
+      {
+        params: {
+          q: "mimeType = 'application/vnd.google-apps.folder'",
+          pageToken: values.folders?.pageToken,
+        },
+      }
+    );
 
     console.log({ res });
 
-    setFolderList({
-      files: folderList?.files
-        ? [...folderList?.files, ...res.files]
-        : res.files,
-      pageToken: res.nextPageToken,
+    setValues({
+      ...values,
+      folders: {
+        list: values.folders?.list
+          ? [...values.folders?.list, ...res.files]
+          : res.files,
+        pageToken: res.nextPageToken,
+      },
     });
-  }, [folderList]);
+  }, [values]);
 
-  // topページに表示させるものを決め、 表紙をcacheする
-  const selectFile = (fileId: string) => {};
+  const handleFetchFileList = useCallback(async () => {
+    const res = await request<DriveFiles, ListDriveFiles>(
+      "GET",
+      ServerPath.files,
+      {
+        params: {
+          q: "mimeType = 'application/pdf'",
+          pageToken: values.files?.pageToken,
+        },
+      }
+    );
+
+    console.log({ res });
+
+    setValues({
+      ...values,
+      files: {
+        list: values.files?.list
+          ? [...values.files?.list, ...res.files]
+          : res.files,
+        pageToken: res.nextPageToken,
+      },
+    });
+  }, [values]);
 
   useEffect(() => {
     handleFetchFolderList();
@@ -58,14 +101,48 @@ const Settings: NextPage<P> = () => {
       <Grid item>
         <Typography variant="h4">表示設定</Typography>
       </Grid>
-      <Button onClick={handleFetchFolderList}>Fetch Again</Button>
+      <Grid item>
+        <Typography variant="h5">フォルダー設定</Typography>
+      </Grid>
+      <Button onClick={handleFetchFolderList}>Fetch more!</Button>
       <Grid item container direction="column">
         <FormGroup>
-          {folderList &&
-            folderList?.files.map((file, i) => (
+          {values.folders &&
+            values.folders.list.map((file, i) => (
               <FormControlLabel
                 key={i}
                 control={<Checkbox />}
+                onClick={(e) =>
+                  setValues({
+                    ...values,
+                    selectedFiles: (e.target as any).checked
+                      ? [...values.selectedFiles, file]
+                      : values.selectedFiles.filter((e) => e.id !== file.id),
+                  })
+                }
+                label={file.name}
+              />
+            ))}
+        </FormGroup>
+      </Grid>
+      <Typography variant="h5">ファイル選択</Typography>
+      <Button onClick={handleFetchFileList}>Fetch file!</Button>
+      <Grid item></Grid>
+      <Grid item container direction="column">
+        <FormGroup>
+          {values.files &&
+            values.files.list.map((file, i) => (
+              <FormControlLabel
+                key={i}
+                control={<Checkbox />}
+                onClick={(e) =>
+                  setValues({
+                    ...values,
+                    selectedFolders: (e.target as any).checked
+                      ? [...values.selectedFolders, file]
+                      : values.selectedFolders.filter((e) => e.id !== file.id),
+                  })
+                }
                 label={file.name}
               />
             ))}
