@@ -9,7 +9,8 @@ import {
 import type { NextPage } from "next";
 import { useCallback, useEffect, useState } from "react";
 import { pdfjs } from "react-pdf";
-import { DriveFiles } from "../type/model/google-drive.type";
+import { ListDriveFiles } from "../type/api/google-drive-api.type";
+import { DriveFile, DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -20,25 +21,36 @@ interface P {
 const Settings: NextPage<P> = () => {
   const request = useRequest();
 
-  const [fileList, setFileList] = useState<DriveFiles | null>(null);
+  const [folderList, setFolderList] = useState<{
+    files: DriveFile[];
+    pageToken: string;
+  } | null>(null);
 
-  console.log({ fileList });
+  console.log({ fileList: folderList });
 
-  const handleFetchFileList = useCallback(async () => {
-    const res = await request<DriveFiles>("GET", `api/files`, {
-      params: { q: "mimeType = 'application/vnd.google-apps.folder'" },
+  const handleFetchFolderList = useCallback(async () => {
+    const res = await request<DriveFiles, ListDriveFiles>("GET", `api/files`, {
+      params: {
+        q: "mimeType = 'application/vnd.google-apps.folder'",
+        pageToken: folderList?.pageToken,
+      },
     });
 
     console.log({ res });
 
-    setFileList(res);
-  }, []);
+    setFolderList({
+      files: folderList?.files
+        ? [...folderList?.files, ...res.files]
+        : res.files,
+      pageToken: res.nextPageToken,
+    });
+  }, [folderList]);
 
   // topページに表示させるものを決め、 表紙をcacheする
   const selectFile = (fileId: string) => {};
 
   useEffect(() => {
-    handleFetchFileList();
+    handleFetchFolderList();
   }, []);
 
   return (
@@ -46,11 +58,11 @@ const Settings: NextPage<P> = () => {
       <Grid item>
         <Typography variant="h4">表示設定</Typography>
       </Grid>
-      <Button onClick={handleFetchFileList}>Fetch Again</Button>
+      <Button onClick={handleFetchFolderList}>Fetch Again</Button>
       <Grid item container direction="column">
         <FormGroup>
-          {fileList &&
-            fileList?.files.map((file, i) => (
+          {folderList &&
+            folderList?.files.map((file, i) => (
               <FormControlLabel
                 key={i}
                 control={<Checkbox />}
