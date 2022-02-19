@@ -5,8 +5,8 @@ import { PDFDocument } from "pdf-lib";
 import { bucket, collection } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { Path, StoragePath } from "../../../../server/helper/const";
-import { ImageSet } from "../../../../type/firestore-image-set.type";
-import { MediaType } from "../../../../type/google-drive-api.type";
+import { MediaType } from "../../../../type/api/google-drive-api.type";
+import { ImageSet } from "../../../../type/model/firestore-image-set.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const api = new ApiHelper(req, res);
@@ -20,6 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       ).data() as ImageSet;
 
       if (imageSet) {
+        // TODO Drive側で更新されていたら取得し直す処理も必要
         console.log(`imageSet exists`);
 
         const response = await bucket.file(imageSet.path).download();
@@ -39,6 +40,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         responseEncoding: "base64",
       });
 
+      // TODO できれば表紙は画像ファイルで格納したい 方法模索中
       console.log(`PDF downloaded from Google Drive`);
 
       const pdfDoc = await PDFDocument.load(response);

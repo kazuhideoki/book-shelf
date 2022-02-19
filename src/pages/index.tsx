@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import styles from "../styles/Home.module.css";
-import { DriveFiles } from "../type/google-drive-api.type";
+import { DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
 import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";

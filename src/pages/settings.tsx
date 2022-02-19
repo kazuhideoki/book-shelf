@@ -1,8 +1,14 @@
-import { Grid, Typography } from "@material-ui/core";
+import {
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import type { NextPage } from "next";
 import { useCallback, useEffect, useState } from "react";
 import { pdfjs } from "react-pdf";
-import { DriveFiles } from "../type/google-drive-api.type";
+import { DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -38,12 +44,16 @@ const Settings: NextPage<P> = () => {
         <Typography variant="h4">表示設定</Typography>
       </Grid>
       <Grid item container direction="column">
-        {fileList &&
-          fileList?.files.map((file, i) => (
-            <Grid item key={i}>
-              <Typography>{file.name}</Typography>
-            </Grid>
-          ))}
+        <FormGroup>
+          {fileList &&
+            fileList?.files.map((file, i) => (
+              <FormControlLabel
+                key={i}
+                control={<Checkbox />}
+                label={file.name}
+              />
+            ))}
+        </FormGroup>
       </Grid>
     </Grid>
   );

@@ -16,7 +16,7 @@ interface P {
 export default function App(props: AppProps) {
   return (
     <RecoilRoot>
-      <_App {...props} />;
+      <_App {...props} />
     </RecoilRoot>
   );
 }
@@ -30,7 +30,6 @@ function _App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     return FrontFirebaseHelper.listenFirebaseAuth((user) => {
-      console.log("front!!!!!!!!!!");
       setAuthState(user);
     });
   }, []);
