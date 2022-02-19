@@ -2,12 +2,10 @@ import { Button, Grid } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { FrontPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
-import { DriveFiles } from "../type/model/google-drive.type";
-import { useRequest } from "../utils/axios";
-import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -20,13 +18,8 @@ const sampleIds = [
 ];
 
 const Home: NextPage<P> = () => {
-  const [driveFiles, setDriveFiles] = useState<DriveFiles | null>(null);
-  const [file, setFile] = useState<any>(null);
   const [multipleFiles, setMultipleFiles] = useState<any[]>([]);
   const [displayedFile, setDisplayedFile] = useState<any>(null);
-  const request = useRequest();
-
-  console.log({ displayedFile });
 
   useEffect(() => {
     let count = 1;
@@ -39,7 +32,6 @@ const Home: NextPage<P> = () => {
       });
 
       const fileNumber = count % (multipleFiles?.length || 3);
-      // const fileNumber = count % 3;
       console.log({ fileNumber });
       console.log({ targetFile: multipleFiles[fileNumber] });
       setDisplayedFile(multipleFiles[fileNumber]);
@@ -49,42 +41,6 @@ const Home: NextPage<P> = () => {
 
     return () => clearInterval(timer);
   }, [multipleFiles]);
-
-  const handleFetchFileList = useCallback(async () => {
-    const res = await request<DriveFiles>("GET", `api/files`);
-
-    console.log({ res });
-
-    setDriveFiles(res);
-  }, []);
-
-  const handleFetchFile = useCallback(async (fileId: string) => {
-    const res = await request<string>("GET", `api/files/${fileId}/media`, {
-      params: {
-        fileId,
-      },
-    });
-
-    setFile(base64ToArrayBuffer(res));
-  }, []);
-
-  const handleFetch3files = useCallback(async () => {
-    console.log("handleFetch3files");
-
-    const res = await Promise.all([
-      ...sampleIds.map((fileId) =>
-        request<string>("GET", `api/files/${fileId}/media`, {
-          params: {
-            fileId,
-          },
-        })
-      ),
-    ]);
-
-    console.log({ handleFetch3filesRes: res });
-
-    setMultipleFiles(res.map((e) => base64ToArrayBuffer(e)));
-  }, []);
 
   return (
     <div className={styles.container}>
@@ -106,52 +62,12 @@ const Home: NextPage<P> = () => {
               {<Page key={`page_${1}`} pageNumber={1} height={400} />}
             </Document>
           </div>
-          {/* <img src={displayedFile} width={400} height={400} /> */}
         </Grid>
 
         <Grid container direction="column" spacing={1}>
           <Grid item>
-            <Button variant="contained" onClick={handleFetchFileList}>
-              ファイル一覧取得
-            </Button>
-            <Button variant="contained" onClick={handleFetch3files}>
-              3ファイル取得
-            </Button>
+            <Link href={FrontPath.settings}>設定ページへ</Link>
           </Grid>
-          <Grid item container spacing={1}>
-            {driveFiles?.files.map((file, i) => {
-              return (
-                <Grid item key={i}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleFetchFile(file.id)}
-                  >
-                    {file.name}
-                  </Button>
-                  【{file.id}】
-                </Grid>
-              );
-            })}
-            {driveFiles?.files.map((file, i) => {
-              return (
-                <Grid item key={i}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleFetchFile(file.id)}
-                  >
-                    {file.name}
-                  </Button>
-                </Grid>
-              );
-            })}
-          </Grid>
-
-          <Grid item>
-            <Document file={file}>
-              {<Page key={`page_${1}`} pageNumber={1} />}
-            </Document>
-          </Grid>
-
           <Grid item>
             <Button onClick={async () => FrontAuth.signOut()}>
               サインアウト
@@ -159,7 +75,6 @@ const Home: NextPage<P> = () => {
           </Grid>
         </Grid>
       </main>
-      <Link href={`/settings`}>設定ページへ</Link>
     </div>
   );
 };

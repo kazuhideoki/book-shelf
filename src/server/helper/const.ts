@@ -1,3 +1,8 @@
+export class FrontPath {
+  static top = "/";
+  static settings = "/settings";
+}
+
 export class ServerPath {
   static files = `api/files`;
   static displaySets = `api/display-sets`;
