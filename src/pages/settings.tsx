@@ -23,20 +23,13 @@ const Settings: NextPage<P> = () => {
   const request = useRequest();
 
   const [values, setValues] = useState<{
-    folders: {
-      list: DriveFile[];
+    folderData: {
+      folders: (DriveFile & { files?: DriveFile[]; pageToken?: string })[];
       pageToken: string;
     } | null;
-    files: {
-      list: DriveFile[];
-      pageToken: string;
-    } | null;
-    selectedFolders: DriveFile[];
     selectedFiles: DriveFile[];
   }>({
-    folders: null,
-    files: null,
-    selectedFolders: [],
+    folderData: null,
     selectedFiles: [],
   });
 
@@ -49,7 +42,7 @@ const Settings: NextPage<P> = () => {
       {
         params: {
           q: "mimeType = 'application/vnd.google-apps.folder'",
-          pageToken: values.folders?.pageToken,
+          pageToken: values.folderData?.pageToken,
         },
       }
     );
@@ -58,39 +51,62 @@ const Settings: NextPage<P> = () => {
 
     setValues({
       ...values,
-      folders: {
-        list: values.folders?.list
-          ? [...values.folders?.list, ...res.files]
+      folderData: {
+        folders: values.folderData?.folders
+          ? [...values.folderData?.folders, ...res.files]
           : res.files,
         pageToken: res.nextPageToken,
       },
     });
   }, [values]);
 
-  const handleFetchFileList = useCallback(async () => {
-    const res = await request<DriveFiles, ListDriveFiles>(
-      "GET",
-      ServerPath.files,
-      {
-        params: {
-          q: "mimeType = 'application/pdf'",
-          pageToken: values.files?.pageToken,
+  const handleFetchFileList = useCallback(
+    async (folderId: string) => {
+      const targetFolder = values.folderData?.folders.find(
+        (e) => e.id === folderId
+      );
+      const res = await request<DriveFiles, ListDriveFiles>(
+        "GET",
+        ServerPath.files,
+        {
+          params: {
+            q: "mimeType = 'application/pdf'",
+            pageToken: targetFolder?.pageToken,
+          },
+        }
+      );
+
+      console.log({ res });
+
+      const files = targetFolder?.files
+        ? [...targetFolder.files, ...res.files]
+        : res.files;
+
+      // folderのfileを追加
+      const updatedFolders: (DriveFile & {
+        files?: DriveFile[];
+        pageToken?: string;
+      })[] = values.folderData?.folders.map((folder) => {
+        if (folder.id === folderId) {
+          return {
+            ...folder,
+            files: files,
+            pageToken: res.nextPageToken,
+          };
+        }
+        return folder;
+      })!;
+
+      setValues({
+        ...values,
+        folderData: {
+          ...values.folderData!,
+          folders: updatedFolders,
         },
-      }
-    );
-
-    console.log({ res });
-
-    setValues({
-      ...values,
-      files: {
-        list: values.files?.list
-          ? [...values.files?.list, ...res.files]
-          : res.files,
-        pageToken: res.nextPageToken,
-      },
-    });
-  }, [values]);
+      });
+    },
+    [values]
+  );
 
   useEffect(() => {
     handleFetchFolderList();
@@ -106,47 +122,45 @@ const Settings: NextPage<P> = () => {
       </Grid>
       <Button onClick={handleFetchFolderList}>Fetch more!</Button>
       <Grid item container direction="column">
-        <FormGroup>
-          {values.folders &&
-            values.folders.list.map((file, i) => (
-              <FormControlLabel
-                key={i}
-                control={<Checkbox />}
-                onClick={(e) =>
-                  setValues({
-                    ...values,
-                    selectedFiles: (e.target as any).checked
-                      ? [...values.selectedFiles, file]
-                      : values.selectedFiles.filter((e) => e.id !== file.id),
-                  })
-                }
-                label={file.name}
-              />
-            ))}
-        </FormGroup>
-      </Grid>
-      <Typography variant="h5">ファイル選択</Typography>
-      <Button onClick={handleFetchFileList}>Fetch file!</Button>
-      <Grid item></Grid>
-      <Grid item container direction="column">
-        <FormGroup>
-          {values.files &&
-            values.files.list.map((file, i) => (
-              <FormControlLabel
-                key={i}
-                control={<Checkbox />}
-                onClick={(e) =>
-                  setValues({
-                    ...values,
-                    selectedFolders: (e.target as any).checked
-                      ? [...values.selectedFolders, file]
-                      : values.selectedFolders.filter((e) => e.id !== file.id),
-                  })
-                }
-                label={file.name}
-              />
-            ))}
-        </FormGroup>
+        {values.folderData &&
+          values.folderData.folders.map((folder, i) => {
+            const files = values.folderData?.folders.find(
+              (e) => e.id === folder.id
+            )?.files;
+            return (
+              <>
+                <Button onClick={() => handleFetchFileList(folder.id)}>
+                  {folder.name} Fetch file!
+                </Button>
+                {files?.length && (
+                  <>
+                    <Typography variant="h5">ファイル選択</Typography>
+                    <Grid item container direction="column">
+                      <FormGroup>
+                        {files?.map((file, i) => (
+                          <FormControlLabel
+                            key={i}
+                            control={<Checkbox />}
+                            onClick={(e) =>
+                              setValues({
+                                ...values,
+                                selectedFiles: (e.target as any).checked
+                                  ? [...values.selectedFiles, file]
+                                  : values.selectedFiles.filter(
+                                      (e) => e.id !== file.id
+                                    ),
+                              })
+                            }
+                            label={file.name}
+                          />
+                        ))}
+                      </FormGroup>
+                    </Grid>
+                  </>
+                )}
+              </>
+            );
+          })}
       </Grid>
     </Grid>
   );
