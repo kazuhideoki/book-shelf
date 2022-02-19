@@ -26,9 +26,23 @@ export const useRequest = () => {
 
   console.log({ driveAuth, uid: userAuth?.uid });
 
-  return <T>(method: Method, url: string, config?: any) =>
-    axiosRequest<T>(method, url, {
+  return async function <T, U = any>(
+    method: Method,
+    url: string,
+    config: {
+      params?: U;
+      data?: U;
+    }
+  ): Promise<T> {
+    let headers: any = { ...driveAuth };
+
+    if (userAuth?.uid) headers = { ...headers, userId: userAuth.uid };
+
+    console.log({ config });
+
+    return await axiosRequest<T>(method, url, {
       ...config,
-      headers: { ...config?.headers, ...driveAuth, userId: userAuth?.uid },
+      headers,
     });
+  };
 };

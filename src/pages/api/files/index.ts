@@ -10,11 +10,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   return api.handler({
     get: async () => {
-      const { q, pageSize, pageToken } = api.query as ListDriveFiles;
+      const { q, pageSize, pageToken, mimeType } = api.query as ListDriveFiles &
+        any;
 
       const response = await api.daxiosRequest<DriveFiles>("GET", Path.files, {
         params: {
-          q: q ?? "mimeType='application/pdf'",
+          q,
+          mimeType,
           pageSize: pageSize ?? 10,
           pageToken,
         },

@@ -1,4 +1,5 @@
 import {
+  Button,
   Checkbox,
   FormControlLabel,
   FormGroup,
@@ -24,7 +25,9 @@ const Settings: NextPage<P> = () => {
   console.log({ fileList });
 
   const handleFetchFileList = useCallback(async () => {
-    const res = await request<DriveFiles>("GET", `api/files`, {});
+    const res = await request<DriveFiles>("GET", `api/files`, {
+      params: { q: "mimeType = 'application/vnd.google-apps.folder'" },
+    });
 
     console.log({ res });
 
@@ -43,6 +46,7 @@ const Settings: NextPage<P> = () => {
       <Grid item>
         <Typography variant="h4">表示設定</Typography>
       </Grid>
+      <Button onClick={handleFetchFileList}>Fetch Again</Button>
       <Grid item container direction="column">
         <FormGroup>
           {fileList &&
