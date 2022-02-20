@@ -22,6 +22,7 @@ import { FrontPath, ServerPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
 import { DisplaySet } from "../type/model/firestore-display-set.type";
 import { useRequest } from "../utils/axios";
+import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -40,7 +41,6 @@ const Home: NextPage<P> = () => {
 
   const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
   console.log({ displaySets });
-
   const [selectedDisplaySet, setSelectedDisplaySet] = useState<string | null>(
     null
   );
@@ -134,10 +134,15 @@ const Home: NextPage<P> = () => {
                   <MenuItem
                     key={i}
                     value={displaySet.displaySetId}
-                    onClick={(e) => {
-                      setSelectedDisplaySet(
-                        (e.target as any).innerText as string
-                      );
+                    onClick={async (e) => {
+                      const res = await Promise.all([
+                        ...displaySet.files.map((e) =>
+                          request<string>("GET", ServerPath.fileMedia(e.fileId))
+                        ),
+                      ]);
+
+                      setPdfs(res.map((e) => base64ToArrayBuffer(e)));
+
                       setShowDialog(false);
                     }}
                   >

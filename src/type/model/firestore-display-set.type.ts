@@ -4,7 +4,7 @@ export type DisplaySet = {
   files: {
     fileId: string;
     index: number;
-  };
+  }[];
   createdAt: Date;
   updatedAt: Date;
 };

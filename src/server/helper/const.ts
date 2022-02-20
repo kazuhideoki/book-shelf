@@ -5,6 +5,8 @@ export class FrontPath {
 
 export class ServerPath {
   static files = `api/files`;
+  static file = (fileId: string) => `${ServerPath.files}/${fileId}`;
+  static fileMedia = (fileId: string) => `${ServerPath.file(fileId)}/media`;
   static displaySets = `api/display-sets`;
 }
 
