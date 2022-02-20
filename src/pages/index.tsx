@@ -83,9 +83,8 @@ const Home: NextPage<P> = () => {
 
       <main className={styles.main}>
         <Typography variant="h6">
-          Welcome to{" "}
           <Link href={process.env.NEXT_PUBLIC_WEB_SERVICE_URL}>
-            E Book Shelf!
+            E Book Shelf
           </Link>
         </Typography>
 
