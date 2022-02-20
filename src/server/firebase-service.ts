@@ -4,7 +4,8 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-var serviceAccount = require("/credentials.json");
+// var serviceAccount = require("/credentials.json");
+var serviceAccount = JSON.parse(process.env.GOOGOLE_DRIVE_API_CREDENTIALS!);
 
 const app = !admin.apps.length
   ? admin.initializeApp({
