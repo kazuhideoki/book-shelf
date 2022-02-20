@@ -1,8 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import admin from "firebase-admin";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
-import { bucket, collection } from "../../../../server/firebase-service";
+import { bucket } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { ExternalPath, StoragePath } from "../../../../server/helper/const";
 import { MediaType } from "../../../../type/api/google-drive-api.type";
@@ -15,9 +15,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId, mediaType } = api.query;
 
-      const imageSet = (
-        await getDoc(doc(collection("ImageSets"), fileId))
-      ).data() as ImageSet;
+      const imageSet = (await admin
+        .firestore()
+        .collection("ImageSets")
+        .doc(fileId)
+        .get()
+        .then((dss) => dss.data())) as ImageSet;
 
       if (imageSet) {
         // TODO Drive側で更新されていたら取得し直す処理も必要
@@ -63,7 +66,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         updatedAt: new Date(),
       };
 
-      await setDoc(doc(collection("ImageSets"), fileId), data);
+      await admin.firestore().collection("ImageSets").doc(fileId).create(data);
+      // await setDoc(doc(collection("ImageSets"), fileId), data);
       console.log(`cache path saved in Firestore`);
 
       if (mediaType === MediaType.IMAGE) {

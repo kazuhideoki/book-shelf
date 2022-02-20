@@ -48,7 +48,7 @@ export class ApiHelper {
     error?: () => never;
   }): Promise<void> {
     const { get, post, patch, delete: Delete, error } = p;
-    console.log(`⭐  ${this.req.url}`);
+    console.log(`⭐ ${this.req.method} ${this.req.url}`);
 
     try {
       switch (this.req.method) {
@@ -68,7 +68,7 @@ export class ApiHelper {
         default:
           break;
       }
-      console.log(`🔵  ${this.req.url}`);
+      console.log(`🔵 ${this.req.method} ${this.req.url}`);
     } catch (e) {
       if (error) {
         error();

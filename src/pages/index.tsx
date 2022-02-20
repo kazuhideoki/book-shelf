@@ -116,7 +116,7 @@ const Home: NextPage<P> = () => {
           </Grid>
         </Grid>
       </main>
-      {displaySets.length && (
+      {
         <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
           <DialogTitle>ディスプレイセットの選択</DialogTitle>
           <DialogContent>
@@ -157,7 +157,7 @@ const Home: NextPage<P> = () => {
             <Button onClick={() => setShowDialog(false)}>閉じる</Button>
           </DialogActions>
         </Dialog>
-      )}
+      }
     </div>
   );
 };
