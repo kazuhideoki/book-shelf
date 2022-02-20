@@ -7,10 +7,11 @@ import {
   FormGroup,
   Grid,
   Icon,
-  Link,
   Typography,
 } from "@mui/material";
 import type { NextPage } from "next";
+// import Link from 'next/link';
+import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { FrontPath, ServerPath } from "../server/helper/const";
@@ -18,7 +19,6 @@ import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
 import { DriveFile, DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
-// import Link from 'next/link';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {
@@ -26,6 +26,7 @@ interface P {
 }
 
 const Settings: NextPage<P> = () => {
+  const router = useRouter();
   const request = useRequest();
 
   const [values, setValues] = useState<{
@@ -132,7 +133,7 @@ const Settings: NextPage<P> = () => {
     } catch (error) {
       console.log(`Error occurred: ${error}`);
     }
-  }, []);
+  }, [values]);
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -147,9 +148,9 @@ const Settings: NextPage<P> = () => {
             <Typography variant="h3">表示設定</Typography>
           </Grid>
           <Grid item>
-            <Link href={FrontPath.top}>
+            <Button onClick={() => router.push(FrontPath.top)}>
               <Typography variant="h5">ディスプレイページに戻る</Typography>
-            </Link>
+            </Button>
           </Grid>
         </Grid>
       </Grid>

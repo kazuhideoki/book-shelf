@@ -64,6 +64,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       };
 
       await setDoc(doc(collection("ImageSets"), fileId), data);
+      console.log(`cache path saved in Firestore`);
 
       if (mediaType === MediaType.IMAGE) {
         throw new Error("Not implemented");

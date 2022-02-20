@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -35,17 +36,16 @@ const sampleIds = [
 ];
 
 const Home: NextPage<P> = () => {
+  const router = useRouter();
   const request = useRequest();
   const userAuth = useRecoilValue(userAuthState);
   const driveAuth = useRecoilValue(driveAuthState);
 
   const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
-  console.log({ displaySets });
   const [selectedDisplaySet, setSelectedDisplaySet] = useState<string | null>(
     null
   );
   const [showDialog, setShowDialog] = useState(false);
-  console.log({ selectedDisplaySet });
 
   const [pdfs, setPdfs] = useState<any[]>([]);
   const [targetPDF, setTargetPDF] = useState<any>(null);
@@ -67,19 +67,13 @@ const Home: NextPage<P> = () => {
   useEffect(() => {
     let count = 1;
     const timer = setInterval(() => {
-      console.log({
-        count,
-      });
-      console.log({
-        fileLength: pdfs?.length,
-      });
+      if (pdfs.length) {
+        const fileNumber = count % pdfs.length;
 
-      const fileNumber = count % (pdfs?.length || 3);
-      console.log({ fileNumber });
-      console.log({ targetFile: pdfs[fileNumber] });
-      setTargetPDF(pdfs[fileNumber]);
+        setTargetPDF(pdfs[fileNumber]);
 
-      count++;
+        count++;
+      }
     }, 6000);
 
     return () => clearInterval(timer);
@@ -126,35 +120,38 @@ const Home: NextPage<P> = () => {
         <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
           <DialogTitle>ディスプレイセットの選択</DialogTitle>
           <DialogContent>
-            {displaySets.map((displaySet, i) => {
-              console.log({ dsplaySetinMap: displaySet });
+            <>
+              {displaySets.map((displaySet, i) => {
+                return (
+                  <>
+                    <MenuItem
+                      key={i}
+                      value={displaySet.displaySetId}
+                      onClick={async (e) => {
+                        const res = await Promise.all([
+                          ...displaySet.files.map((e) =>
+                            request<string>(
+                              "GET",
+                              ServerPath.fileMedia(e.fileId)
+                            )
+                          ),
+                        ]);
 
-              return (
-                <>
-                  <MenuItem
-                    key={i}
-                    value={displaySet.displaySetId}
-                    onClick={async (e) => {
-                      const res = await Promise.all([
-                        ...displaySet.files.map((e) =>
-                          request<string>("GET", ServerPath.fileMedia(e.fileId))
-                        ),
-                      ]);
+                        setPdfs(res.map((e) => base64ToArrayBuffer(e)));
 
-                      setPdfs(res.map((e) => base64ToArrayBuffer(e)));
-
-                      setShowDialog(false);
-                    }}
-                  >
-                    {" "}
-                    {displaySet.displaySetId}
-                  </MenuItem>
-                  <MenuItem>
-                    <Link href={FrontPath.settings}>設定する</Link>
-                  </MenuItem>
-                </>
-              );
-            })}
+                        setShowDialog(false);
+                      }}
+                    >
+                      {" "}
+                      {displaySet.displaySetId}
+                    </MenuItem>
+                  </>
+                );
+              })}
+              <Button onClick={() => router.push(FrontPath.settings)}>
+                設定する
+              </Button>
+            </>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setShowDialog(false)}>閉じる</Button>

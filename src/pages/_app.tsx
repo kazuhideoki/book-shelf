@@ -55,6 +55,8 @@ function _App({ Component, pageProps }: AppProps) {
     );
   }
 
+  console.log({ userAuth, driveAuth });
+
   if (!userAuth || !driveAuth) {
     return <SignIn />;
   }

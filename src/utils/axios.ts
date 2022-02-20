@@ -24,8 +24,6 @@ export const useRequest = () => {
   const driveAuth = useRecoilValue(driveAuthState);
   const userAuth = useRecoilValue(userAuthState);
 
-  console.log({ driveAuth, uid: userAuth?.uid });
-
   return async function <T, U = any>(
     method: Method,
     url: string,
