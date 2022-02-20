@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         const response = await getDocs(
           query(collection("DisplaySets"), where("userId", "==", userId))
-        );
+        ).then((qss) => qss.docs.map((e) => e.data()));
 
         // display-sets/{id}/files で storageからpdf表示ファイル取得できるようにする？？
         // 要検討

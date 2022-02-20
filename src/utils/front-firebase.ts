@@ -8,7 +8,7 @@ const app = initializeApp(Env.NEXT_PUBLIC_FIREBASE_CONFIG);
 export const FrontAuth = getAuth(app);
 
 export class FrontFirebaseHelper {
-  static listenFirebaseAuth(setAuth: (user: User) => void) {
+  static listenFirebaseAuth(callback: (user: User) => void) {
     if (typeof (window as any) === "undefined") return;
 
     const unsubscribe = FrontAuth.onAuthStateChanged(
@@ -24,7 +24,7 @@ export class FrontFirebaseHelper {
           console.log("User is signin");
           console.log({ user });
 
-          setAuth(user);
+          callback(user);
         }
       },
       (error) => {}

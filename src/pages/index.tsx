@@ -1,8 +1,23 @@
-import { Box, Button, Grid, Link, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Link,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { displaySetsState } from "../recoil/atom/display-set";
+import { driveAuthState } from "../recoil/atom/drive-auth";
+import { userAuthState } from "../recoil/atom/user-auth";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
 import { DisplaySet } from "../type/model/firestore-display-set.type";
@@ -20,19 +35,33 @@ const sampleIds = [
 
 const Home: NextPage<P> = () => {
   const request = useRequest();
-  const [displaySets, setDisplaySets] = useState<DisplaySet | null>(null);
+  const userAuth = useRecoilValue(userAuthState);
+  const driveAuth = useRecoilValue(driveAuthState);
+
+  const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
+  console.log({ displaySets });
+
+  const [selectedDisplaySet, setSelectedDisplaySet] = useState<string | null>(
+    null
+  );
+  const [showDialog, setShowDialog] = useState(false);
+  console.log({ selectedDisplaySet });
+
   const [pdfs, setPdfs] = useState<any[]>([]);
   const [targetPDF, setTargetPDF] = useState<any>(null);
 
   useEffect(() => {
-    try {
-      request<DisplaySet>("GET", ServerPath.displaySets).then((res) => {
-        setDisplaySets(res);
-      });
-    } catch (error) {
-      console.log(`Error occurred: ${error}`);
+    if (userAuth && driveAuth) {
+      try {
+        request<DisplaySet[]>("GET", ServerPath.displaySets).then((res) => {
+          setDisplaySets(res);
+          setShowDialog(true);
+        });
+      } catch (error) {
+        console.log(`Error occurred: ${error}`);
+      }
     }
-  }, []);
+  }, [userAuth, driveAuth]);
 
   // 表示する画像を一定間隔で入れ替える
   useEffect(() => {
@@ -82,17 +111,51 @@ const Home: NextPage<P> = () => {
           </Grid>
         </Box>
 
-        <Grid container direction="column" spacing={1}>
+        <Grid container spacing={1} justifyContent="end">
           <Grid item>
-            <Link href={FrontPath.settings}>設定ページへ</Link>
-          </Grid>
-          <Grid item>
+            <Button onClick={() => setShowDialog(true)}>
+              ディスプレイセット選択
+            </Button>
             <Button onClick={async () => FrontAuth.signOut()}>
               サインアウト
             </Button>
           </Grid>
         </Grid>
       </main>
+      {displaySets.length && (
+        <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
+          <DialogTitle>ディスプレイセットの選択</DialogTitle>
+          <DialogContent>
+            {displaySets.map((displaySet, i) => {
+              console.log({ dsplaySetinMap: displaySet });
+
+              return (
+                <>
+                  <MenuItem
+                    key={i}
+                    value={displaySet.displaySetId}
+                    onClick={(e) => {
+                      setSelectedDisplaySet(
+                        (e.target as any).innerText as string
+                      );
+                      setShowDialog(false);
+                    }}
+                  >
+                    {" "}
+                    {displaySet.displaySetId}
+                  </MenuItem>
+                  <MenuItem>
+                    <Link href={FrontPath.settings}>設定する</Link>
+                  </MenuItem>
+                </>
+              );
+            })}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowDialog(false)}>閉じる</Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </div>
   );
 };
