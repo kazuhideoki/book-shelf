@@ -29,12 +29,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 interface P {}
 
-const sampleIds = [
-  "14y_If6OunynA-KMIYiTPGNldfZ3z8WEb",
-  "1gURMeOUJ1rtQ8ZYteWu_UZcoYv_fbQJu",
-  "1-xVrIdceiJWuBTkYmq6HWar86owU98St",
-];
-
 const Home: NextPage<P> = () => {
   const router = useRouter();
   const request = useRequest();

@@ -14,8 +14,10 @@ const app = !admin.apps.length
     })
   : admin.app();
 
+export const firestore = admin.firestore();
+
 export const db = getFirestore();
-export const firestore = app.firestore;
+// export const firestore = app.firestore;
 export const collection = (collectionName: CollectionName) =>
   firebaseCollection(db, collectionName);
 export type CollectionName = "ImageSets" | "DisplaySets";

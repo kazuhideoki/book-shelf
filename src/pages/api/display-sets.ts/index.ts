@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
-import admin from "firebase-admin";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { firestore } from "../../../server/firebase-service";
 import { ApiHelper } from "../../../server/helper/api-helper";
 import { DisplaySet } from "../../../type/model/firestore-display-set.type";
 
@@ -11,8 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   return api.handler({
     get: async () => {
       try {
-        const response = await admin
-          .firestore()
+        const response = await firestore
           .collection("DisplaySets")
           .where("userId", "==", userId)
           .get()
@@ -30,7 +29,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
     post: async () => {
       const data = api.data;
-      const ref = admin.firestore().collection("DisplaySets").doc();
+      const ref = firestore.collection("DisplaySets").doc();
 
       const firebaseData: DisplaySet = {
         userId: userId,
