@@ -121,7 +121,7 @@ const Settings: NextPage<P> = () => {
 
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
-      await request<any, RegisterDispalySet[]>("POST", ServerPath.displaySets, {
+      await request<any, RegisterDispalySet>("POST", ServerPath.displaySets, {
         data: values.selectedFiles.map((e) => ({
           fileId: e.file.id,
           index: e.index,
