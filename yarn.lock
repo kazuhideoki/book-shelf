@@ -307,10 +307,10 @@
   "resolved" "https://registry.npmjs.org/@emotion/sheet/-/sheet-1.1.0.tgz"
   "version" "1.1.0"
 
-"@emotion/styled@^11.3.0", "@emotion/styled@^11.8.0":
-  "integrity" "sha512-MqHX7qqJesa9X36u3bBvzaK0HmnyclFewSK4uhHl+8s9TFpRMqpakbeHeSGqWCl7QkMhqvPA7oJijZYRsF7nUA=="
-  "resolved" "https://registry.npmjs.org/@emotion/styled/-/styled-11.8.0.tgz"
-  "version" "11.8.0"
+"@emotion/styled@^11.3.0", "@emotion/styled@^11.8.1":
+  "integrity" "sha512-OghEVAYBZMpEquHZwuelXcRjRJQOVayvbmNR0zr174NHdmMgrNkLC6TljKC5h9lZLkN5WGrdUcrKlOJ4phhoTQ=="
+  "resolved" "https://registry.npmjs.org/@emotion/styled/-/styled-11.8.1.tgz"
+  "version" "11.8.1"
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@emotion/babel-plugin" "^11.7.1"

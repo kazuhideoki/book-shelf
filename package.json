@@ -10,8 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.8.0",
-    "@emotion/styled": "^11.8.0",
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.8.1",
     "@firebase/auth": "^0.19.8",
     "@mui/icons-material": "^5.4.2",
     "@mui/material": "^5.4.2",
