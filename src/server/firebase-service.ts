@@ -14,7 +14,7 @@ const app = !admin.apps.length
     })
   : admin.app();
 
-export const firestore = admin.firestore();
+export const firestore = admin.firestore(app);
 
 export const db = getFirestore();
 // export const firestore = app.firestore;
