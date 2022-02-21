@@ -1,0 +1,9 @@
+#### ignore all
+*
+
+#### include require files
+!package*.json
+!tsconfig.json
+!next.config.js
+!public/**
+!src/**
