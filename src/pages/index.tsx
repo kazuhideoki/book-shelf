@@ -114,33 +114,37 @@ const Home: NextPage<P> = () => {
           <DialogTitle>ディスプレイセットの選択</DialogTitle>
           <DialogContent>
             <>
-              {displaySets.map((displaySet, i) => {
-                return (
-                  <>
-                    <MenuItem
-                      key={i}
-                      value={displaySet.displaySetId}
-                      onClick={async (e) => {
-                        const res = await Promise.all([
-                          ...displaySet.files.map((e) =>
-                            request<string>(
-                              "GET",
-                              ServerPath.fileMedia(e.fileId)
-                            )
-                          ),
-                        ]);
+              {displaySets.length === 0 ? (
+                <Typography>登録なし</Typography>
+              ) : (
+                displaySets.map((displaySet, i) => {
+                  return (
+                    <>
+                      <MenuItem
+                        key={i}
+                        value={displaySet.displaySetId}
+                        onClick={async (e) => {
+                          const res = await Promise.all([
+                            ...displaySet.files.map((e) =>
+                              request<string>(
+                                "GET",
+                                ServerPath.fileMedia(e.fileId)
+                              )
+                            ),
+                          ]);
 
-                        setPdfs(res.map((e) => base64ToArrayBuffer(e)));
+                          setPdfs(res.map((e) => base64ToArrayBuffer(e)));
 
-                        setShowDialog(false);
-                      }}
-                    >
-                      {" "}
-                      {displaySet.displaySetId}
-                    </MenuItem>
-                  </>
-                );
-              })}
+                          setShowDialog(false);
+                        }}
+                      >
+                        {" "}
+                        {displaySet.displaySetId}
+                      </MenuItem>
+                    </>
+                  );
+                })
+              )}
               <Button onClick={() => router.push(FrontPath.settings)}>
                 設定する
               </Button>
