@@ -2,6 +2,8 @@ FROM node:16.13.2-alpine
 
 ARG URL_SOURCE0="https://vault.centos.org/8.4.2105/BaseOS/Source/SPackages/openssl-1.1.1g-15.el8_3.src.rpm"
 
+WORKDIR /usr/src/app
+
 # Openssl srpmダウンロード
 RUN wget $URL_SOURCE0
 
@@ -9,7 +11,6 @@ RUN wget $URL_SOURCE0
 RUN rpm -ivf openssl-1.1.1g-15.el8_3.src.rpm
 
 
-WORKDIR /usr/src/app
 
 # srpmからOpensslをビルド
 RUN rpmbuild -bb openssl.spec
