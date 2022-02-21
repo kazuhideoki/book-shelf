@@ -35,4 +35,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## Env 変更時
 
-`openssl enc -e -aes-256-cbc -salt -k _ENV_ENCRIPTION -in ./.env.deploy -out ./.env.deploy.enc` で暗号化
+- `openssl enc -e -aes-256-cbc -salt -k _ENV_ENCRIPTION -in ./.env.deploy -out ./.env.deploy.enc` で暗号化
+- Cloud Build で復号化のために環境変数に\_ENV_ENCRIPTION をセット
