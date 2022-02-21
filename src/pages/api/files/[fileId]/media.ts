@@ -65,7 +65,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       };
 
       await firestore.collection("ImageSets").doc(fileId).create(data);
-      // await setDoc(doc(collection("ImageSets"), fileId), data);
       console.log(`cache path saved in Firestore`);
 
       if (mediaType === MediaType.IMAGE) {
