@@ -5,6 +5,8 @@ WORKDIR /usr/src/app
 
 ARG _ENV_ENCRIPTION
 
+RUN echo $_ENV_ENCRIPTION
+
 COPY ./ ./
 
 RUN apk update \
