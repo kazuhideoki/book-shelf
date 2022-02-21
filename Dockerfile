@@ -1,11 +1,10 @@
 FROM node:16.13.2-alpine
 
-
 WORKDIR /usr/src/app
 
 ARG env_encryption
 
-RUN echo $_ENV_ENCRIPTION
+RUN echo $env_encryption
 
 COPY ./ ./
 
