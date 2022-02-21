@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY ./ ./
 
-RUN npm i && npm run build
+RUN npm i --force && npm run build
 
 EXPOSE 3000
 
