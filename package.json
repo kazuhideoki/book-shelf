@@ -6,7 +6,7 @@
     "tsc": "tsc",
     "node:api": "npx ts-node-dev server/google-drive.service.ts",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS='--http-server-default-timeout=0' next start",
     "lint": "next lint"
   },
   "dependencies": {
