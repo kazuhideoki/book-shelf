@@ -133,6 +133,8 @@ const Home: NextPage<P> = () => {
                             ),
                           ]);
 
+                          console.log({ res });
+
                           setPdfs(res.map((e) => base64ToArrayBuffer(e)));
 
                           setShowDialog(false);

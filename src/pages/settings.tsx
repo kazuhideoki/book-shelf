@@ -12,11 +12,13 @@ import {
 import type { NextPage } from "next";
 // import Link from 'next/link';
 import { useRouter } from "next/router";
+import { resolve } from "path";
 import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
+import { ImageSet } from "../type/model/firestore-image-set.type";
 import { DriveFile, DriveFiles } from "../type/model/google-drive.type";
 import { useRequest } from "../utils/axios";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -34,11 +36,30 @@ const Settings: NextPage<P> = () => {
       folders: (DriveFile & { files?: DriveFile[]; pageToken?: string })[];
       pageToken: string;
     } | null;
-    selectedFiles: { file: DriveFile; index: number }[];
+    selectedFiles: { file: DriveFile; index: number; imagePath?: string }[];
   }>({
     folderData: null,
     selectedFiles: [],
   });
+
+  const handleSelectFile = async (file: DriveFile, e: any) => {
+    const index = values.selectedFiles.length + 1;
+    const checked = (e.target as any).checked;
+
+    let res: ImageSet | undefined = undefined;
+    if (checked) {
+      res = await request<ImageSet>("GET", ServerPath.fileMedia(file.id));
+
+      console.log({ resImage: resolve });
+    }
+
+    setValues({
+      ...values,
+      selectedFiles: checked
+        ? [...values.selectedFiles, { file, index, imagePath: res?.path }]
+        : values.selectedFiles.filter((e) => e.file.id !== file.id),
+    });
+  };
 
   console.log({ values });
 
@@ -186,25 +207,25 @@ const Settings: NextPage<P> = () => {
                 {files?.length && (
                   <Grid item container direction="column">
                     <FormGroup>
-                      {files?.map((file, i) => (
-                        <FormControlLabel
-                          key={i}
-                          control={<Checkbox />}
-                          onClick={(e) => {
-                            const index = values.selectedFiles.length + 1;
+                      {files?.map((file, i) => {
+                        const imagePath = values.selectedFiles.find(
+                          (e) => e.file.id === file.id
+                        )?.imagePath;
 
-                            setValues({
-                              ...values,
-                              selectedFiles: (e.target as any).checked
-                                ? [...values.selectedFiles, { file, index }]
-                                : values.selectedFiles.filter(
-                                    (e) => e.file.id !== file.id
-                                  ),
-                            });
-                          }}
-                          label={file.name}
-                        />
-                      ))}
+                        return (
+                          <Grid item key={i}>
+                            <FormControlLabel
+                              key={i}
+                              control={<Checkbox />}
+                              onClick={async (e) => {
+                                await handleSelectFile(file, e as any);
+                              }}
+                              label={file.name}
+                            />
+                            {imagePath && <img src={imagePath} />}
+                          </Grid>
+                        );
+                      })}
                     </FormGroup>
                   </Grid>
                 )}
