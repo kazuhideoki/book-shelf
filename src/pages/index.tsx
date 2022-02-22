@@ -129,7 +129,7 @@ const Home: NextPage<P> = () => {
                             ...displaySet.files.map((e) =>
                               request<ImageSet>(
                                 "GET",
-                                ServerPath.fileMedia(e.fileId)
+                                ServerPath.file(e.fileId)
                               )
                             ),
                           ]);
