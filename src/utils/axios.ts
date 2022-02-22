@@ -36,8 +36,6 @@ export const useRequest = () => {
 
     if (userAuth?.uid) headers = { ...headers, userId: userAuth.uid };
 
-    console.log({ config });
-
     return await axiosRequest<T>(method, url, {
       ...config,
       headers,

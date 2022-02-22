@@ -1,38 +1,51 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { firestore as firebaseFirestore } from "firebase-admin";
+import { readFileSync } from "fs";
+import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PDFDocument } from "pdf-lib";
+import { fromBase64 } from "pdf2pic";
 import { bucket, firestore } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { ExternalPath, StoragePath } from "../../../../server/helper/const";
-import { MediaType } from "../../../../type/api/google-drive-api.type";
-import { ImageSet } from "../../../../type/model/firestore-image-set.type";
+import {
+  ImageSet,
+  ImageSetFS,
+} from "../../../../type/model/firestore-image-set.type";
+
+const expiryTime = 60 * 60 * 24 * 7;
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const api = new ApiHelper(req, res);
 
   return api.handler({
     get: async () => {
-      const { fileId, mediaType } = api.query;
+      const { fileId } = api.query;
 
       const imageSet = (await firestore
         .collection("ImageSets")
         .doc(fileId)
         .get()
-        .then((dss) => dss.data())) as ImageSet;
+        .then((dss) => dss.data())) as ImageSetFS;
 
-      if (imageSet) {
+      console.log({ imageSet });
+      console.log(DateTime.now().toString());
+
+      if (
+        imageSet &&
+        DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt.toDate())
+      ) {
         // TODO Drive側で更新されていたら取得し直す処理も必要
-        console.log(`imageSet exists`);
+        console.log(`imageSet exists and not expired`);
 
-        const response = await bucket.file(imageSet.path).download();
-
-        console.log(`1 page of PDF downloaded from Firebase Storage`);
-
-        const result = response[0].toString();
-
-        return res.status(200).json(result);
+        return res.status(200).json(imageSet);
       }
-      console.log(`imageSet not found`);
+
+      if (!imageSet) console.log(`imageSet not found`);
+      if (
+        imageSet &&
+        !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt.toDate()))
+      )
+        console.log(`imageSet not found`);
 
       const response = await api.daxiosRequest<any>(
         "GET",
@@ -45,33 +58,76 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
       );
 
-      // TODO できれば表紙は画像ファイルで格納したい 方法模索中
       console.log(`PDF downloaded from Google Drive`);
 
-      const pdfDoc = await PDFDocument.load(response);
-      const firstPage = pdfDoc.getPages()[0];
-      const result = await firstPage.doc.saveAsBase64();
-
-      await bucket.file(StoragePath.pdfFile(api.userId, fileId)).save(result);
-
-      console.log(`1 page of PDF saved in Firebase Storage`);
-
-      const data: ImageSet = {
-        userId: api.userId,
-        fileId,
-        path: StoragePath.pdfFile(api.userId, fileId),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      const options = {
+        density: 100,
+        saveFilename: fileId,
+        savePath: `/tmp`,
+        format: "png",
+        width: 300,
+        height: 300,
       };
 
-      await firestore.collection("ImageSets").doc(fileId).create(data);
+      const image = await fromBase64(
+        response,
+        options
+      )(1).catch((e) => console.log(`error occurred in fromBase64: ${e}`));
+      console.log({ imageResBase64: image });
+
+      const imageData = readFileSync((image as any).path);
+
+      await bucket
+        .file(StoragePath.imageFile(api.userId, fileId))
+        .save(imageData)
+        .catch((e) => console.log(`error occurred in bucket.file: ${e}`));
+
+      bucket.file(StoragePath.imageFile(api.userId, fileId));
+
+      const expiredAt = DateTime.fromJSDate(new Date()).plus({
+        seconds: expiryTime,
+      });
+      const url = (
+        await bucket
+          .file(StoragePath.imageFile(api.userId, fileId))
+          .getSignedUrl({
+            action: "read",
+            expires: expiredAt.toISO(),
+          })
+          .catch((e) => {
+            console.log(`error occurred in getSignedUrl: ${e}`);
+            throw e;
+          })
+      )[0];
+
+      console.log({ url });
+
+      // console.log(`1 page of PDF saved in Firebase Storage`);
+
+      const data: ImageSetFS = {
+        userId: api.userId,
+        fileId,
+        path: url,
+        expiredAt: firebaseFirestore.Timestamp.fromDate(expiredAt.toJSDate()),
+        createdAt: firebaseFirestore.Timestamp.fromDate(new Date()),
+        updatedAt: firebaseFirestore.Timestamp.fromDate(new Date()),
+      };
+
+      const returnData: ImageSet = {
+        ...data,
+        expiredAt: data.expiredAt.toDate(),
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.expiredAt.toDate(),
+      };
+
+      await firestore
+        .collection("ImageSets")
+        .doc(fileId)
+        .set(data)
+        .catch((e) => console.log(`error occurred in firestore: ${e}`));
       console.log(`cache path saved in Firestore`);
 
-      if (mediaType === MediaType.IMAGE) {
-        throw new Error("Not implemented");
-      } else if (mediaType === MediaType.PDF || mediaType === undefined) {
-        return res.status(200).json((result as any).toString("base64"));
-      }
+      return res.status(200).json(returnData);
     },
   });
 };
