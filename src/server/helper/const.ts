@@ -7,6 +7,8 @@ export class ServerPath {
   static files = `/api/files`;
   static file = (fileId: string) => `${ServerPath.files}/${fileId}`;
   static displaySets = `/api/display-sets`;
+  static users = `/users`;
+  static user = (userId: string) => `${ServerPath.users}/${userId}`;
 }
 
 export class ExternalPath {
