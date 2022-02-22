@@ -7,7 +7,10 @@ import { fromBase64 } from "pdf2pic";
 import { bucket, firestore } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { ExternalPath, StoragePath } from "../../../../server/helper/const";
-import { ImageSetFS } from "../../../../type/model/firestore-image-set.type";
+import {
+  ImageSet,
+  ImageSetFS,
+} from "../../../../type/model/firestore-image-set.type";
 
 const expiryTime = 60 * 60 * 24 * 7;
 
@@ -110,6 +113,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         updatedAt: firebaseFirestore.Timestamp.fromDate(new Date()),
       };
 
+      const returnData: ImageSet = {
+        ...data,
+        expiredAt: data.expiredAt.toDate(),
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.expiredAt.toDate(),
+      };
+
       await firestore
         .collection("ImageSets")
         .doc(fileId)
@@ -117,7 +127,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         .catch((e) => console.log(`error occurred in firestore: ${e}`));
       console.log(`cache path saved in Firestore`);
 
-      return res.status(200).json(data);
+      return res.status(200).json(returnData);
     },
   });
 };

@@ -14,7 +14,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { pdfjs } from "react-pdf";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { displaySetsState } from "../recoil/atom/display-set";
 import { driveAuthState } from "../recoil/atom/drive-auth";
@@ -22,8 +22,8 @@ import { userAuthState } from "../recoil/atom/user-auth";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
 import { DisplaySet } from "../type/model/firestore-display-set.type";
+import { ImageSet } from "../type/model/firestore-image-set.type";
 import { useRequest } from "../utils/axios";
-import { base64ToArrayBuffer } from "../utils/base64ToArrayBuffer";
 import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -91,9 +91,10 @@ const Home: NextPage<P> = () => {
         <Box style={{ height: 400 }}>
           <Grid item container>
             <Grid item justifyContent="center" direction="column">
-              <Document file={targetPDF}>
+              {/* <Document file={targetPDF}>
                 {<Page key={`page_${1}`} pageNumber={1} height={400} />}
-              </Document>
+              </Document> */}
+              <img src={targetPDF} />
             </Grid>
           </Grid>
         </Box>
@@ -126,7 +127,7 @@ const Home: NextPage<P> = () => {
                         onClick={async (e) => {
                           const res = await Promise.all([
                             ...displaySet.files.map((e) =>
-                              request<string>(
+                              request<ImageSet>(
                                 "GET",
                                 ServerPath.fileMedia(e.fileId)
                               )
@@ -135,7 +136,7 @@ const Home: NextPage<P> = () => {
 
                           console.log({ res });
 
-                          setPdfs(res.map((e) => base64ToArrayBuffer(e)));
+                          setPdfs(res.map((e) => e.path));
 
                           setShowDialog(false);
                         }}
