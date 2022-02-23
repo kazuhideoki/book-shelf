@@ -65,7 +65,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const options = {
         density: 100,
         saveFilename: fileId,
-        savePath: `/tmp`,
+        savePath: `./tmp`,
         format: "png",
         width: 300,
         height: 300,
