@@ -109,7 +109,12 @@ export class HttpsError extends Error {
    */
   public readonly httpErrorCode: HttpErrorCode;
 
-  constructor(code: FunctionsErrorCode, message: string, details?: unknown) {
+  constructor(
+    code: FunctionsErrorCode,
+    message: string,
+    details?: unknown,
+    customErrorCode?: CustomErrorCode
+  ) {
     super(message);
 
     // A sanity check for non-TypeScript consumers.
@@ -120,7 +125,7 @@ export class HttpsError extends Error {
     this.code = code;
     this.details = details;
     this.httpErrorCode = errorCodeMap[code];
-    this.customErrorCode = this.customErrorCode;
+    this.customErrorCode = customErrorCode;
   }
 
   public customErrorCode?: CustomErrorCode;

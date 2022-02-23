@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { DriveAuth } from "../../../recoil/atom/drive-auth";
 import { collection } from "../../../server/firebase-service";
 import { ApiHelper } from "../../../server/helper/api-helper";
-import { ExternalPath, FrontPath } from "../../../server/helper/const";
+import { ExternalPath } from "../../../server/helper/const";
 import { HttpsError } from "../../../server/helper/https-error";
 import { axiosRequest } from "../../../utils/axios";
 
@@ -13,13 +13,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   return api.handler({
     get: async () => {
       const { code } = api.query;
-      const userId = req.query.userId as string;
+      const userId = api.userId;
 
-      if (!api.query.driveAuth) {
-        throw new HttpsError("invalid-argument", `driveAuth is Empty`);
+      if (!api.query.userAuth) {
+        throw new HttpsError("invalid-argument", `userAuth is Empty`);
       }
 
-      const userAuth = JSON.parse(api.query.driveAuth);
+      const userAuth = JSON.parse(api.query.userAuth);
+
+      console.log({ userAuth });
 
       const data = {
         code,
@@ -28,6 +30,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         redirect_uri: process.env.NEXT_PUBLIC_WEB_SERVICE_URL,
         grant_type: "authorization_code",
       };
+
+      console.log({ data });
 
       const response = await axiosRequest<DriveAuth>(
         "POST",
@@ -40,16 +44,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
       );
 
+      console.log(`response in teken.ts`);
+      console.log({ response });
+
       await collection("users").doc(userId).set({
         id: userId,
         userAuth,
         DriveAuth: response,
       });
 
-      res.writeHead(302, {
-        Location: FrontPath.top,
-      });
-      res.end();
+      res.json({ response });
     },
   });
 };

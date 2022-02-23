@@ -2,7 +2,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { collection, toData } from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
-import { RegisterAppUser } from "../../../../type/api/firestore-user-api.type";
 import { AppUser } from "../../../../type/model/firestore-user.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -26,14 +25,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (user) {
           return res.status(200).json(user);
+        } else {
+          // throw new HttpsError("not-found", "AppUser not found");
         }
 
-        const data: RegisterAppUser = { userId, userAuth };
-        console.log({ data });
+        // const data: RegisterAppUser = { userId, userAuth };
+        // console.log({ data });
 
-        await collection("users").doc(userId).create(data);
+        // await collection("users").doc(userId).create(data);
 
-        return res.status(200).json(data);
+        // return res.status(200).json(data);
+        res.end();
       } catch (error) {
         console.log({ error });
 
