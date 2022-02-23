@@ -1,7 +1,9 @@
+import { User } from "@firebase/auth";
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { DriveAuth } from "../../recoil/atom/drive-auth";
 import { axiosRequest } from "../../utils/axios";
+import { HttpsError } from "./https-error";
 
 export class ApiHelper {
   readonly req: NextApiRequest;
@@ -23,6 +25,16 @@ export class ApiHelper {
   }
   get userId() {
     return this.headers.userid as string; // headers経由でキャメルケースが小文字になる
+  }
+  get userAuth() {
+    return this.headers.userauth
+      ? (JSON.parse(this.headers.userauth) as User)
+      : undefined;
+  }
+  get driveAuth() {
+    return this.headers.driveauth
+      ? (JSON.parse(this.headers.driveauth) as DriveAuth)
+      : undefined;
   }
 
   /**
@@ -78,10 +90,23 @@ export class ApiHelper {
       if (error) {
         error();
       } else {
-        console.log({ error });
+        if (
+          (e as any).constructor.name === HttpsError.name ||
+          (e as HttpsError).httpErrorCode?.canonicalName
+        ) {
+          const httpsError = e as HttpsError;
+
+          console.log(`❌ ${this.req.method} ${this.req.url}`);
+
+          this.res.status(httpsError.httpErrorCode.status).send({
+            status: httpsError.httpErrorCode.canonicalName,
+            msg: httpsError.message,
+            customErrorCode: httpsError.customErrorCode ?? undefined,
+          });
+        }
         this.res.status(500);
-        this.res.end();
       }
+      this.res.end();
     }
   }
 }

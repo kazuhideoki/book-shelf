@@ -1,4 +1,5 @@
 import { Box, CircularProgress } from "@mui/material";
+import { GetServerSideProps } from "next";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -7,8 +8,8 @@ import { SignIn } from "../components/Signin";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { loadingState } from "../recoil/atom/loading";
 import { userAuthState } from "../recoil/atom/user-auth";
-import { ServerPath } from '../server/helper/const';
-import { AppUser } from '../type/model/firestore-user.type';
+import { ServerPath } from "../server/helper/const";
+import { GetAccessToken as GetDriveToken } from "../type/api/google-drive-api.type";
 import { useRequest } from "../utils/axios";
 import { FrontFirebaseHelper } from "../utils/front-firebase";
 
@@ -24,26 +25,36 @@ export default function App(props: AppProps) {
   );
 }
 
-function _App({ Component, pageProps }: AppProps) {
+function _App({ Component, pageProps }: AppProps<P>) {
+  const code = Component.defaultProps?.code;
   const router = useRouter();
   const request = useRequest();
-
   const loading = useRecoilValue(loadingState);
+
   const [userAuth, setAuthState] = useRecoilState(userAuthState);
   const [driveAuth, setDriveAuth] = useRecoilState(driveAuthState);
 
   useEffect(() => {
-    return FrontFirebaseHelper.listenFirebaseAuth((user) => {
-      setAuthState(user);
+    return FrontFirebaseHelper.listenFirebaseAuth(async (user) => {
+      setAuthState({ userAuth: user, initialized: true });
 
-        request<AppUser>('GET', ServerPath.user(user.uid),{headers: {
-        userAuth: user,
-      }}).then(appUser => {
-        setDriveAuth(appUser.driveAuth)
-      })
+      console.log(`user && code前`);
+      console.log({ userAuth: user, userId: user.uid });
 
+      if (user && code) {
+        console.log(`user && code2`);
+
+        request<void, GetDriveToken>("GET", ServerPath.driveToken, {
+          params: {
+            code,
+            userAuth: user,
+            userId: user.uid,
+          },
+          headers: { userAuth: user, userId: user.uid },
+        }).catch((e) => console.log(`error occurred in getToken: ${e}`));
+      }
     });
-  }, []);
+  }, [code, request]);
 
   if (loading) {
     return (
@@ -62,9 +73,7 @@ function _App({ Component, pageProps }: AppProps) {
     );
   }
 
-  console.log({ userAuth, driveAuth });
-
-  if (!userAuth || !driveAuth) {
+  if (!userAuth?.initialized || !driveAuth?.initialized) {
     return <SignIn />;
   }
 
@@ -74,3 +83,10 @@ function _App({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  // const auth = JSON.parse(context.query.driveAuth as string);
+  const code = context.query.code as string;
+
+  return { props: { code } };
+};

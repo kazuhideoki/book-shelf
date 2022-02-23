@@ -11,23 +11,35 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   return api.handler({
     get: async () => {
       const userId = api.userId;
-      const { driveAuth, userAuth } = api.headers;
+      const userAuth = api.userAuth;
 
-      let user: AppUser;
       try {
         const user = await toData<AppUser>(
           collection("users").doc(userId).get()
-        );
+        ).catch((e) => {
+          console.log({ e });
+
+          console.log(`error occurred in fetch appUser: ${e}`);
+        });
+
+        console.log(`Fetched appUser: ${user}`);
 
         if (user) {
           return res.status(200).json(user);
-        } else {
-          const data: RegisterAppUser = { userId, driveAuth, userAuth };
-          await collection("users").doc(userId).create(data);
-
-          return res.status(200).json(data);
         }
-      } catch (error) {}
+
+        const data: RegisterAppUser = { userId, userAuth };
+        console.log({ data });
+
+        await collection("users").doc(userId).create(data);
+
+        return res.status(200).json(data);
+      } catch (error) {
+        console.log({ error });
+
+        res.status(500);
+        res.end();
+      }
     },
   });
 };

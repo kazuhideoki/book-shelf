@@ -1,8 +1,10 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { DriveAuth } from "../../../recoil/atom/drive-auth";
+import { collection } from "../../../server/firebase-service";
 import { ApiHelper } from "../../../server/helper/api-helper";
-import { ExternalPath } from "../../../server/helper/const";
+import { ExternalPath, FrontPath } from "../../../server/helper/const";
+import { HttpsError } from "../../../server/helper/https-error";
 import { axiosRequest } from "../../../utils/axios";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -11,6 +13,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   return api.handler({
     get: async () => {
       const { code } = api.query;
+      const userId = req.query.userId as string;
+
+      if (!api.query.driveAuth) {
+        throw new HttpsError("invalid-argument", `driveAuth is Empty`);
+      }
+
+      const userAuth = JSON.parse(api.query.driveAuth);
 
       const data = {
         code,
@@ -30,7 +39,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
         }
       );
-      res.json(response);
+
+      await collection("users").doc(userId).set({
+        id: userId,
+        userAuth,
+        DriveAuth: response,
+      });
+
+      res.writeHead(302, {
+        Location: FrontPath.top,
+      });
+      res.end();
     },
   });
 };

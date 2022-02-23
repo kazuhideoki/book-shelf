@@ -8,7 +8,9 @@ export type DriveAuth = {
   token_type: string;
 };
 
-export const driveAuthState = atom<DriveAuth | undefined>({
+export type DriveAuthState = { driveAuth?: DriveAuth; initialized: boolean };
+
+export const driveAuthState = atom<DriveAuthState | undefined>({
   key: "driveAuth",
-  default: undefined,
+  default: { initialized: false },
 });
