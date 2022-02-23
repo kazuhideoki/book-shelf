@@ -30,9 +30,14 @@ export const useRequest = () => {
     config?: {
       params?: U;
       data?: U;
+      headers?: any;
     }
   ): Promise<T> {
-    let headers: any = { ...driveAuth };
+    let headers: any = {
+      ...config?.headers,
+      driveAuth: config?.headers.driveAuth ?? driveAuth,
+      userAuth: config?.headers.userAuth ?? userAuth,
+    };
 
     if (userAuth?.uid) headers = { ...headers, userId: userAuth.uid };
 

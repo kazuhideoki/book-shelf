@@ -37,3 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 - `openssl enc -e -aes-256-cbc -md sha256 -salt -k {env_encryption} -in ./.env.deploy -out ./.env.deploy.enc` で暗号化
 - Cloud Build で復号化のために環境変数に env_encryption をセット
+
+## Rasbian Cromium 操作
+
+- `chromium-browser https://e-book-shelf-dqzqyxvulq-an.a.run.app --kiosk`

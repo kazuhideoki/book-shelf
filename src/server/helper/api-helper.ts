@@ -1,5 +1,6 @@
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import { DriveAuth } from "../../recoil/atom/drive-auth";
 import { axiosRequest } from "../../utils/axios";
 
 export class ApiHelper {
@@ -32,11 +33,13 @@ export class ApiHelper {
     url: string,
     config?: AxiosRequestConfig<any>
   ): Promise<T> {
-    const { access_token } = this.req.headers;
+    const { driveAuth } = this.req.headers as any;
 
     const res = await axiosRequest<T>(method, url, {
       ...config,
-      headers: { Authorization: `Bearer ${access_token}` },
+      headers: {
+        Authorization: `Bearer ${(driveAuth as DriveAuth)?.access_token}`,
+      },
     });
 
     return res;

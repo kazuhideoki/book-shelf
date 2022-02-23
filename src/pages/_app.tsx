@@ -4,10 +4,11 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
 import { SignIn } from "../components/Signin";
-import { displaySetsState } from "../recoil/atom/display-set";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { loadingState } from "../recoil/atom/loading";
 import { userAuthState } from "../recoil/atom/user-auth";
+import { ServerPath } from '../server/helper/const';
+import { AppUser } from '../type/model/firestore-user.type';
 import { useRequest } from "../utils/axios";
 import { FrontFirebaseHelper } from "../utils/front-firebase";
 
@@ -29,12 +30,18 @@ function _App({ Component, pageProps }: AppProps) {
 
   const loading = useRecoilValue(loadingState);
   const [userAuth, setAuthState] = useRecoilState(userAuthState);
-  const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
-  const driveAuth = useRecoilValue(driveAuthState);
+  const [driveAuth, setDriveAuth] = useRecoilState(driveAuthState);
 
   useEffect(() => {
     return FrontFirebaseHelper.listenFirebaseAuth((user) => {
       setAuthState(user);
+
+        request<AppUser>('GET', ServerPath.user(user.uid),{headers: {
+        userAuth: user,
+      }}).then(appUser => {
+        setDriveAuth(appUser.driveAuth)
+      })
+
     });
   }, []);
 
