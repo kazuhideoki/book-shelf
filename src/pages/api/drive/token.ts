@@ -50,7 +50,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       await collection("users").doc(userId).set({
         id: userId,
         userAuth,
-        DriveAuth: response,
+        driveAuth: response,
       });
 
       res.json({ response });

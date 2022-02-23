@@ -24,61 +24,64 @@ export default function App(props: AppProps) {
 
 function _App({ Component, pageProps }: AppProps<P>) {
   const router = useRouter();
+  const code = router.query.code;
+
   const request = useRequest();
   const loading = useRecoilValue(loadingState);
 
   const [userAuth, setAuthState] = useRecoilState(userAuthState);
   const [driveAuth, setDriveAuth] = useRecoilState(driveAuthState);
 
-  // const handleDriveAuth = async() => {
-  //   axiosRequest<void>("GET", ServerPath.driveToken, {
-  //     params: {
-  //       code,
-  //       userAuth: user,
-  //       userId: user.uid,
-  //     },
-  //     headers: { userAuth: JSON.stringify(user) as any, userId: user.uid },
-  //   }).catch((e) => console.log(`error occurred in getToken: ${e}`));
-  // }
+  console.log(`topで`);
 
-  const code = router.query.code;
+  console.log({ userAuth, driveAuth });
+
   useEffect(() => {
-    if (code) {
-      axiosRequest<DriveAuth>("GET", `/api/drive/token`, {
-        params: { code },
-      }).then((res) => setDriveAuth({ driveAuth: res, initialized: true }));
+    if (userAuth?.initialized) {
+      const userId = userAuth.userAuth?.uid;
+      request<AppUser>("GET", ServerPath.user(userId!), {
+        headers: {
+          userAuth: JSON.stringify(userAuth.userAuth) as any,
+          userId,
+        },
+      })
+        .then((appUser) => {
+          console.log({ appUser });
+
+          if (appUser?.driveAuth) {
+            setDriveAuth({ driveAuth: appUser.driveAuth, initialized: true });
+          }
+        })
+        .catch((e) => console.log(`Error occurred appUser: ${e} `));
     }
-  }, [code]);
+  }, [userAuth?.initialized]);
 
   useEffect(() => {
     return FrontFirebaseHelper.listenFirebaseAuth(async (user) => {
       setAuthState({ userAuth: user, initialized: true });
 
       console.log(`user && code前`);
-      console.log({ userAuth: user, userId: user.uid });
+      console.log({ userAuth: user, userId: user.uid, code });
 
       if (user && !code) {
         console.log(`user && ！code`);
 
-        const appUser = await axiosRequest<AppUser>(
-          "GET",
-          ServerPath.user(user.uid),
-          {
-            headers: {
-              userAuth: JSON.stringify(user) as any,
-              userId: user.uid,
-            },
-          }
-        );
-        // .catch(e => {
-        //   if(e instanceof HttpsError && e.customErrorCode === CustomErrorCode.APP_USER_NOT_REGISTERED){
-
+        // const appUser = await axiosRequest<AppUser>(
+        //   "GET",
+        //   ServerPath.user(user.uid),
+        //   {
+        //     headers: {
+        //       userAuth: JSON.stringify(user) as any,
+        //       userId: user.uid,
+        //     },
         //   }
-        // });
+        // ).catch((e) => console.log(`Error occurred appUser: ${e} `));
 
-        if (appUser.driveAuth) {
-          setDriveAuth({ driveAuth: appUser.driveAuth, initialized: true });
-        }
+        // console.log({ appUser });
+
+        // if (appUser?.driveAuth) {
+        //   setDriveAuth({ driveAuth: appUser.driveAuth, initialized: true });
+        // }
       }
 
       if (user && code) {
