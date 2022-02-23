@@ -45,7 +45,7 @@ const Home: NextPage<P> = () => {
   const [targetPDF, setTargetPDF] = useState<any>(null);
 
   useEffect(() => {
-    if (userAuth && driveAuth) {
+    if (userAuth?.initialized && driveAuth?.initialized) {
       try {
         request<DisplaySet[]>("GET", ServerPath.displaySets).then((res) => {
           setDisplaySets(res);
@@ -55,7 +55,7 @@ const Home: NextPage<P> = () => {
         console.log(`Error occurred: ${error}`);
       }
     }
-  }, [userAuth, driveAuth]);
+  }, []);
 
   // 表示する画像を一定間隔で入れ替える
   useEffect(() => {
@@ -129,7 +129,7 @@ const Home: NextPage<P> = () => {
                             ...displaySet.files.map((e) =>
                               request<ImageSet>(
                                 "GET",
-                                ServerPath.fileMedia(e.fileId)
+                                ServerPath.file(e.fileId)
                               )
                             ),
                           ]);

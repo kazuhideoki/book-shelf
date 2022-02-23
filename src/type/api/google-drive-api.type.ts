@@ -1,5 +1,8 @@
+import { UserAuth } from "../../recoil/atom/user-auth";
 export type GetAccessToken = {
   code: string;
+  userId: string;
+  userAuth: UserAuth;
 };
 
 export type ListDriveFiles = {

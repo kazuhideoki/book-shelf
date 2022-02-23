@@ -17,6 +17,9 @@ export async function axiosRequest<T>(
     })
     .then((r) => r.data);
 
+  console.log(`axiosRequest`);
+  console.log({ config });
+
   return res;
 }
 
@@ -24,17 +27,26 @@ export const useRequest = () => {
   const driveAuth = useRecoilValue(driveAuthState);
   const userAuth = useRecoilValue(userAuthState);
 
+  console.log({ driveAuth, userAuth });
+
   return async function <T, U = any>(
     method: Method,
     url: string,
     config?: {
       params?: U;
       data?: U;
+      headers?: any;
     }
   ): Promise<T> {
-    let headers: any = { ...driveAuth };
+    console.log({ config });
+    let headers: any = {
+      ...config?.headers,
+      driveAuth: config?.headers.driveAuth ?? driveAuth,
+      userAuth: config?.headers.userAuth ?? userAuth,
+      userId: config?.headers.userId ?? userAuth?.userAuth?.uid,
+    };
 
-    if (userAuth?.uid) headers = { ...headers, userId: userAuth.uid };
+    console.log({ headers });
 
     return await axiosRequest<T>(method, url, {
       ...config,

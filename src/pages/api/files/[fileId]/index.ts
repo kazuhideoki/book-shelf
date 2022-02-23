@@ -4,7 +4,11 @@ import { readFileSync } from "fs";
 import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { fromBase64 } from "pdf2pic";
-import { bucket, firestore } from "../../../../server/firebase-service";
+import {
+  bucket,
+  collection,
+  toData,
+} from "../../../../server/firebase-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { ExternalPath, StoragePath } from "../../../../server/helper/const";
 import {
@@ -21,11 +25,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId } = api.query;
 
-      const imageSet = (await firestore
-        .collection("ImageSets")
-        .doc(fileId)
-        .get()
-        .then((dss) => dss.data())) as ImageSetFS;
+      const imageSet = await toData<ImageSetFS>(
+        collection("imageSets").doc(fileId).get()
+      );
 
       console.log({ imageSet });
       console.log(DateTime.now().toString());
@@ -120,8 +122,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         updatedAt: data.expiredAt.toDate(),
       };
 
-      await firestore
-        .collection("ImageSets")
+      await collection("imageSets")
         .doc(fileId)
         .set(data)
         .catch((e) => console.log(`error occurred in firestore: ${e}`));

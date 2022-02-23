@@ -48,7 +48,7 @@ const Settings: NextPage<P> = () => {
 
     let res: ImageSet | undefined = undefined;
     if (checked) {
-      res = await request<ImageSet>("GET", ServerPath.fileMedia(file.id));
+      res = await request<ImageSet>("GET", ServerPath.file(file.id));
 
       console.log({ resImage: resolve });
     }

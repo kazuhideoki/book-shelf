@@ -4,10 +4,14 @@ export class FrontPath {
 }
 
 export class ServerPath {
+  static drive = `/api/drive`;
+  static driveAuth = `${ServerPath.drive}/auth`;
+  static driveToken = `${ServerPath.drive}/token`;
   static files = `/api/files`;
   static file = (fileId: string) => `${ServerPath.files}/${fileId}`;
-  static fileMedia = (fileId: string) => `${ServerPath.file(fileId)}/media`;
   static displaySets = `/api/display-sets`;
+  static users = `/api/users`;
+  static user = (userId: string) => `${ServerPath.users}/${userId}`;
 }
 
 export class ExternalPath {
