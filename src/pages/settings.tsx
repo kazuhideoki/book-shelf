@@ -12,7 +12,6 @@ import {
 import type { NextPage } from "next";
 // import Link from 'next/link';
 import { useRouter } from "next/router";
-import { resolve } from "path";
 import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { FrontPath, ServerPath } from "../server/helper/const";
@@ -50,7 +49,7 @@ const Settings: NextPage<P> = () => {
     if (checked) {
       res = await request<ImageSet>("GET", ServerPath.file(file.id));
 
-      console.log({ resImage: resolve });
+      console.log({ resImage: res });
     }
 
     setValues({
