@@ -42,7 +42,7 @@ export const SignIn: NextComponentType<
     if (code) {
       axiosRequest<DriveAuth>("GET", `/api/drive/token`, {
         params: { code },
-      }).then((res) => setDriveAuth(res));
+      }).then((res) => setDriveAuth({ driveAuth: res, initialized: true }));
     }
   }, [code]);
 
