@@ -1,5 +1,4 @@
 import { Box, CircularProgress } from "@mui/material";
-import { GetServerSideProps } from "next";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -13,10 +12,7 @@ import { AppUser } from "../type/model/firestore-user.type";
 import { axiosRequest, useRequest } from "../utils/axios";
 import { FrontFirebaseHelper } from "../utils/front-firebase";
 
-interface P {
-  code?: string;
-  auth?: DriveAuth;
-}
+interface P {}
 
 export default function App(props: AppProps) {
   return (
@@ -27,11 +23,6 @@ export default function App(props: AppProps) {
 }
 
 function _App({ Component, pageProps }: AppProps<P>) {
-  const code = Component.defaultProps?.code;
-  const auth = Component.defaultProps?.auth;
-
-  console.log({ code, auth });
-
   const router = useRouter();
   const request = useRequest();
   const loading = useRecoilValue(loadingState);
@@ -50,9 +41,14 @@ function _App({ Component, pageProps }: AppProps<P>) {
   //   }).catch((e) => console.log(`error occurred in getToken: ${e}`));
   // }
 
+  const code = router.query.code;
   useEffect(() => {
-    if (auth) setDriveAuth({ driveAuth: auth, initialized: true });
-  }, []);
+    if (code) {
+      axiosRequest<DriveAuth>("GET", `/api/drive/token`, {
+        params: { code },
+      }).then((res) => setDriveAuth({ driveAuth: res, initialized: true }));
+    }
+  }, [code]);
 
   useEffect(() => {
     return FrontFirebaseHelper.listenFirebaseAuth(async (user) => {
@@ -136,15 +132,3 @@ function _App({ Component, pageProps }: AppProps<P>) {
     </>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const auth = context.query.driveAuth
-    ? (JSON.parse(context.query.driveAuth as string) as DriveAuth)
-    : undefined;
-  const code = context.query.code as string;
-
-  console.log("getServerSideProps");
-  console.log({ code, auth });
-
-  return { props: { code, auth } };
-};
