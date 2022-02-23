@@ -1,4 +1,5 @@
 import { AxiosRequestConfig, default as axios, Method } from "axios";
+import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { userAuthState } from "../recoil/atom/user-auth";
@@ -24,33 +25,38 @@ export async function axiosRequest<T>(
 }
 
 export const useRequest = () => {
-  const driveAuth = useRecoilValue(driveAuthState);
   const userAuth = useRecoilValue(userAuthState);
+  const driveAuth = useRecoilValue(driveAuthState);
 
   console.log({ driveAuth, userAuth });
 
-  return async function <T, U = any>(
-    method: Method,
-    url: string,
-    config?: {
-      params?: U;
-      data?: U;
-      headers?: any;
-    }
-  ): Promise<T> {
-    console.log({ config });
-    let headers: any = {
-      ...config?.headers,
-      driveAuth: config?.headers.driveAuth ?? driveAuth,
-      userAuth: config?.headers.userAuth ?? userAuth,
-      userId: config?.headers.userId ?? userAuth?.userAuth?.uid,
-    };
+  return useCallback(
+    async <T, U = any>(
+      method: Method,
+      url: string,
+      config?: {
+        params?: U;
+        data?: U;
+        headers?: any;
+      }
+    ): Promise<T> => {
+      console.log({ config });
+      const da = config?.headers?.driveAuth ?? driveAuth?.driveAuth;
+      const ua = config?.headers?.userAuth ?? userAuth?.userAuth;
+      let headers: any = {
+        ...config?.headers,
+        driveAuth: da ? JSON.stringify(da) : undefined,
+        userAuth: ua ? JSON.stringify(ua) : undefined,
+        userId: config?.headers?.userId ?? userAuth?.userAuth?.uid,
+      };
 
-    console.log({ headers });
+      console.log({ headers });
 
-    return await axiosRequest<T>(method, url, {
-      ...config,
-      headers,
-    });
-  };
+      return await axiosRequest<T>(method, url, {
+        ...config,
+        headers,
+      });
+    },
+    [userAuth?.userAuth, driveAuth?.driveAuth]
+  );
 };

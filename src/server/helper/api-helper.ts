@@ -45,7 +45,7 @@ export class ApiHelper {
     url: string,
     config?: AxiosRequestConfig<any>
   ): Promise<T> {
-    const { driveAuth } = this.req.headers as any;
+    const driveAuth = this.driveAuth as any;
 
     const res = await axiosRequest<T>(method, url, {
       ...config,
