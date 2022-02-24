@@ -5,4 +5,6 @@ export type AppUser = {
   userId: string;
   userAuth: User;
   driveAuth: DriveAuth;
+  createdAt: Date;
+  updatedAt: Date;
 };

@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { collection, toData } from "../../../server/firebase-service";
 import { ApiHelper } from "../../../server/helper/api-helper";
+import { collection, toData } from "../../../server/service/server_firebase";
 import { DisplaySet } from "../../../type/model/firestore-display-set.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
