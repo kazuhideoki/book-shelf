@@ -10,8 +10,3 @@ export type ListDriveFiles = {
   pageSize?: number;
   pageToken?: string;
 };
-
-export enum MediaType {
-  PDF = "PDF",
-  IMAGE = "IMAGE",
-}

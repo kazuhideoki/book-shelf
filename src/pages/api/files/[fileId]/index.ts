@@ -4,17 +4,15 @@ import { readFileSync } from "fs";
 import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { fromBase64 } from "pdf2pic";
+import { ApiHelper } from "../../../../server/helper/api-helper";
+import { ExternalPath, StoragePath } from "../../../../server/helper/const";
 import {
   bucket,
   collection,
   toData,
-} from "../../../../server/firebase-service";
-import { ApiHelper } from "../../../../server/helper/api-helper";
-import { ExternalPath, StoragePath } from "../../../../server/helper/const";
-import {
-  ImageSet,
-  ImageSetFS,
-} from "../../../../type/model/firestore-image-set.type";
+} from "../../../../server/service/server_firebase";
+import { UpdateImageSet } from "../../../../type/api/firestore-image-set-api.type";
+import { ImageSet } from "../../../../type/model/firestore-image-set.type";
 
 const expiryTime = 60 * 60 * 24 * 7;
 
@@ -25,7 +23,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId } = api.query;
 
-      const imageSet = await toData<ImageSetFS>(
+      const imageSet = await toData<UpdateImageSet>(
         collection("imageSets").doc(fileId).get()
       );
 
@@ -106,7 +104,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       // console.log(`1 page of PDF saved in Firebase Storage`);
 
-      const data: ImageSetFS = {
+      const data: UpdateImageSet = {
         userId: api.userId,
         fileId,
         path: url,
