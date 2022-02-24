@@ -13,18 +13,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const { q, pageSize, pageToken, mimeType } = api.query as ListDriveFiles &
         any;
 
-      const response = await api.daxiosRequest<DriveFiles>(
-        "GET",
-        ExternalPath.files,
-        {
+      const response = await api
+        .daxiosRequest<DriveFiles>("GET", ExternalPath.files, {
           params: {
             q,
             mimeType,
             pageSize: pageSize ?? 10,
             pageToken,
           },
-        }
-      );
+        })
+        .catch((e) => console.log(`error daxios files ${e}`));
 
       res.status(200).json(response);
     },

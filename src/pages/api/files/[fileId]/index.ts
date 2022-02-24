@@ -67,8 +67,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         saveFilename: fileId,
         savePath: `./tmp`,
         format: "png",
-        width: 300,
-        height: 300,
+        // width: 300,
+        // height: 300,
       };
 
       const image = await fromBase64(
