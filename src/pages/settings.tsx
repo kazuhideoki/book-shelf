@@ -14,6 +14,8 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
+import { useSetRecoilState } from "recoil";
+import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
@@ -29,6 +31,7 @@ interface P {
 const Settings: NextPage<P> = () => {
   const router = useRouter();
   const request = useRequest();
+  const setSnackbar = useSetRecoilState(snackbarState);
 
   const [values, setValues] = useState<{
     folderData: {
@@ -147,6 +150,11 @@ const Settings: NextPage<P> = () => {
           fileId: e.file.id,
           index: e.index,
         })),
+      });
+
+      setSnackbar({
+        open: true,
+        message: "ディスプレイセットが保存されました",
       });
 
       console.log("Successfully saved display set!");

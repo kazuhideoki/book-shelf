@@ -1,6 +1,7 @@
 import { User } from "@firebase/auth";
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import { CustomError } from "../../type/model/error";
 import { DriveAuth } from "../../type/model/google-drive-auth.type";
 import { axiosRequest } from "../../utils/axios";
 import { HttpsError } from "./https-error";
@@ -52,6 +53,21 @@ export class ApiHelper {
       headers: {
         Authorization: `Bearer ${(driveAuth as DriveAuth)?.access_token}`,
       },
+    }).catch((e) => {
+      if (e.code === 401) {
+        // 再びdrive認証して、DBに保存
+        // axiosRequest<DriveAuth>("GET", ServerPath.driveToken, {
+        //   params: {
+        //     userAuth: user,
+        //     userId: user.uid,
+        //   },
+        //   headers: {
+        //     userAuth: JSON.stringify(user) as any,
+        //     userId: user.uid,
+        //   },
+        // });
+      }
+      throw e;
     });
 
     return res;
@@ -96,13 +112,16 @@ export class ApiHelper {
         ) {
           const httpsError = e as HttpsError;
 
-          console.log(`❌ ${this.req.method} ${this.req.url}`);
+          console.error(`❌ ${this.req.method} ${this.req.url}`);
+          console.error(`${httpsError.message}`);
 
-          this.res.status(httpsError.httpErrorCode.status).send({
+          const error: CustomError = {
             status: httpsError.httpErrorCode.canonicalName,
             msg: httpsError.message,
             customErrorCode: httpsError.customErrorCode ?? undefined,
-          });
+          };
+
+          this.res.status(httpsError.httpErrorCode.status).send(error);
         }
         this.res.status(500);
       }

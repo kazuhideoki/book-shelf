@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
 import { SignIn } from "../components/Signin";
+import { CustomSnackbar } from "../components/Snackbar";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { loadingState } from "../recoil/atom/loading";
 import { userAuthState } from "../recoil/atom/user-auth";
@@ -107,6 +108,7 @@ function _App({ Component, pageProps }: AppProps<P>) {
   return (
     <>
       <Component {...pageProps} />
+      <CustomSnackbar />
     </>
   );
 }
