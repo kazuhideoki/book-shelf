@@ -1,13 +1,13 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { firestore as firebaseFirestore } from "firebase-admin";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { DriveAuth } from "../../../recoil/atom/drive-auth";
 import { ApiHelper } from "../../../server/helper/api-helper";
 import { ExternalPath } from "../../../server/helper/const";
 import { HttpsError } from "../../../server/helper/https-error";
 import { collection, toData } from "../../../server/service/server_firebase";
 import { UpdateAppUser } from "../../../type/api/firestore-user-api.type";
 import { AppUser } from "../../../type/model/firestore-user.type";
+import { DriveAuth } from "../../../type/model/google-drive-auth.type";
 import { axiosRequest } from "../../../utils/axios";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

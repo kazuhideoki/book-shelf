@@ -1,12 +1,5 @@
 import { atom } from "recoil";
-
-export type DriveAuth = {
-  access_token: string;
-  expires_in: string;
-  refresh_token: string;
-  scope: string;
-  token_type: string;
-};
+import { DriveAuth } from "../../type/model/google-drive-auth.type";
 
 export type DriveAuthState = { driveAuth?: DriveAuth; initialized: boolean };
 

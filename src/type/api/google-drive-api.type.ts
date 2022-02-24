@@ -1,4 +1,5 @@
-import { UserAuth } from "../../recoil/atom/user-auth";
+import { UserAuth } from "../model/firestore-user.type";
+
 export type GetAccessToken = {
   code: string;
   userId: string;

@@ -1,5 +1,7 @@
 import { User } from "@firebase/auth";
-import { DriveAuth } from "../../recoil/atom/drive-auth";
+import { DriveAuth } from "./google-drive-auth.type";
+
+export type UserAuth = Partial<User>;
 
 export type AppUser = {
   userId: string;

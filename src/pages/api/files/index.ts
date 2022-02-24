@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiHelper } from "../../../server/helper/api-helper";
 import { ExternalPath } from "../../../server/helper/const";
 import { ListDriveFiles } from "../../../type/api/google-drive-api.type";
-import { DriveFiles } from "../../../type/model/google-drive.type";
+import { DriveFiles } from "../../../type/model/google-drive-file.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const api = new ApiHelper(req, res);

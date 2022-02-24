@@ -1,7 +1,7 @@
 import { User } from "@firebase/auth";
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
-import { DriveAuth } from "../../recoil/atom/drive-auth";
+import { DriveAuth } from "../../type/model/google-drive-auth.type";
 import { axiosRequest } from "../../utils/axios";
 import { HttpsError } from "./https-error";
 

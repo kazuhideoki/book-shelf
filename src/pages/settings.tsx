@@ -18,7 +18,7 @@ import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
 import { ImageSet } from "../type/model/firestore-image-set.type";
-import { DriveFile, DriveFiles } from "../type/model/google-drive.type";
+import { DriveFile, DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 

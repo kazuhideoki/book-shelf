@@ -4,11 +4,12 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
 import { SignIn } from "../components/Signin";
-import { DriveAuth, driveAuthState } from "../recoil/atom/drive-auth";
+import { driveAuthState } from "../recoil/atom/drive-auth";
 import { loadingState } from "../recoil/atom/loading";
 import { userAuthState } from "../recoil/atom/user-auth";
 import { ServerPath } from "../server/helper/const";
 import { AppUser } from "../type/model/firestore-user.type";
+import { DriveAuth } from "../type/model/google-drive-auth.type";
 import { axiosRequest, useRequest } from "../utils/axios";
 import { FrontFirebaseHelper } from "../utils/front-firebase";
 
