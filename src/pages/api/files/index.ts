@@ -12,15 +12,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const { q, pageSize, pageToken, mimeType } = api.query as ListDriveFiles &
         any;
 
-      // const response = await api
-      //   .daxiosRequest<DriveFiles>("GET", ExternalPath.files, {
-      //     params: {
-      //       q,
-      //       mimeType,
-      //       pageSize: pageSize ?? 10,
-      //       pageToken,
-      //     },
-      //   })
       const response = await new DriveFileService(api.appUser)
         .list({
           q,

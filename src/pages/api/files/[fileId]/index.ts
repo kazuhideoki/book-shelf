@@ -1,17 +1,12 @@
 /* eslint-disable import/no-anonymous-default-export */
-import { firestore as firebaseFirestore } from "firebase-admin";
 import { readFileSync } from "fs";
 import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { fromBase64 } from "pdf2pic";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { ExternalPath, StoragePath } from "../../../../server/helper/const";
-import {
-  bucket,
-  collection,
-  toData,
-} from "../../../../server/service/server_firebase";
-import { UpdateImageSet } from "../../../../type/api/firestore-image-set-api.type";
+import { ImageSetService } from "../../../../server/service/image-set.service";
+import { bucket } from "../../../../server/service/server_firebase";
 import { ImageSet } from "../../../../type/model/firestore-image-set.type";
 
 const expiryTime = 60 * 60 * 24 * 7;
@@ -23,16 +18,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId } = api.query;
 
-      const imageSet = await toData<UpdateImageSet>(
-        collection("imageSets").doc(fileId).get()
-      );
+      const imageSet = await new ImageSetService(api.appUser).find(fileId);
 
       console.log({ imageSet });
       console.log(DateTime.now().toString());
 
       if (
         imageSet &&
-        DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt.toDate())
+        DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt)
       ) {
         // TODO Drive側で更新されていたら取得し直す処理も必要
         console.log(`imageSet exists and not expired`);
@@ -43,7 +36,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       if (!imageSet) console.log(`imageSet not found`);
       if (
         imageSet &&
-        !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt.toDate()))
+        !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt))
       )
         console.log(`imageSet not found`);
 
@@ -104,29 +97,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       // console.log(`1 page of PDF saved in Firebase Storage`);
 
-      const data: UpdateImageSet = {
+      const data: ImageSet = {
         userId: api.userId,
         fileId,
         path: url,
-        expiredAt: firebaseFirestore.Timestamp.fromDate(expiredAt.toJSDate()),
-        createdAt: firebaseFirestore.Timestamp.fromDate(new Date()),
-        updatedAt: firebaseFirestore.Timestamp.fromDate(new Date()),
+        expiredAt: expiredAt.toJSDate(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
-      const returnData: ImageSet = {
-        ...data,
-        expiredAt: data.expiredAt.toDate(),
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.expiredAt.toDate(),
-      };
-
-      await collection("imageSets")
-        .doc(fileId)
-        .set(data)
-        .catch((e) => console.log(`error occurred in firestore: ${e}`));
+      await new ImageSetService(api.appUser).register(fileId, data);
       console.log(`cache path saved in Firestore`);
 
-      return res.status(200).json(returnData);
+      return res.status(200).json(data);
     },
   });
 };
