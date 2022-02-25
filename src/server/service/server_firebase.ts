@@ -1,4 +1,4 @@
-import admin, { firestore as store } from "firebase-admin";
+import admin, { firestore as firebaseFirestore } from "firebase-admin";
 
 // var serviceAccount = require("/credentials.json");
 var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT!);
@@ -14,28 +14,34 @@ export type CollectionName = "imageSets" | "displaySets" | "users";
 export const collection = (collectionName: CollectionName) =>
   admin.firestore(app).collection(collectionName);
 
-export function toData<T>(qss: store.QuerySnapshot): T[];
-export function toData<T>(pqss: Promise<store.QuerySnapshot>): Promise<T[]>;
-export function toData<T>(dss: store.DocumentSnapshot): T;
-export function toData<T>(pdss: Promise<store.DocumentSnapshot>): Promise<T>;
+export function toData<T>(qss: firebaseFirestore.QuerySnapshot): T[];
+export function toData<T>(
+  pqss: Promise<firebaseFirestore.QuerySnapshot>
+): Promise<T[]>;
+export function toData<T>(dss: firebaseFirestore.DocumentSnapshot): T;
+export function toData<T>(
+  pdss: Promise<firebaseFirestore.DocumentSnapshot>
+): Promise<T>;
 export function toData<T>(
   ss:
-    | store.QuerySnapshot
-    | Promise<store.QuerySnapshot>
-    | store.DocumentSnapshot
-    | Promise<store.DocumentSnapshot>
+    | firebaseFirestore.QuerySnapshot
+    | Promise<firebaseFirestore.QuerySnapshot>
+    | firebaseFirestore.DocumentSnapshot
+    | Promise<firebaseFirestore.DocumentSnapshot>
 ): T[] | T {
-  const process = (ss: store.QuerySnapshot | store.DocumentSnapshot) => {
-    if (ss instanceof store.QuerySnapshot) {
+  const process = (
+    ss: firebaseFirestore.QuerySnapshot | firebaseFirestore.DocumentSnapshot
+  ) => {
+    if (ss instanceof firebaseFirestore.QuerySnapshot) {
       return ss.docs.map((dss) => ({
         id: dss.id,
-        ...dss.data(),
+        ...timestampToDateRecursively(dss.data()),
       }));
     } else {
       if (!ss.exists) return null as any;
       return {
         id: ss.id,
-        ...ss.data(),
+        ...timestampToDateRecursively(ss.data()),
       };
     }
   };
@@ -44,6 +50,42 @@ export function toData<T>(
     return (ss as Promise<any>).then(process) as any;
   } else {
     return process(ss as any);
+  }
+}
+
+export function timestampToDateRecursively(value: any): any {
+  if (value == null) {
+    return value;
+  } else if (value.constructor === firebaseFirestore.Timestamp) {
+    return value.toDate();
+  } else if (Array.isArray(value)) {
+    return value.map(timestampToDateRecursively);
+  } else if (value.constructor === Object) {
+    const converted: any = {};
+    for (const key in value) {
+      converted[key] = timestampToDateRecursively(value[key]);
+    }
+    return converted;
+  } else {
+    return value;
+  }
+}
+
+export function timestampFromDateRecursively(value: any): any {
+  if (value == null) {
+    return value;
+  } else if (value.constructor === Date) {
+    return firebaseFirestore.Timestamp.fromDate(value);
+  } else if (Array.isArray(value)) {
+    return value.map(timestampFromDateRecursively);
+  } else if (value.constructor === Object) {
+    const converted: any = {};
+    for (const key in value) {
+      converted[key] = timestampFromDateRecursively(value[key]);
+    }
+    return converted;
+  } else {
+    return value;
   }
 }
 
