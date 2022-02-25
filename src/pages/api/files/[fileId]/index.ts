@@ -4,9 +4,9 @@ import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { fromBase64 } from "pdf2pic";
 import { ApiHelper } from "../../../../server/helper/api-helper";
-import { ExternalPath, StoragePath } from "../../../../server/helper/const";
+import { ExternalPath } from "../../../../server/helper/const";
 import { ImageSetService } from "../../../../server/service/image-set.service";
-import { bucket } from "../../../../server/service/server_firebase";
+import { StorageService } from "../../../../server/service/storage-service";
 import { ImageSet } from "../../../../type/model/firestore-image-set.type";
 
 const expiryTime = 60 * 60 * 24 * 7;
@@ -19,9 +19,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const { fileId } = api.query;
 
       const imageSet = await new ImageSetService(api.appUser).find(fileId);
-
-      console.log({ imageSet });
-      console.log(DateTime.now().toString());
 
       if (
         imageSet &&
@@ -58,8 +55,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         saveFilename: fileId,
         savePath: `./tmp`,
         format: "png",
-        // width: 300,
-        // height: 300,
       };
 
       const image = await fromBase64(
@@ -70,38 +65,26 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       const imageData = readFileSync((image as any).path);
 
-      await bucket
-        .file(StoragePath.imageFile(api.userId, fileId))
-        .save(imageData)
-        .catch((e) => console.log(`error occurred in bucket.file: ${e}`));
+      await new StorageService(api.appUser).save(fileId, imageData);
 
-      bucket.file(StoragePath.imageFile(api.userId, fileId));
+      // bucket.file(StoragePath.imageFile(api.userId, fileId));
 
-      const expiredAt = DateTime.fromJSDate(new Date()).plus({
+      const expires = DateTime.fromJSDate(new Date()).plus({
         seconds: expiryTime,
       });
-      const url = (
-        await bucket
-          .file(StoragePath.imageFile(api.userId, fileId))
-          .getSignedUrl({
-            action: "read",
-            expires: expiredAt.toISO(),
-          })
-          .catch((e) => {
-            console.log(`error occurred in getSignedUrl: ${e}`);
-            throw e;
-          })
-      )[0];
+
+      const url = await new StorageService(api.appUser).getSignedUrl(
+        fileId,
+        expires.toJSDate()
+      );
 
       console.log({ url });
-
-      // console.log(`1 page of PDF saved in Firebase Storage`);
 
       const data: ImageSet = {
         userId: api.userId,
         fileId,
         path: url,
-        expiredAt: expiredAt.toJSDate(),
+        expiredAt: expires.toJSDate(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
