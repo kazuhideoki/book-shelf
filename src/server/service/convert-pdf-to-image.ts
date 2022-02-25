@@ -17,7 +17,7 @@ export const convertPDFToImage = async (
 
   const image = await fromBase64(
     data,
-    options
+    _options
   )(1).catch((e) => console.log(`error occurred in fromBase64: ${e}`));
   console.log({ imageResBase64: image });
 
