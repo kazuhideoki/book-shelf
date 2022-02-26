@@ -1,9 +1,6 @@
-import { BaseQuery } from "../helper/base-query";
 import { StoragePath } from "../helper/const";
 import { BaseService } from "./base.service";
 import { bucket } from "./server_firebase";
-
-export type ImageSetQuery = {} & BaseQuery;
 
 export class StorageService extends BaseService {
   async save(fileId: string, data: Buffer) {

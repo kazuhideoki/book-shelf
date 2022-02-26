@@ -6,7 +6,9 @@ import { AppUser } from "../../type/model/firestore-user.type";
 import { DriveAuth } from "../../type/model/google-drive-auth.type";
 import { axiosRequest } from "../../utils/axios";
 import { collection, toData } from "../service/server_firebase";
+import { ContextHolder } from "./context";
 import { HttpsError } from "./https-error";
+import { middleware } from "./middleware";
 
 export class ApiHelper {
   readonly req: NextApiRequest;
@@ -93,7 +95,9 @@ export class ApiHelper {
     delete?: () => Promise<void>;
     error?: () => never;
   }): Promise<void> {
-    await this.setAppUser();
+    // await this.setAppUser();
+    ContextHolder.initContext();
+    await middleware(this.req);
 
     const { get, post, patch, delete: Delete, error } = p;
     console.log(`⭐ ${this.req.method} ${this.req.url}`);

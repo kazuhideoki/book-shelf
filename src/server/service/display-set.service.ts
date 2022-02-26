@@ -1,10 +1,7 @@
 import { RegisterDispalySet } from "../../type/api/firestore-display-set-api.type";
 import { DisplaySet } from "../../type/model/firestore-display-set.type";
-import { BaseQuery } from "../helper/base-query";
 import { BaseService } from "./base.service";
 import { collection, toData } from "./server_firebase";
-
-export type ImageSetQuery = {} & BaseQuery;
 
 export class DisplaySetService extends BaseService {
   async list(): Promise<DisplaySet[]> {

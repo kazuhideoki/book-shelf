@@ -1,18 +1,13 @@
 import { Box, CircularProgress } from "@mui/material";
 import { AppProps } from "next/app";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
 import { SignIn } from "../components/Signin";
 import { CustomSnackbar } from "../components/Snackbar";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { loadingState } from "../recoil/atom/loading";
 import { userAuthState } from "../recoil/atom/user-auth";
-import { ServerPath } from "../server/helper/const";
-import { AppUser } from "../type/model/firestore-user.type";
-import { DriveAuth } from "../type/model/google-drive-auth.type";
-import { axiosRequest, useRequest } from "../utils/axios";
-import { FrontFirebaseHelper } from "../utils/front-firebase";
+import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 
 interface P {}
@@ -36,52 +31,52 @@ function _App({ Component, pageProps }: AppProps<P>) {
   const [userAuth, setAuthState] = useRecoilState(userAuthState);
   const [driveAuth, setDriveAuth] = useRecoilState(driveAuthState);
 
-  useEffect(() => {
-    if (userAuth?.initialized) {
-      const userId = userAuth.userAuth?.uid;
-      withLoading(
-        request<AppUser>("GET", ServerPath.user(userId!), {
-          headers: {
-            userAuth: JSON.stringify(userAuth.userAuth) as any,
-            userId,
-          },
-        })
-          .then((appUser) => {
-            if (appUser?.driveAuth) {
-              setDriveAuth({ driveAuth: appUser.driveAuth, initialized: true });
-            }
-          })
-          .catch((e) => console.log(`Error occurred appUser: ${e} `))
-      );
-    }
-  }, [userAuth?.initialized]);
+  // useEffect(() => {
+  //   if (userAuth?.initialized) {
+  //     const userId = userAuth.userAuth?.uid;
+  //     withLoading(
+  //       request<AppUser>("GET", ServerPath.user(userId!), {
+  //         headers: {
+  //           userAuth: JSON.stringify(userAuth.userAuth) as any,
+  //           userId,
+  //         },
+  //       })
+  //         .then((appUser) => {
+  //           if (appUser?.driveAuth) {
+  //             setDriveAuth({ driveAuth: appUser.driveAuth, initialized: true });
+  //           }
+  //         })
+  //         .catch((e) => console.log(`Error occurred appUser: ${e} `))
+  //     );
+  //   }
+  // }, [userAuth?.initialized]);
 
-  useEffect(() => {
-    return FrontFirebaseHelper.listenFirebaseAuth(async (user) => {
-      setAuthState({ userAuth: user, initialized: true });
+  // useEffect(() => {
+  //   return FrontFirebaseHelper.listenFirebaseAuth(async (user) => {
+  //     setAuthState({ userAuth: user, initialized: true });
 
-      if (user && !code) {
-      }
+  //     if (user && !code) {
+  //     }
 
-      if (user && code) {
-        const res = await withLoading(
-          axiosRequest<DriveAuth>("GET", ServerPath.driveToken, {
-            params: {
-              code,
-              userAuth: user,
-              userId: user.uid,
-            },
-            headers: {
-              userAuth: JSON.stringify(user) as any,
-              userId: user.uid,
-            },
-          })
-        );
+  //     if (user && code) {
+  //       const res = await withLoading(
+  //         axiosRequest<DriveAuth>("GET", ServerPath.driveToken, {
+  //           params: {
+  //             code,
+  //             userAuth: user,
+  //             userId: user.uid,
+  //           },
+  //           headers: {
+  //             userAuth: JSON.stringify(user) as any,
+  //             userId: user.uid,
+  //           },
+  //         })
+  //       );
 
-        setDriveAuth({ driveAuth: res, initialized: true });
-      }
-    });
-  }, [code]);
+  //       setDriveAuth({ driveAuth: res, initialized: true });
+  //     }
+  //   });
+  // }, [code]);
 
   if (loading) {
     return (

@@ -1,8 +1,7 @@
 import { AxiosRequestConfig, default as axios, Method } from "axios";
 import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { driveAuthState } from "../recoil/atom/drive-auth";
-import { userAuthState } from "../recoil/atom/user-auth";
+import { authState } from "../recoil/atom/auth";
 const instance = axios.create();
 
 export async function axiosRequest<T>(
@@ -25,10 +24,7 @@ export async function axiosRequest<T>(
 }
 
 export const useRequest = () => {
-  const userAuth = useRecoilValue(userAuthState);
-  const driveAuth = useRecoilValue(driveAuthState);
-
-  console.log({ driveAuth, userAuth });
+  const { auth } = useRecoilValue(authState);
 
   return useCallback(
     async <T, U = any>(
@@ -41,13 +37,9 @@ export const useRequest = () => {
       }
     ): Promise<T> => {
       console.log({ config });
-      const da = config?.headers?.driveAuth ?? driveAuth?.driveAuth;
-      const ua = config?.headers?.userAuth ?? userAuth?.userAuth;
       let headers: any = {
         ...config?.headers,
-        driveAuth: da ? JSON.stringify(da) : undefined,
-        userAuth: ua ? JSON.stringify(ua) : undefined,
-        userId: config?.headers?.userId ?? userAuth?.userAuth?.uid,
+        Authorization: `Bearer ${auth?.tokenId}`,
       };
 
       console.log({ headers });
@@ -57,6 +49,6 @@ export const useRequest = () => {
         headers,
       });
     },
-    [userAuth?.userAuth, driveAuth?.driveAuth]
+    [auth?.accessToken]
   );
 };

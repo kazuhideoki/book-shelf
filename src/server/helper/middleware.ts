@@ -1,5 +1,5 @@
 import { OAuth2Client } from "google-auth-library";
-import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { NextApiRequest } from "next";
 import { AuthContext } from "../../server/helper/auth-context";
 import { ContextHolder } from "../../server/helper/context";
 import { AccountService } from "../../server/service/account.service";
@@ -7,10 +7,10 @@ import { AppUser } from "../../type/model/firestore-user.type";
 
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
-export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
+export async function middleware(req: NextApiRequest) {
   console.log(`⭐ middleware`);
 
-  const Authorization = (req.headers as any).Authorization as string;
+  const Authorization = (req.headers as any).authorization as string;
   const token = Authorization?.replace("Bearer ", "");
 
   console.log({ token });
@@ -41,7 +41,4 @@ export default async function middleware(req: NextRequest, ev: NextFetchEvent) {
   }
 
   ContextHolder.set(new AuthContext(account));
-
-  const res = NextResponse.next();
-  return res;
 }

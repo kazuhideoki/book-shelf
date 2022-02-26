@@ -10,7 +10,7 @@ const app = !admin.apps.length
     })
   : admin.app();
 
-export type CollectionName = "imageSets" | "displaySets" | "users";
+type CollectionName = "imageSets" | "displaySets" | "users" | "accounts";
 export const collection = (collectionName: CollectionName) =>
   admin.firestore(app).collection(collectionName);
 
@@ -89,7 +89,6 @@ export function timestampFromDateRecursively(value: any): any {
   }
 }
 
-export const storage = app.storage();
 export const bucket = app
   .storage()
   .bucket(process.env.FIREBASE_STORAGE_BUCKET_NAME);
