@@ -1,6 +1,6 @@
 import { StoragePath } from "../helper/const";
 import { BaseService } from "./base.service";
-import { bucket } from "./server_firebase";
+import { bucket } from "./server-firebase";
 
 export class StorageService extends BaseService {
   async save(fileId: string, data: Buffer) {

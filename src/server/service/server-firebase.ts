@@ -10,7 +10,7 @@ const app = !admin.apps.length
     })
   : admin.app();
 
-type CollectionName = "imageSets" | "displaySets" | "users" | "accounts";
+type CollectionName = "imageSets" | "displaySets" | "accounts";
 export const collection = (collectionName: CollectionName) =>
   admin.firestore(app).collection(collectionName);
 

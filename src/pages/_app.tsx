@@ -1,14 +1,10 @@
 import { Box, CircularProgress } from "@mui/material";
 import { AppProps } from "next/app";
-import { useRouter } from "next/router";
-import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
+import { RecoilRoot, useRecoilValue } from "recoil";
 import { SignIn } from "../components/Signin";
 import { CustomSnackbar } from "../components/Snackbar";
-import { driveAuthState } from "../recoil/atom/drive-auth";
+import { authState } from "../recoil/atom/auth";
 import { loadingState } from "../recoil/atom/loading";
-import { userAuthState } from "../recoil/atom/user-auth";
-import { useRequest } from "../utils/axios";
-import { useWithLoading } from "../utils/with-loading";
 
 interface P {}
 
@@ -21,62 +17,8 @@ export default function App(props: AppProps) {
 }
 
 function _App({ Component, pageProps }: AppProps<P>) {
-  const router = useRouter();
-  const code = router.query.code;
-
-  const request = useRequest();
   const loading = useRecoilValue(loadingState);
-  const withLoading = useWithLoading();
-
-  const [userAuth, setAuthState] = useRecoilState(userAuthState);
-  const [driveAuth, setDriveAuth] = useRecoilState(driveAuthState);
-
-  // useEffect(() => {
-  //   if (userAuth?.initialized) {
-  //     const userId = userAuth.userAuth?.uid;
-  //     withLoading(
-  //       request<AppUser>("GET", ServerPath.user(userId!), {
-  //         headers: {
-  //           userAuth: JSON.stringify(userAuth.userAuth) as any,
-  //           userId,
-  //         },
-  //       })
-  //         .then((appUser) => {
-  //           if (appUser?.driveAuth) {
-  //             setDriveAuth({ driveAuth: appUser.driveAuth, initialized: true });
-  //           }
-  //         })
-  //         .catch((e) => console.log(`Error occurred appUser: ${e} `))
-  //     );
-  //   }
-  // }, [userAuth?.initialized]);
-
-  // useEffect(() => {
-  //   return FrontFirebaseHelper.listenFirebaseAuth(async (user) => {
-  //     setAuthState({ userAuth: user, initialized: true });
-
-  //     if (user && !code) {
-  //     }
-
-  //     if (user && code) {
-  //       const res = await withLoading(
-  //         axiosRequest<DriveAuth>("GET", ServerPath.driveToken, {
-  //           params: {
-  //             code,
-  //             userAuth: user,
-  //             userId: user.uid,
-  //           },
-  //           headers: {
-  //             userAuth: JSON.stringify(user) as any,
-  //             userId: user.uid,
-  //           },
-  //         })
-  //       );
-
-  //       setDriveAuth({ driveAuth: res, initialized: true });
-  //     }
-  //   });
-  // }, [code]);
+  const auth = useRecoilValue(authState);
 
   if (loading) {
     return (
@@ -96,7 +38,7 @@ function _App({ Component, pageProps }: AppProps<P>) {
     );
   }
 
-  if (!userAuth?.initialized || !driveAuth?.initialized) {
+  if (!auth.initialized) {
     return <SignIn />;
   }
 

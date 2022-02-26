@@ -4,7 +4,7 @@ import {
   collection,
   timestampFromDateRecursively,
   toData,
-} from "./server_firebase";
+} from "./server-firebase";
 
 export class AccountService extends BaseService {
   async find(accountId: string): Promise<Account> {

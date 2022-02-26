@@ -2,10 +2,8 @@ import { User } from "@firebase/auth";
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { CustomError } from "../../type/model/error";
-import { AppUser } from "../../type/model/firestore-user.type";
 import { DriveAuth } from "../../type/model/google-drive-auth.type";
 import { axiosRequest } from "../../utils/axios";
-import { collection, toData } from "../service/server_firebase";
 import { ContextHolder } from "./context";
 import { HttpsError } from "./https-error";
 import { middleware } from "./middleware";
@@ -17,17 +15,6 @@ export class ApiHelper {
   constructor(req: NextApiRequest, res: NextApiResponse) {
     this.req = req;
     this.res = res;
-  }
-
-  private _appUser: AppUser | undefined;
-  private _setAppUser(appUesr: AppUser) {
-    this._appUser = appUesr;
-  }
-  get appUser(): AppUser {
-    if (!this._appUser) {
-      throw new Error("appUser is not set");
-    }
-    return this._appUser;
   }
 
   get query() {
@@ -95,7 +82,6 @@ export class ApiHelper {
     delete?: () => Promise<void>;
     error?: () => never;
   }): Promise<void> {
-    // await this.setAppUser();
     ContextHolder.initContext();
     await middleware(this.req);
 
@@ -153,26 +139,5 @@ export class ApiHelper {
       this.res.status(status ?? e.status ?? 500).send(customError);
       this.res.end();
     }
-  }
-
-  async setAppUser() {
-    const userId = this.userId;
-
-    try {
-      const appUser = await toData<AppUser>(
-        collection("users").doc(userId).get()
-      ).catch((e) => {
-        console.log({ e });
-
-        console.log(`error occurred in fetch appUser: ${e}`);
-
-        throw e;
-      });
-
-      // if (appUser) {
-      //   AuthContext.set(appUser);
-      // }
-      this._setAppUser(appUser);
-    } catch (error) {}
   }
 }

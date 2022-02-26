@@ -14,8 +14,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useGoogleLogout } from "react-google-login";
 import { pdfjs } from "react-pdf";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { authState } from "../recoil/atom/auth";
 import { displaySetsState } from "../recoil/atom/display-set";
 import { driveAuthState } from "../recoil/atom/drive-auth";
 import { userAuthState } from "../recoil/atom/user-auth";
@@ -24,7 +26,6 @@ import styles from "../styles/Home.module.css";
 import { DisplaySet } from "../type/model/firestore-display-set.type";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 import { useRequest } from "../utils/axios";
-import { FrontAuth } from "../utils/front-firebase";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {}
@@ -32,6 +33,10 @@ interface P {}
 const Home: NextPage<P> = () => {
   const router = useRouter();
   const request = useRequest();
+  const { signOut } = useGoogleLogout({
+    clientId: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID!,
+  });
+  const [auth, setAuth] = useRecoilState(authState);
   const userAuth = useRecoilValue(userAuthState);
   const driveAuth = useRecoilValue(driveAuthState);
 
@@ -104,7 +109,12 @@ const Home: NextPage<P> = () => {
             <Button onClick={() => setShowDialog(true)}>
               ディスプレイセット選択
             </Button>
-            <Button onClick={async () => FrontAuth.signOut()}>
+            <Button
+              onClick={() => {
+                signOut();
+                setAuth({ auth: undefined, initialized: false });
+              }}
+            >
               サインアウト
             </Button>
           </Grid>
