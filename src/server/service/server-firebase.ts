@@ -10,18 +10,27 @@ const app = !admin.apps.length
     })
   : admin.app();
 
+// if (!admin.apps.length) {
+//   admin.firestore().settings({ ignoreUndefinedProperties: true });
+// }
+
 type CollectionName = "imageSets" | "displaySets" | "accounts";
+
 export const collection = (collectionName: CollectionName) =>
   admin.firestore(app).collection(collectionName);
 
-export function toData<T>(qss: firebaseFirestore.QuerySnapshot): T[];
+export function toData<T>(
+  qss: firebaseFirestore.QuerySnapshot
+): (T & { id: string })[];
 export function toData<T>(
   pqss: Promise<firebaseFirestore.QuerySnapshot>
-): Promise<T[]>;
-export function toData<T>(dss: firebaseFirestore.DocumentSnapshot): T;
+): Promise<(T & { id: string })[]>;
+export function toData<T>(
+  dss: firebaseFirestore.DocumentSnapshot
+): T & { id: string };
 export function toData<T>(
   pdss: Promise<firebaseFirestore.DocumentSnapshot>
-): Promise<T>;
+): Promise<T & { id: string }>;
 export function toData<T>(
   ss:
     | firebaseFirestore.QuerySnapshot

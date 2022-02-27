@@ -5,8 +5,12 @@ import { collection, toData } from "./server-firebase";
 
 export class DisplaySetService extends BaseService {
   async list(): Promise<DisplaySet[]> {
+    const auht = this.authContext;
+
     const response = await toData<DisplaySet>(
-      collection("displaySets").where("userId", "==", this.appUser.userId).get()
+      collection("displaySets")
+        .where("accountId", "==", this.authContext.auth.accountId)
+        .get()
     ).catch((e) => {
       console.log({ e });
       throw e;
@@ -19,7 +23,7 @@ export class DisplaySetService extends BaseService {
     const ref = collection("displaySets").doc();
 
     const firebaseData: DisplaySet = {
-      userId: this.appUser.userId,
+      accountId: this.authContext.auth.accountId,
       displaySetId: ref.id,
       files: data,
       createdAt: new Date(),

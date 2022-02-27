@@ -5,27 +5,35 @@ import { authState } from "../recoil/atom/auth";
 import { ServerPath } from "../server/helper/const";
 import { Account } from "../type/model/account";
 import { axiosRequest } from "../utils/axios";
+import { useWithLoading } from "../utils/with-loading";
 
 export const SignIn: NextComponentType<
   NextPageContext,
   Record<string, unknown>,
   Record<string, never>
 > = () => {
+  const withLoading = useWithLoading();
   const [auth, setAuth] = useRecoilState(authState);
 
   const handleGoogleAuth = async (googleData: GoogleLoginResponse) => {
     console.log({ googleData });
 
-    const res = await axiosRequest<Account>("POST", ServerPath.self, {
-      headers: {
-        Authorization: `Bearer ${googleData?.tokenId}`,
-      },
-    });
+    const res = await withLoading(
+      axiosRequest<Account>("POST", ServerPath.self, {
+        headers: {
+          Authorization: `Bearer ${googleData?.tokenId}/${googleData.accessToken}`,
+        },
+      })
+    );
 
     console.log({ res });
 
     setAuth({
-      auth: { ...res, accessToken: googleData.accessToken },
+      auth: {
+        ...res,
+        tokenId: googleData.tokenId,
+        accessToken: googleData.accessToken,
+      },
       initialized: true,
     });
 
@@ -44,6 +52,9 @@ export const SignIn: NextComponentType<
         buttonText="Login"
         onSuccess={(res) => handleGoogleAuth(res as GoogleLoginResponse)}
         onFailure={(failure) => console.log({ failure })}
+        // scope={
+        //   "https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/datastore"
+        // }
         scope={"https://www.googleapis.com/auth/drive"}
         cookiePolicy={"single_host_origin"}
       />

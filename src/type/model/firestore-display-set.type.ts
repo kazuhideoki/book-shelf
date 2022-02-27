@@ -1,5 +1,5 @@
 export type DisplaySet = {
-  userId: string;
+  accountId: string;
   displaySetId: string;
   files: {
     fileId: string;

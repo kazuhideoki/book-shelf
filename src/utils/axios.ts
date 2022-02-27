@@ -39,7 +39,7 @@ export const useRequest = () => {
       console.log({ config });
       let headers: any = {
         ...config?.headers,
-        Authorization: `Bearer ${auth?.tokenId}`,
+        Authorization: `Bearer ${auth?.tokenId}/${auth?.accessToken}`,
       };
 
       console.log({ headers });

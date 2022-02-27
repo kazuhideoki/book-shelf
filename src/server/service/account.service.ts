@@ -7,6 +7,18 @@ import {
 } from "./server-firebase";
 
 export class AccountService extends BaseService {
+  static async initFind(email: string) {
+    const response = await toData<Account>(
+      collection("accounts").where("email", "==", email).get()
+    )
+      .catch((e) => {
+        console.log({ e });
+        throw e;
+      })
+      .then((e) => e?.[0]);
+
+    return response;
+  }
   async find(accountId: string): Promise<Account> {
     const response = await toData<Account>(
       collection("accounts").doc(accountId).get()
@@ -18,7 +30,7 @@ export class AccountService extends BaseService {
     return response;
   }
 
-  async findByEmail(email: string): Promise<Account> {
+  async findByEmail(email: string) {
     const response = await toData<Account>(
       collection("accounts").where("email", "==", email).get()
     )

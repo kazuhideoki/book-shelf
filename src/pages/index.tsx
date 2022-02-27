@@ -16,11 +16,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useGoogleLogout } from "react-google-login";
 import { pdfjs } from "react-pdf";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { authState } from "../recoil/atom/auth";
 import { displaySetsState } from "../recoil/atom/display-set";
-import { driveAuthState } from "../recoil/atom/drive-auth";
-import { userAuthState } from "../recoil/atom/user-auth";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
 import { DisplaySet } from "../type/model/firestore-display-set.type";
@@ -37,20 +35,15 @@ const Home: NextPage<P> = () => {
     clientId: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID!,
   });
   const [auth, setAuth] = useRecoilState(authState);
-  const userAuth = useRecoilValue(userAuthState);
-  const driveAuth = useRecoilValue(driveAuthState);
 
   const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
-  const [selectedDisplaySet, setSelectedDisplaySet] = useState<string | null>(
-    null
-  );
   const [showDialog, setShowDialog] = useState(false);
 
-  const [pdfs, setPdfs] = useState<any[]>([]);
-  const [targetPDF, setTargetPDF] = useState<any>(null);
+  const [imgs, setImgs] = useState<any[]>([]);
+  const [targetImg, setTargetImg] = useState<any>(null);
 
   useEffect(() => {
-    if (userAuth?.initialized && driveAuth?.initialized) {
+    if (auth.initialized) {
       try {
         request<DisplaySet[]>("GET", ServerPath.displaySets).then((res) => {
           setDisplaySets(res);
@@ -66,17 +59,17 @@ const Home: NextPage<P> = () => {
   useEffect(() => {
     let count = 1;
     const timer = setInterval(() => {
-      if (pdfs.length) {
-        const fileNumber = count % pdfs.length;
+      if (imgs.length) {
+        const fileNumber = count % imgs.length;
 
-        setTargetPDF(pdfs[fileNumber]);
+        setTargetImg(imgs[fileNumber]);
 
         count++;
       }
     }, 6000);
 
     return () => clearInterval(timer);
-  }, [pdfs]);
+  }, [imgs]);
 
   return (
     <div className={styles.container}>
@@ -96,10 +89,7 @@ const Home: NextPage<P> = () => {
         <Box style={{ height: 400 }}>
           <Grid item container>
             <Grid item justifyContent="center" direction="column">
-              {/* <Document file={targetPDF}>
-                {<Page key={`page_${1}`} pageNumber={1} height={400} />}
-              </Document> */}
-              <img src={targetPDF} />
+              <img src={targetImg} />
             </Grid>
           </Grid>
         </Box>
@@ -144,10 +134,7 @@ const Home: NextPage<P> = () => {
                             ),
                           ]);
 
-                          console.log({ res });
-
-                          setPdfs(res.map((e) => e.path));
-
+                          setImgs(res.map((e) => e.path));
                           setShowDialog(false);
                         }}
                       >
@@ -158,6 +145,7 @@ const Home: NextPage<P> = () => {
                   );
                 })
               )}
+              <Box mt={2} />
               <Button onClick={() => router.push(FrontPath.settings)}>
                 設定する
               </Button>

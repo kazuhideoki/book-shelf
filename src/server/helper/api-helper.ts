@@ -1,9 +1,8 @@
-import { User } from "@firebase/auth";
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { CustomError } from "../../type/model/error";
-import { DriveAuth } from "../../type/model/google-drive-auth.type";
 import { axiosRequest } from "../../utils/axios";
+import { AuthContext } from "./auth-context";
 import { ContextHolder } from "./context";
 import { HttpsError } from "./https-error";
 import { middleware } from "./middleware";
@@ -26,19 +25,6 @@ export class ApiHelper {
   get headers() {
     return this.req.headers as any;
   }
-  get userId() {
-    return this.headers.userid as string; // headers経由でキャメルケースが小文字になる
-  }
-  get userAuth() {
-    return this.headers.userauth
-      ? (JSON.parse(this.headers.userauth) as User)
-      : undefined;
-  }
-  get driveAuth() {
-    return this.headers.driveauth
-      ? (JSON.parse(this.headers.driveauth) as DriveAuth)
-      : undefined;
-  }
 
   /**
    *  Google Drive APIへのリクエスト
@@ -48,26 +34,14 @@ export class ApiHelper {
     url: string,
     config?: AxiosRequestConfig<any>
   ): Promise<T> {
-    const driveAuth = this.driveAuth as any;
-
     const res = await axiosRequest<T>(method, url, {
       ...config,
       headers: {
-        Authorization: `Bearer ${(driveAuth as DriveAuth)?.access_token}`,
+        Authorization: `Bearer ${AuthContext.instance.auth.accessToken}`,
       },
     }).catch((e) => {
       if (e.code === 401) {
         // 再びdrive認証して、DBに保存??
-        // axiosRequest<DriveAuth>("GET", ServerPath.driveToken, {
-        //   params: {
-        //     userAuth: user,
-        //     userId: user.uid,
-        //   },
-        //   headers: {
-        //     userAuth: JSON.stringify(user) as any,
-        //     userId: user.uid,
-        //   },
-        // });
       }
       throw e;
     });

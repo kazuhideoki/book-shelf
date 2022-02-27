@@ -1,4 +1,4 @@
-import { Account } from "../../type/model/account";
+import { ServerAuth } from "../../type/model/auth";
 import { Context, ContextHolder } from "./context";
 
 /**
@@ -6,9 +6,9 @@ import { Context, ContextHolder } from "./context";
  */
 export class AuthContext extends Context {
   /**
-   * @param account 現行コンテキストで認証済みの Account
+   * @param auth 現行コンテキストで認証済みの Account
    */
-  constructor(readonly account: Account) {
+  constructor(readonly auth: ServerAuth) {
     super();
   }
 

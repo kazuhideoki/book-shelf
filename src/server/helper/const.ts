@@ -21,8 +21,8 @@ export class ExternalPath {
 }
 
 export class StoragePath {
-  static pdfFile = (userId: string, fileId: string) =>
-    `files/${userId}/${fileId}.pdf`;
-  static imageFile = (userId: string, fileId: string) =>
-    `files/${userId}/${fileId}.png`;
+  static pdfFile = (accountId: string, fileId: string) =>
+    `files/${accountId}/${fileId}.pdf`;
+  static imageFile = (accountId: string, fileId: string) =>
+    `files/${accountId}/${fileId}.png`;
 }

@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   return api.handler({
     post: async () => {
-      const account = AuthContext.instance.account;
+      const account = AuthContext.instance.auth;
       return res.json(account);
     },
   });
