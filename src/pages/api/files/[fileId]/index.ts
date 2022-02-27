@@ -1,7 +1,9 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { writeFileSync } from "fs";
 import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PDFDocument, PDFRef } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
+import PdfParse from "pdf-parse";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { AuthContext } from "../../../../server/helper/auth-context";
 import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-image";
@@ -43,14 +45,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const media = await new DriveFileService(AuthContext.instance).fetchMedia(
         fileId
       );
+      console.log({ media });
 
-      const pdf = await PDFDocument.load(media);
-      const ref = pdf.findPageForAnnotationRef(PDFRef.of(0) as any);
-      console.log({ ref });
+      writeFileSync(`./tmp/${fileId}.pdf`, Buffer.from(media));
 
-      const page = pdf.getPage(0);
+      const parseResult = await PdfParse(Buffer.from(media)); // 文字、メタデータなど取れる。注釈は取れない。。。
 
-      const pdf4 = (await PDFDocument.load(media)).getPage(4);
+      const base64 = Buffer.from(media).toString("base64");
+      const page = (await PDFDocument.load(base64)).getPage(0);
 
       const width = page.getWidth();
       const height = page.getHeight();
@@ -59,7 +61,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       console.log(`PDF downloaded from Google Drive`);
 
-      const image = await convertPDFToImage(fileId, media, {
+      const image = await convertPDFToImage(fileId, base64, {
         width,
         height,
       });
