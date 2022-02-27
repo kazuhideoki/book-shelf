@@ -35,7 +35,7 @@ export class DriveFileService extends BaseService {
   }
 
   async fetchMedia(fileId: string): Promise<string> {
-    return await this.daxiosRequest<any>("GET", ExternalPath.file(fileId), {
+    return await this.daxiosRequest<string>("GET", ExternalPath.file(fileId), {
       params: {
         alt: "media",
       },

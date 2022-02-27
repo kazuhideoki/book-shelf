@@ -7,6 +7,10 @@ export abstract class BaseService {
     this.authContext = authContext;
   }
 
+  get accountId() {
+    return this.authContext.auth.accountId;
+  }
+
   async daxiosRequest<T>(
     method: Method,
     url: string,

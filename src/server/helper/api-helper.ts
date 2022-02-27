@@ -25,6 +25,12 @@ export class ApiHelper {
   get headers() {
     return this.req.headers as any;
   }
+  get auth() {
+    return AuthContext.instance.auth;
+  }
+  get accountId() {
+    return this.auth.accountId;
+  }
 
   /**
    *  Google Drive APIへのリクエスト
@@ -37,7 +43,7 @@ export class ApiHelper {
     const res = await axiosRequest<T>(method, url, {
       ...config,
       headers: {
-        Authorization: `Bearer ${AuthContext.instance.auth.accessToken}`,
+        Authorization: `Bearer ${this.auth.accessToken}`,
       },
     }).catch((e) => {
       if (e.code === 401) {

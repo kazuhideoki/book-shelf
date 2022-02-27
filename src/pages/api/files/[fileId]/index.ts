@@ -1,6 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { PDFDocument, PDFRef } from "pdf-lib";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { AuthContext } from "../../../../server/helper/auth-context";
 import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-image";
@@ -43,9 +44,25 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         fileId
       );
 
+      const pdf = await PDFDocument.load(media);
+      const ref = pdf.findPageForAnnotationRef(PDFRef.of(0) as any);
+      console.log({ ref });
+
+      const page = pdf.getPage(0);
+
+      const pdf4 = (await PDFDocument.load(media)).getPage(4);
+
+      const width = page.getWidth();
+      const height = page.getHeight();
+
+      console.log({ width, height });
+
       console.log(`PDF downloaded from Google Drive`);
 
-      const image = await convertPDFToImage(fileId, media);
+      const image = await convertPDFToImage(fileId, media, {
+        width,
+        height,
+      });
 
       await new StorageService(AuthContext.instance).save(fileId, image);
 

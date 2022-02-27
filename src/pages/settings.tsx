@@ -229,7 +229,12 @@ const Settings: NextPage<P> = () => {
                               }}
                               label={file.name}
                             />
-                            {imagePath && <img src={imagePath} />}
+                            {imagePath && (
+                              <img
+                                src={imagePath}
+                                style={{ maxWidth: 200, maxHeight: 200 }}
+                              />
+                            )}
                           </Grid>
                         );
                       })}

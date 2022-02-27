@@ -86,10 +86,10 @@ const Home: NextPage<P> = () => {
           </Link>
         </Typography>
 
-        <Box style={{ height: 400 }}>
+        <Box>
           <Grid item container>
             <Grid item justifyContent="center" direction="column">
-              <img src={targetImg} />
+              <img src={targetImg} style={{ maxWidth: 400, maxHeight: 400 }} />
             </Grid>
           </Grid>
         </Box>
