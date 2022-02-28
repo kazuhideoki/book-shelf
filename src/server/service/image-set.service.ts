@@ -1,13 +1,10 @@
 import { ImageSet } from "../../type/model/firestore-image-set.type";
-import { BaseQuery } from "../helper/base-query";
 import { BaseService } from "./base.service";
 import {
   collection,
   timestampFromDateRecursively,
   toData,
-} from "./server_firebase";
-
-export type ImageSetQuery = {} & BaseQuery;
+} from "./server-firebase";
 
 export class ImageSetService extends BaseService {
   async find(fileId: string): Promise<ImageSet> {

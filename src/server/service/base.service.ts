@@ -1,10 +1,14 @@
 import { AxiosRequestConfig, Method } from "axios";
-import { AppUser } from "../../type/model/firestore-user.type";
 import { axiosRequest } from "../../utils/axios";
+import { AuthContext } from "../helper/auth-context";
 
 export abstract class BaseService {
-  constructor(readonly appUser: AppUser) {
-    this.appUser = appUser;
+  constructor(readonly authContext: AuthContext) {
+    this.authContext = authContext;
+  }
+
+  get accountId() {
+    return this.authContext.auth.accountId;
   }
 
   async daxiosRequest<T>(
@@ -15,7 +19,7 @@ export abstract class BaseService {
     const res = await axiosRequest<T>(method, url, {
       ...config,
       headers: {
-        Authorization: `Bearer ${this.appUser.driveAuth.access_token}`,
+        Authorization: `Bearer ${this.authContext.auth.accessToken}`,
       },
     });
 

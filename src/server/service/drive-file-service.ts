@@ -34,8 +34,17 @@ export class DriveFileService extends BaseService {
     return response;
   }
 
-  async fetchMedia(fileId: string): Promise<string> {
-    return await this.daxiosRequest<any>("GET", ExternalPath.file(fileId), {
+  async fetchMedia(fileId: string): Promise<Buffer> {
+    return await this.daxiosRequest<Buffer>("GET", ExternalPath.file(fileId), {
+      params: {
+        alt: "media",
+      },
+      responseType: "arraybuffer",
+    });
+  }
+
+  async fetchMediaBase64(fileId: string): Promise<string> {
+    return await this.daxiosRequest<string>("GET", ExternalPath.file(fileId), {
       params: {
         alt: "media",
       },

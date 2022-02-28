@@ -11,3 +11,12 @@ export function base64ToArrayBuffer(base64: string) {
 export const uint8ArrayToBase64 = (u8: Uint8Array) => {
   return Buffer.from(u8).toString("base64");
 };
+
+export function bufferToArrayBuffer(buf: Buffer) {
+  const ab = new ArrayBuffer(buf.length);
+  const view = new Uint8Array(ab);
+  for (let i = 0; i < buf.length; ++i) {
+    view[i] = buf[i];
+  }
+  return ab;
+}
