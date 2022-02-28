@@ -42,7 +42,7 @@ const Settings: NextPage<P> = () => {
       folders: (DriveFile & { files?: DriveFile[]; pageToken?: string })[];
       pageToken: string;
     } | null;
-    selectedFiles: { file: DriveFile; index: number; imagePath?: string }[];
+    selectedFiles: { file: DriveFile; index: number; imagePath?: string }[]; // imagePathはimageSetにしていいか
   }>({
     name: "",
     folderData: null,
@@ -52,19 +52,18 @@ const Settings: NextPage<P> = () => {
   const handleSelectFile = async (file: DriveFile, e: any) => {
     const index = values.selectedFiles.length + 1;
     const checked = (e.target as any).checked;
+    const exsisting = values.selectedFiles.find((e) => e.file.id === file.id);
 
-    let res: ImageSet | undefined = undefined;
-    if (checked) {
-      res = await request<ImageSet>("GET", ServerPath.file(file.id));
-
-      console.log({ resImage: res });
+    let imageSet: ImageSet | undefined = undefined;
+    if (checked && !exsisting) {
+      imageSet = await request<ImageSet>("GET", ServerPath.file(file.id));
     }
 
     setValues({
       ...values,
-      selectedFiles: checked
-        ? [...values.selectedFiles, { file, index, imagePath: res?.path }]
-        : values.selectedFiles.filter((e) => e.file.id !== file.id),
+      selectedFiles: exsisting
+        ? values.selectedFiles
+        : [...values.selectedFiles, { file, index, imagePath: imageSet?.path }],
     });
   };
 
@@ -239,11 +238,13 @@ const Settings: NextPage<P> = () => {
                               }}
                               label={file.name}
                             />
-                            {imagePath && (
+                            {imagePath ? (
                               <img
                                 src={imagePath}
                                 style={{ maxWidth: 200, maxHeight: 200 }}
                               />
+                            ) : (
+                              <></>
                             )}
                           </Grid>
                         );
