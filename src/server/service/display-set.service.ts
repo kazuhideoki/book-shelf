@@ -25,7 +25,8 @@ export class DisplaySetService extends BaseService {
     const firebaseData: DisplaySet = {
       accountId: this.authContext.auth.accountId,
       displaySetId: ref.id,
-      files: data,
+      name: data.name,
+      files: data.files,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

@@ -7,6 +7,7 @@ import {
   FormGroup,
   Grid,
   Icon,
+  TextField,
   Typography,
 } from "@mui/material";
 import type { NextPage } from "next";
@@ -22,6 +23,7 @@ import { ListDriveFiles } from "../type/api/google-drive-api.type";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 import { DriveFile, DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
+import { useWithLoading } from "../utils/with-loading";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {
@@ -31,15 +33,18 @@ interface P {
 const Settings: NextPage<P> = () => {
   const router = useRouter();
   const request = useRequest();
+  const withLoading = useWithLoading();
   const setSnackbar = useSetRecoilState(snackbarState);
 
   const [values, setValues] = useState<{
+    name: string;
     folderData: {
       folders: (DriveFile & { files?: DriveFile[]; pageToken?: string })[];
       pageToken: string;
     } | null;
     selectedFiles: { file: DriveFile; index: number; imagePath?: string }[];
   }>({
+    name: "",
     folderData: null,
     selectedFiles: [],
   });
@@ -145,12 +150,17 @@ const Settings: NextPage<P> = () => {
 
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
-      await request<any, RegisterDispalySet>("POST", ServerPath.displaySets, {
-        data: values.selectedFiles.map((e) => ({
-          fileId: e.file.id,
-          index: e.index,
-        })),
-      });
+      await withLoading(
+        request<any, RegisterDispalySet>("POST", ServerPath.displaySets, {
+          data: {
+            name: values.name,
+            files: values.selectedFiles.map((e) => ({
+              fileId: e.file.id,
+              index: e.index,
+            })),
+          },
+        })
+      );
 
       setSnackbar({
         open: true,
@@ -244,6 +254,13 @@ const Settings: NextPage<P> = () => {
               </Grid>
             );
           })}
+      </Grid>
+      <Grid>
+        <TextField
+          value={values.name}
+          label={"ディスプレイセットの名前"}
+          onChange={(e) => setValues({ ...values, name: e.target.value })}
+        />
       </Grid>
       <Grid item>
         <Button variant="contained" onClick={handleSubmitDisplaySets}>
