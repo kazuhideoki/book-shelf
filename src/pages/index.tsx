@@ -44,14 +44,15 @@ const Home: NextPage<P> = () => {
 
   useEffect(() => {
     if (auth.initialized) {
-      try {
-        request<DisplaySet[]>("GET", ServerPath.displaySets).then((res) => {
+      request<DisplaySet[]>("GET", ServerPath.displaySets)
+        .then((res) => {
           setDisplaySets(res);
           setShowDialog(true);
+        })
+        .catch((error) => {
+          console.log({ error });
+          console.log(`Error occurred: ${error}`);
         });
-      } catch (error) {
-        console.log(`Error occurred: ${error}`);
-      }
     }
   }, []);
 

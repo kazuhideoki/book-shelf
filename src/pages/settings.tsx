@@ -92,6 +92,8 @@ const Settings: NextPage<P> = () => {
         },
       });
     } catch (error) {
+      console.log({ error });
+
       console.log(`Error occurred ${error}`);
     }
   }, [values]);

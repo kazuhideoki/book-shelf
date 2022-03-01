@@ -16,6 +16,7 @@ export async function middleware(req: NextApiRequest) {
 
   console.log({ idToken });
 
+  // tokenが古いと Token used too late のエラーになる
   const [ticket] = await Promise.all([
     client.verifyIdToken({
       idToken,
