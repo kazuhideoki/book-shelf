@@ -24,6 +24,7 @@ import styles from "../styles/Home.module.css";
 import { DisplaySet } from "../type/model/firestore-display-set.type";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 import { useRequest } from "../utils/axios";
+import { useWithLoading } from "../utils/with-loading";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {}
@@ -31,6 +32,8 @@ interface P {}
 const Home: NextPage<P> = () => {
   const router = useRouter();
   const request = useRequest();
+  const withLoading = useWithLoading();
+
   const { signOut } = useGoogleLogout({
     clientId: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID!,
   });
@@ -134,9 +137,11 @@ const Home: NextPage<P> = () => {
                         onClick={async (e) => {
                           const res = await Promise.all([
                             ...displaySet.files.map((e) =>
-                              request<ImageSet>(
-                                "GET",
-                                ServerPath.file(e.fileId)
+                              withLoading(
+                                request<ImageSet>(
+                                  "GET",
+                                  ServerPath.file(e.fileId)
+                                )
                               )
                             ),
                           ]);
