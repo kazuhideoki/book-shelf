@@ -52,9 +52,9 @@ export const SignIn: NextComponentType<
         buttonText="Login"
         onSuccess={(res) => handleGoogleAuth(res as GoogleLoginResponse)}
         onFailure={(failure) => console.log({ failure })}
-        // scope={
-        //   "https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/datastore"
-        // }
+        // この設定でrefreashTokenを取得するためのcodeをgetできる うごくな。。。
+        accessType="offline"
+        responseType="code"
         scope={"https://www.googleapis.com/auth/drive"}
         cookiePolicy={"single_host_origin"}
       />

@@ -45,11 +45,6 @@ export class ApiHelper {
       headers: {
         Authorization: `Bearer ${this.auth.accessToken}`,
       },
-    }).catch((e) => {
-      if (e.code === 401) {
-        // 再びdrive認証して、DBに保存??
-      }
-      throw e;
     });
 
     return res;

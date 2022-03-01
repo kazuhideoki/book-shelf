@@ -71,15 +71,13 @@ const Settings: NextPage<P> = () => {
 
   const handleFetchFolderList = useCallback(async () => {
     try {
-      const res = await request<DriveFiles, ListDriveFiles>(
-        "GET",
-        ServerPath.files,
-        {
+      const res = await withLoading(
+        request<DriveFiles, ListDriveFiles>("GET", ServerPath.files, {
           params: {
             q: "mimeType = 'application/vnd.google-apps.folder'",
             pageToken: values.folderData?.pageToken,
           },
-        }
+        })
       );
 
       setValues({
