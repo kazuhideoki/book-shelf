@@ -45,11 +45,6 @@ export class ApiHelper {
       headers: {
         Authorization: `Bearer ${this.auth.accessToken}`,
       },
-    }).catch((e) => {
-      if (e.code === 401) {
-        // 再びdrive認証して、DBに保存??
-      }
-      throw e;
     });
 
     return res;
@@ -63,12 +58,13 @@ export class ApiHelper {
     error?: () => never;
   }): Promise<void> {
     ContextHolder.initContext();
-    await middleware(this.req);
 
     const { get, post, patch, delete: Delete, error } = p;
     console.log(`⭐ ${this.req.method} ${this.req.url}`);
 
     try {
+      await middleware(this.req);
+
       switch (this.req.method) {
         case "GET":
           await get?.();
@@ -90,7 +86,13 @@ export class ApiHelper {
     } catch (e: any) {
       console.error(`❌ ${this.req.method} ${this.req.url}`);
 
-      let status, msg, customErrorCode;
+      let customError: CustomError, status, msg, customErrorCode;
+
+      customError = {
+        status: status ?? e.status ?? 500,
+        msg: msg ?? e.message ?? `Unknown error occurred`,
+        customErrorCode,
+      };
 
       if (error) {
         error();
@@ -107,7 +109,7 @@ export class ApiHelper {
         }
       }
 
-      const customError: CustomError = {
+      customError = {
         status: status ?? e.status ?? 500,
         msg: msg ?? e.message ?? `Unknown error occurred`,
         customErrorCode,

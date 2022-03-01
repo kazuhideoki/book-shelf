@@ -10,7 +10,10 @@ import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-ima
 import { DriveFileService } from "../../../../server/service/drive-file-service";
 import { ImageSetService } from "../../../../server/service/image-set.service";
 import { StorageService } from "../../../../server/service/storage-service";
-import { ImageSet } from "../../../../type/model/firestore-image-set.type";
+import {
+  ImageSet,
+  ImageSetMeta,
+} from "../../../../type/model/firestore-image-set.type";
 
 const expiryTime = 60 * 60 * 24 * 7;
 
@@ -78,10 +81,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         expires
       );
 
+      const meta: ImageSetMeta = {
+        pages: parseResult.numpages,
+      };
+
+      if (parseResult.info.Title) meta.title = parseResult.info.Title;
+
       const data: ImageSet = {
         accountId: AuthContext.instance.auth.accountId,
         fileId,
         path: url,
+        meta: meta,
         expiredAt: expires,
         createdAt: new Date(),
         updatedAt: new Date(),

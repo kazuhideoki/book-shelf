@@ -39,19 +39,20 @@ const Home: NextPage<P> = () => {
   const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
   const [showDialog, setShowDialog] = useState(false);
 
-  const [imgs, setImgs] = useState<any[]>([]);
-  const [targetImg, setTargetImg] = useState<any>(null);
+  const [imgs, setImgs] = useState<ImageSet[]>([]);
+  const [targetImg, setTargetImg] = useState<ImageSet | null>(null);
 
   useEffect(() => {
     if (auth.initialized) {
-      try {
-        request<DisplaySet[]>("GET", ServerPath.displaySets).then((res) => {
+      request<DisplaySet[]>("GET", ServerPath.displaySets)
+        .then((res) => {
           setDisplaySets(res);
           setShowDialog(true);
+        })
+        .catch((error) => {
+          console.log({ error });
+          console.log(`Error occurred: ${error}`);
         });
-      } catch (error) {
-        console.log(`Error occurred: ${error}`);
-      }
     }
   }, []);
 
@@ -87,9 +88,15 @@ const Home: NextPage<P> = () => {
         </Typography>
 
         <Box>
-          <Grid item container>
-            <Grid item justifyContent="center" direction="column">
-              <img src={targetImg} style={{ maxWidth: 400, maxHeight: 400 }} />
+          <Grid item container justifyContent="center" direction="column">
+            <Grid item>
+              <img
+                src={targetImg?.path}
+                style={{ maxWidth: 400, maxHeight: 400 }}
+              />
+            </Grid>
+            <Grid item>
+              <Typography>{targetImg?.meta.title}</Typography>
             </Grid>
           </Grid>
         </Box>
@@ -134,12 +141,12 @@ const Home: NextPage<P> = () => {
                             ),
                           ]);
 
-                          setImgs(res.map((e) => e.path));
+                          setImgs(res);
                           setShowDialog(false);
                         }}
                       >
                         {" "}
-                        {displaySet.displaySetId}
+                        {displaySet.name}
                       </MenuItem>
                     </>
                   );
