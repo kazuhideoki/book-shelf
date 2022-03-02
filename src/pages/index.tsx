@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,10 +14,11 @@ import {
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useGoogleLogout } from "react-google-login";
 import { pdfjs } from "react-pdf";
 import { useRecoilState } from "recoil";
+import { Display } from "../components/Display";
 import { authState } from "../recoil/atom/auth";
 import { displaySetsState } from "../recoil/atom/display-set";
 import { FrontPath, ServerPath } from "../server/helper/const";
@@ -90,19 +92,15 @@ const Home: NextPage<P> = () => {
           </Link>
         </Typography>
 
-        <Box>
-          <Grid item container justifyContent="center" direction="column">
-            <Grid item>
-              <img
-                src={targetImg?.path}
-                style={{ maxWidth: 400, maxHeight: 400 }}
-              />
-            </Grid>
-            <Grid item>
-              <Typography>{targetImg?.meta.title}</Typography>
-            </Grid>
-          </Grid>
-        </Box>
+        <Suspense
+          fallback={
+            <Box sx={{ height: 400, width: 400 }}>
+              <CircularProgress />
+            </Box>
+          }
+        >
+          <Display imageSet={targetImg} />
+        </Suspense>
 
         <Grid container spacing={1} justifyContent="end">
           <Grid item>
