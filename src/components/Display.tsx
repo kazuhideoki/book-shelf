@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { imageSetsAsync } from "../recoil/selector/images";
+import { fetchImageSets } from "../recoil/selector/image-set";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 
 interface P {}
@@ -11,7 +11,7 @@ export const Display: NextComponentType<
   Record<string, unknown>,
   P
 > = ({}) => {
-  const imageSets = useRecoilValue(imageSetsAsync);
+  const imageSets = useRecoilValue(fetchImageSets);
 
   const [targetImg, setTargetImg] = useState<ImageSet | null>(null);
 

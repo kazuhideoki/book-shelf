@@ -17,6 +17,7 @@ export const fetchImageSets = selector<ImageSet[]>({
 
     const selectedDisplaySets = get(displaySetsAtom).selected;
 
+    // TODO ここでのエラー後 再fetchしてくれない 導線を考える必要ある
     if (!selectedDisplaySets) {
       throw "Display set must be set";
     }

@@ -2,13 +2,13 @@ import { Box, Button, MenuItem } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction } from "react";
-import { FrontPath, ServerPath } from "../server/helper/const";
-import { DisplaySet } from "../type/model/firestore-display-set.type";
-import { ImageSet } from "../type/model/firestore-image-set.type";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { displaySetsAtom } from "../recoil/atom/display-set";
+import { fetchDisplaySets } from "../recoil/selector/display-set";
+import { FrontPath } from "../server/helper/const";
 import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 interface P {
-  onSetImg: Dispatch<SetStateAction<Promise<ImageSet[]>>>;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -16,11 +16,11 @@ export const SelectDisplaySetsDialog: NextComponentType<
   NextPageContext,
   Record<string, unknown>,
   P
-> = ({ onSetImg, setShowDialog }) => {
+> = ({ setShowDialog }) => {
   console.log("SelectDisplaySetsDialog");
 
-  // const displaySets = useRecoilValue(displaySetsState);
-  const displaySets: DisplaySet[] = [];
+  const displaySets = useRecoilValue(fetchDisplaySets);
+  const setDisplaySets = useSetRecoilState(displaySetsAtom);
   const router = useRouter();
   const request = useRequest();
   const withLoading = useWithLoading();
@@ -29,27 +29,26 @@ export const SelectDisplaySetsDialog: NextComponentType<
     <>
       {displaySets.map((displaySet, i) => {
         return (
-          <>
-            <MenuItem
-              key={i}
-              value={displaySet.displaySetId}
-              onClick={async (e) => {
-                const res = Promise.all([
-                  ...displaySet.files.map((e) =>
-                    withLoading(
-                      request<ImageSet>("GET", ServerPath.file(e.fileId))
-                    )
-                  ),
-                ]);
+          <MenuItem
+            key={i}
+            value={displaySet.displaySetId}
+            onClick={async (e) => {
+              // const res = Promise.all([
+              //   ...displaySet.files.map((e) =>
+              //     withLoading(
+              //       request<ImageSet>("GET", ServerPath.file(e.fileId))
+              //     )
+              //   ),
+              // ]);
 
-                onSetImg(res);
-                setShowDialog(false);
-              }}
-            >
-              {" "}
-              {displaySet.name}
-            </MenuItem>
-          </>
+              setDisplaySets((prev) => ({ ...prev, selected: displaySet }));
+
+              setShowDialog(false);
+            }}
+          >
+            {" "}
+            {displaySet.name}
+          </MenuItem>
         );
       })}
       <Box mt={2} />

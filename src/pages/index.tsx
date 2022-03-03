@@ -114,7 +114,7 @@ const Home: NextPage<P> = () => {
         <DialogContent>
           <ErrorBoundary errorComponent={<>エラーだよ</>}>
             <Suspense fallback={<>{"読み込みだよ〜"}</>}>
-              <SelectDisplaySetsDialog />
+              <SelectDisplaySetsDialog {...{ setShowDialog }} />
             </Suspense>
           </ErrorBoundary>
         </DialogContent>
