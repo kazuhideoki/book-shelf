@@ -9,7 +9,6 @@ import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 interface P {
   onSetImg: Dispatch<SetStateAction<Promise<ImageSet[]>>>;
-  showDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -17,7 +16,7 @@ export const SelectDisplaySetsDialog: NextComponentType<
   NextPageContext,
   Record<string, unknown>,
   P
-> = ({ onSetImg, showDialog, setShowDialog }) => {
+> = ({ onSetImg, setShowDialog }) => {
   console.log("SelectDisplaySetsDialog");
 
   // const displaySets = useRecoilValue(displaySetsState);
