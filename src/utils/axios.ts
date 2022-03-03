@@ -2,6 +2,7 @@ import { AxiosRequestConfig, default as axios, Method } from "axios";
 import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { authState } from "../recoil/atom/auth";
+import { FrontAuth } from "../type/model/auth";
 const instance = axios.create();
 
 export async function axiosRequest<T>(
@@ -17,38 +18,36 @@ export async function axiosRequest<T>(
     })
     .then((r) => r.data);
 
-  console.log(`axiosRequest`);
-  console.log({ config });
-
   return res;
 }
+
+export const axiosRequestToServer =
+  (auth?: FrontAuth) =>
+  async <T, U = any>(
+    method: Method,
+    url: string,
+    config?: {
+      params?: U;
+      data?: U;
+      headers?: any;
+    }
+  ): Promise<T> => {
+    console.log({ config });
+    let headers: any = {
+      ...config?.headers,
+      Authorization: `Bearer ${auth?.tokenId}/${auth?.accessToken}`,
+    };
+
+    console.log({ headers });
+
+    return await axiosRequest<T>(method, url, {
+      ...config,
+      headers,
+    });
+  };
 
 export const useRequest = () => {
   const { auth } = useRecoilValue(authState);
 
-  return useCallback(
-    async <T, U = any>(
-      method: Method,
-      url: string,
-      config?: {
-        params?: U;
-        data?: U;
-        headers?: any;
-      }
-    ): Promise<T> => {
-      console.log({ config });
-      let headers: any = {
-        ...config?.headers,
-        Authorization: `Bearer ${auth?.tokenId}/${auth?.accessToken}`,
-      };
-
-      console.log({ headers });
-
-      return await axiosRequest<T>(method, url, {
-        ...config,
-        headers,
-      });
-    },
-    [auth?.accessToken]
-  );
+  return useCallback(axiosRequestToServer(auth), [auth]);
 };

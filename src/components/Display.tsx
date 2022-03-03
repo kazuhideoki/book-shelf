@@ -1,23 +1,47 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { imageSetsAsync } from "../recoil/selector/images";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 
-interface P {
-  imageSet: ImageSet;
-}
+interface P {}
 export const Display: NextComponentType<
   NextPageContext,
   Record<string, unknown>,
   P
-> = ({ imageSet }) => {
+> = ({}) => {
+  const imageSets = useRecoilValue(imageSetsAsync);
+
+  const [targetImg, setTargetImg] = useState<ImageSet | null>(null);
+
+  // 表示する画像を一定間隔で入れ替える
+  useEffect(() => {
+    let count = 1;
+    const timer = setInterval(() => {
+      if (imageSets.length) {
+        const fileNumber = count % imageSets.length;
+
+        setTargetImg(imageSets[fileNumber]);
+
+        count++;
+      }
+    }, 6000);
+
+    return () => clearInterval(timer);
+  }, [imageSets, imageSets.length]);
+
   return (
     <Box>
       <Grid item container justifyContent="center" direction="column">
         <Grid item>
-          <img src={imageSet?.path} style={{ maxWidth: 400, maxHeight: 400 }} />
+          <img
+            src={targetImg?.path}
+            style={{ maxWidth: 400, maxHeight: 400 }}
+          />
         </Grid>
         <Grid item>
-          <Typography>{imageSet?.meta.title}</Typography>
+          <Typography>{targetImg?.meta.title}</Typography>
         </Grid>
       </Grid>
     </Box>

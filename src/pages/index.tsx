@@ -1,29 +1,26 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
   Link,
-  MenuItem,
   Typography,
 } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useGoogleLogout } from "react-google-login";
 import { pdfjs } from "react-pdf";
 import { useRecoilState } from "recoil";
 import { Display } from "../components/Display";
+import { ErrorBoundary } from "../components/ErrorBoundary";
+import { SelectDisplaySetsDialog } from "../components/SelectDisplaySetsDialog";
 import { authState } from "../recoil/atom/auth";
-import { displaySetsState } from "../recoil/atom/display-set";
-import { FrontPath, ServerPath } from "../server/helper/const";
 import styles from "../styles/Home.module.css";
-import { DisplaySet } from "../type/model/firestore-display-set.type";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
@@ -41,41 +38,39 @@ const Home: NextPage<P> = () => {
   });
   const [auth, setAuth] = useRecoilState(authState);
 
-  const [displaySets, setDisplaySets] = useRecoilState(displaySetsState);
   const [showDialog, setShowDialog] = useState(false);
 
-  const [imgs, setImgs] = useState<ImageSet[]>([]);
   const [targetImg, setTargetImg] = useState<ImageSet | null>(null);
 
-  useEffect(() => {
-    if (auth.initialized) {
-      request<DisplaySet[]>("GET", ServerPath.displaySets)
-        .then((res) => {
-          setDisplaySets(res);
-          setShowDialog(true);
-        })
-        .catch((error) => {
-          console.log({ error });
-          console.log(`Error occurred: ${error}`);
-        });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (auth.initialized) {
+  //     request<DisplaySet[]>("GET", ServerPath.displaySets)
+  //       .then((res) => {
+  //         setDisplaySets(res);
+  //         setShowDialog(true);
+  //       })
+  //       .catch((error) => {
+  //         console.log({ error });
+  //         console.log(`Error occurred: ${error}`);
+  //       });
+  //   }
+  // }, []);
 
-  // 表示する画像を一定間隔で入れ替える
-  useEffect(() => {
-    let count = 1;
-    const timer = setInterval(() => {
-      if (imgs.length) {
-        const fileNumber = count % imgs.length;
+  // // 表示する画像を一定間隔で入れ替える
+  // useEffect(() => {
+  //   let count = 1;
+  //   const timer = setInterval(() => {
+  //     if (imgs.length) {
+  //       const fileNumber = count % imgs.length;
 
-        setTargetImg(imgs[fileNumber]);
+  //       setTargetImg(imgs[fileNumber]);
 
-        count++;
-      }
-    }, 6000);
+  //       count++;
+  //     }
+  //   }, 6000);
 
-    return () => clearInterval(timer);
-  }, [imgs]);
+  //   return () => clearInterval(timer);
+  // }, [imgs]);
 
   return (
     <div className={styles.container}>
@@ -92,15 +87,11 @@ const Home: NextPage<P> = () => {
           </Link>
         </Typography>
 
-        <Suspense
-          fallback={
-            <Box sx={{ height: 400, width: 400 }}>
-              <CircularProgress />
-            </Box>
-          }
-        >
-          <Display imageSet={targetImg} />
-        </Suspense>
+        <ErrorBoundary errorComponent={<>エラーディスプレイだよ</>}>
+          <Suspense fallback={<Box sx={{ height: 400, width: 400 }} />}>
+            <Display />
+          </Suspense>
+        </ErrorBoundary>
 
         <Grid container spacing={1} justifyContent="end">
           <Grid item>
@@ -118,54 +109,19 @@ const Home: NextPage<P> = () => {
           </Grid>
         </Grid>
       </main>
-      {
-        <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
-          <DialogTitle>ディスプレイセットの選択</DialogTitle>
-          <DialogContent>
-            <>
-              {displaySets.length === 0 ? (
-                <Typography>登録なし</Typography>
-              ) : (
-                displaySets.map((displaySet, i) => {
-                  return (
-                    <>
-                      <MenuItem
-                        key={i}
-                        value={displaySet.displaySetId}
-                        onClick={async (e) => {
-                          const res = await Promise.all([
-                            ...displaySet.files.map((e) =>
-                              withLoading(
-                                request<ImageSet>(
-                                  "GET",
-                                  ServerPath.file(e.fileId)
-                                )
-                              )
-                            ),
-                          ]);
-
-                          setImgs(res);
-                          setShowDialog(false);
-                        }}
-                      >
-                        {" "}
-                        {displaySet.name}
-                      </MenuItem>
-                    </>
-                  );
-                })
-              )}
-              <Box mt={2} />
-              <Button onClick={() => router.push(FrontPath.settings)}>
-                設定する
-              </Button>
-            </>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowDialog(false)}>閉じる</Button>
-          </DialogActions>
-        </Dialog>
-      }
+      <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
+        <DialogTitle>ディスプレイセットの選択</DialogTitle>
+        <DialogContent>
+          <ErrorBoundary errorComponent={<>エラーだよ</>}>
+            <Suspense fallback={<>{"読み込みだよ〜"}</>}>
+              <SelectDisplaySetsDialog />
+            </Suspense>
+          </ErrorBoundary>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDialog(false)}>閉じる</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
