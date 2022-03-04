@@ -1,8 +1,8 @@
 import { AxiosRequestConfig, default as axios, Method } from "axios";
 import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { driveAuthState } from "../recoil/atom/drive-auth";
-import { userAuthState } from "../recoil/atom/user-auth";
+import { authState } from "../recoil/atom/auth";
+import { FrontAuth } from "../type/model/auth";
 const instance = axios.create();
 
 export async function axiosRequest<T>(
@@ -18,45 +18,36 @@ export async function axiosRequest<T>(
     })
     .then((r) => r.data);
 
-  console.log(`axiosRequest`);
-  console.log({ config });
-
   return res;
 }
 
+export const axiosRequestToServer =
+  (auth?: FrontAuth) =>
+  async <T, U = any>(
+    method: Method,
+    url: string,
+    config?: {
+      params?: U;
+      data?: U;
+      headers?: any;
+    }
+  ): Promise<T> => {
+    console.log({ config });
+    let headers: any = {
+      ...config?.headers,
+      Authorization: `Bearer ${auth?.tokenId}/${auth?.accessToken}`,
+    };
+
+    console.log({ headers });
+
+    return await axiosRequest<T>(method, url, {
+      ...config,
+      headers,
+    });
+  };
+
 export const useRequest = () => {
-  const userAuth = useRecoilValue(userAuthState);
-  const driveAuth = useRecoilValue(driveAuthState);
+  const { auth } = useRecoilValue(authState);
 
-  console.log({ driveAuth, userAuth });
-
-  return useCallback(
-    async <T, U = any>(
-      method: Method,
-      url: string,
-      config?: {
-        params?: U;
-        data?: U;
-        headers?: any;
-      }
-    ): Promise<T> => {
-      console.log({ config });
-      const da = config?.headers?.driveAuth ?? driveAuth?.driveAuth;
-      const ua = config?.headers?.userAuth ?? userAuth?.userAuth;
-      let headers: any = {
-        ...config?.headers,
-        driveAuth: da ? JSON.stringify(da) : undefined,
-        userAuth: ua ? JSON.stringify(ua) : undefined,
-        userId: config?.headers?.userId ?? userAuth?.userAuth?.uid,
-      };
-
-      console.log({ headers });
-
-      return await axiosRequest<T>(method, url, {
-        ...config,
-        headers,
-      });
-    },
-    [userAuth?.userAuth, driveAuth?.driveAuth]
-  );
+  return useCallback(axiosRequestToServer(auth), [auth]);
 };

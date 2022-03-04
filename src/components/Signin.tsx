@@ -1,57 +1,63 @@
-import { Button } from "@mui/material";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  UserCredential,
-} from "firebase/auth";
 import { NextComponentType, NextPageContext } from "next";
-import Router, { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
-import { driveAuthState } from "../recoil/atom/drive-auth";
+import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
+import { useRecoilState } from "recoil";
+import { authState } from "../recoil/atom/auth";
+import { ServerPath } from "../server/helper/const";
+import { Account } from "../type/model/account";
 import { axiosRequest } from "../utils/axios";
-import { FrontAuth } from "../utils/front-firebase";
+import { useWithLoading } from "../utils/with-loading";
 
 export const SignIn: NextComponentType<
   NextPageContext,
   Record<string, unknown>,
   Record<string, never>
 > = () => {
-  const router = useRouter();
-  const [renderAuth, setRenderAuth] = useState(false);
-  useEffect(() => setRenderAuth(typeof window !== "undefined"), []);
+  const withLoading = useWithLoading();
+  const [auth, setAuth] = useRecoilState(authState);
 
-  const setDriveAuth = useSetRecoilState(driveAuthState);
+  const handleGoogleAuth = async (googleData: GoogleLoginResponse) => {
+    console.log({ googleData });
 
-  const handleSignin = async () => {
-    const credential: UserCredential = await signInWithPopup(
-      FrontAuth,
-      new GoogleAuthProvider()
+    const res = await withLoading(
+      axiosRequest<Account>("POST", ServerPath.self, {
+        headers: {
+          Authorization: `Bearer ${googleData?.tokenId}/${googleData.accessToken}`,
+        },
+      })
     );
+
+    console.log({ res });
+
+    setAuth({
+      auth: {
+        ...res,
+        tokenId: googleData.tokenId,
+        accessToken: googleData.accessToken,
+      },
+      initialized: true,
+    });
+
+    //   - （結果）Topへ飛ばす
+
+    // 検証
+    // - 時間が立ったときにアクセスできるかどうか？
   };
-
-  const handleDriveAuth = async () => {
-    const url = await axiosRequest<string>("GET", `/api/drive/auth`);
-
-    Router.push(url);
-  };
-
-  const code = router.query.code;
-  // useEffect(() => {
-  //   if (code) {
-  //     axiosRequest<DriveAuth>("GET", `/api/drive/token`, {
-  //       params: { code },
-  //     }).then((res) => setDriveAuth(res));
-  //   }
-  // }, [code]);
 
   return (
     <div>
       <p>E Book Shelf</p>
-      {renderAuth && <Button onClick={handleSignin}>サインイン</Button>}
-      {renderAuth && (
-        <Button onClick={handleDriveAuth}>Google Drive認証</Button>
-      )}
+      <GoogleLogin
+        clientId={process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID!}
+        isSignedIn={true}
+        buttonText="Login"
+        onSuccess={(res) => handleGoogleAuth(res as GoogleLoginResponse)}
+        onFailure={(failure) => console.log({ failure })}
+        // この設定でrefreashTokenを取得するためのcodeをgetできる うごくな。。。
+        accessType="offline"
+        responseType="code"
+        scope={"https://www.googleapis.com/auth/drive"}
+        cookiePolicy={"single_host_origin"}
+      />
     </div>
   );
 };

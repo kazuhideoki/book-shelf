@@ -1,6 +1,7 @@
 export type DisplaySet = {
-  userId: string;
+  accountId: string;
   displaySetId: string;
+  name: string;
   files: {
     fileId: string;
     index: number;

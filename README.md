@@ -38,6 +38,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - `openssl enc -e -aes-256-cbc -md sha256 -salt -k {env_encryption} -in ./.env.deploy -out ./.env.deploy.enc` で暗号化
 - Cloud Build で復号化のために環境変数に env_encryption をセット
 
-## Rasbian Cromium 操作
+## Rasbian の Chromium を自動起動
 
-- `chromium-browser https://e-book-shelf-dqzqyxvulq-an.a.run.app --kiosk`
+- `/etc/systemd/system/open-browser.service` に自動起動用のファイル
+- `sudo systemctl enable open-browser.service` で有効化
+- `sudo systemctl start open-browser.service` で手動スタート
+  (参考) `https://qiita.com/takanemu/items/c2982bfb74c72cbf174d`

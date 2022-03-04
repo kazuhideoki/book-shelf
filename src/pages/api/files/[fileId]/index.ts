@@ -1,18 +1,19 @@
 /* eslint-disable import/no-anonymous-default-export */
-import { firestore as firebaseFirestore } from "firebase-admin";
-import { readFileSync } from "fs";
+import { writeFileSync } from "fs";
 import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { fromBase64 } from "pdf2pic";
+import { PDFDocument } from "pdf-lib";
+import PdfParse from "pdf-parse";
 import { ApiHelper } from "../../../../server/helper/api-helper";
-import { ExternalPath, StoragePath } from "../../../../server/helper/const";
+import { AuthContext } from "../../../../server/helper/auth-context";
+import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-image";
+import { DriveFileService } from "../../../../server/service/drive-file-service";
+import { ImageSetService } from "../../../../server/service/image-set.service";
+import { StorageService } from "../../../../server/service/storage-service";
 import {
-  bucket,
-  collection,
-  toData,
-} from "../../../../server/service/server_firebase";
-import { UpdateImageSet } from "../../../../type/api/firestore-image-set-api.type";
-import { ImageSet } from "../../../../type/model/firestore-image-set.type";
+  ImageSet,
+  ImageSetMeta,
+} from "../../../../type/model/firestore-image-set.type";
 
 const expiryTime = 60 * 60 * 24 * 7;
 
@@ -23,16 +24,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId } = api.query;
 
-      const imageSet = await toData<UpdateImageSet>(
-        collection("imageSets").doc(fileId).get()
+      const imageSet = await new ImageSetService(AuthContext.instance).find(
+        fileId
       );
-
-      console.log({ imageSet });
-      console.log(DateTime.now().toString());
 
       if (
         imageSet &&
-        DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt.toDate())
+        DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt)
       ) {
         // TODO Drive側で更新されていたら取得し直す処理も必要
         console.log(`imageSet exists and not expired`);
@@ -43,90 +41,66 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       if (!imageSet) console.log(`imageSet not found`);
       if (
         imageSet &&
-        !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt.toDate()))
+        !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt))
       )
         console.log(`imageSet not found`);
 
-      const response = await api.daxiosRequest<any>(
-        "GET",
-        ExternalPath.file(fileId),
-        {
-          params: {
-            alt: "media",
-          },
-          responseEncoding: "base64",
-        }
+      const media = await new DriveFileService(AuthContext.instance).fetchMedia(
+        fileId
       );
+      console.log({ media });
+
+      writeFileSync(`./tmp/${fileId}.pdf`, Buffer.from(media));
+
+      const parseResult = await PdfParse(Buffer.from(media)); // 文字、メタデータなど取れる。注釈は取れない。。。
+
+      const base64 = Buffer.from(media).toString("base64");
+      const page = (await PDFDocument.load(base64)).getPage(0);
+
+      const width = page.getWidth();
+      const height = page.getHeight();
+
+      console.log({ width, height });
 
       console.log(`PDF downloaded from Google Drive`);
 
-      const options = {
-        density: 100,
-        saveFilename: fileId,
-        savePath: `./tmp`,
-        format: "png",
-        // width: 300,
-        // height: 300,
+      const image = await convertPDFToImage(fileId, base64, {
+        width,
+        height,
+      });
+
+      await new StorageService(AuthContext.instance).save(fileId, image);
+
+      const expires = DateTime.fromJSDate(new Date())
+        .plus({
+          seconds: expiryTime,
+        })
+        .toJSDate();
+      const url = await new StorageService(AuthContext.instance).getSignedUrl(
+        fileId,
+        expires
+      );
+
+      const meta: ImageSetMeta = {
+        pages: parseResult.numpages,
       };
 
-      const image = await fromBase64(
-        response,
-        options
-      )(1).catch((e) => console.log(`error occurred in fromBase64: ${e}`));
-      console.log({ imageResBase64: image });
+      if (parseResult.info.Title) meta.title = parseResult.info.Title;
 
-      const imageData = readFileSync((image as any).path);
-
-      await bucket
-        .file(StoragePath.imageFile(api.userId, fileId))
-        .save(imageData)
-        .catch((e) => console.log(`error occurred in bucket.file: ${e}`));
-
-      bucket.file(StoragePath.imageFile(api.userId, fileId));
-
-      const expiredAt = DateTime.fromJSDate(new Date()).plus({
-        seconds: expiryTime,
-      });
-      const url = (
-        await bucket
-          .file(StoragePath.imageFile(api.userId, fileId))
-          .getSignedUrl({
-            action: "read",
-            expires: expiredAt.toISO(),
-          })
-          .catch((e) => {
-            console.log(`error occurred in getSignedUrl: ${e}`);
-            throw e;
-          })
-      )[0];
-
-      console.log({ url });
-
-      // console.log(`1 page of PDF saved in Firebase Storage`);
-
-      const data: UpdateImageSet = {
-        userId: api.userId,
+      const data: ImageSet = {
+        accountId: AuthContext.instance.auth.accountId,
         fileId,
         path: url,
-        expiredAt: firebaseFirestore.Timestamp.fromDate(expiredAt.toJSDate()),
-        createdAt: firebaseFirestore.Timestamp.fromDate(new Date()),
-        updatedAt: firebaseFirestore.Timestamp.fromDate(new Date()),
+        meta: meta,
+        expiredAt: expires,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
-      const returnData: ImageSet = {
-        ...data,
-        expiredAt: data.expiredAt.toDate(),
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.expiredAt.toDate(),
-      };
-
-      await collection("imageSets")
-        .doc(fileId)
-        .set(data)
-        .catch((e) => console.log(`error occurred in firestore: ${e}`));
+      await new ImageSetService(AuthContext.instance).register(fileId, data);
       console.log(`cache path saved in Firestore`);
 
-      return res.status(200).json(returnData);
+      return res.status(200).json(data);
     },
   });
 };

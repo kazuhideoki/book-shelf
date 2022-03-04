@@ -39,3 +39,4 @@ yarn-error.log*
 
 credentials.json
 front-credentials.json
+tmp

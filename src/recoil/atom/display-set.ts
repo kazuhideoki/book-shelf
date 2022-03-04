@@ -1,7 +1,13 @@
 import { atom } from "recoil";
 import { DisplaySet } from "../../type/model/firestore-display-set.type";
 
-export const displaySetsState = atom<DisplaySet[]>({
+export type DisplaySetsState = {
+  displaySets: DisplaySet[];
+  selected?: DisplaySet;
+  initilized: boolean;
+};
+
+export const displaySetsAtom = atom<DisplaySetsState>({
   key: "displaySets",
-  default: [],
+  default: { displaySets: [], initilized: false },
 });

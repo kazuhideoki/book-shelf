@@ -1,20 +1,19 @@
 import { useSetRecoilState } from "recoil";
 import { loadingState } from "../recoil/atom/loading";
 
-export async function useWithCircular() {
+export const useWithLoading = () => {
   const setLoading = useSetRecoilState(loadingState);
-
-  return function <T>(callback: T) {
+  return async <T>(callback: Promise<T>): Promise<T> => {
     try {
       setLoading(true);
-      const result = callback;
+      const res = await callback;
       setLoading(false);
-      return result;
+      return res;
     } catch (error) {
-      console.log(error);
+      console.log({ error });
 
       setLoading(false);
       throw error;
     }
   };
-}
+};

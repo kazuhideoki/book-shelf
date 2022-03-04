@@ -1,9 +1,11 @@
-import { User } from "@firebase/auth";
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
-import { DriveAuth } from "../../recoil/atom/drive-auth";
+import { CustomError } from "../../type/model/error";
 import { axiosRequest } from "../../utils/axios";
+import { AuthContext } from "./auth-context";
+import { ContextHolder } from "./context";
 import { HttpsError } from "./https-error";
+import { middleware } from "./middleware";
 
 export class ApiHelper {
   readonly req: NextApiRequest;
@@ -23,18 +25,11 @@ export class ApiHelper {
   get headers() {
     return this.req.headers as any;
   }
-  get userId() {
-    return this.headers.userid as string; // headers経由でキャメルケースが小文字になる
+  get auth() {
+    return AuthContext.instance.auth;
   }
-  get userAuth() {
-    return this.headers.userauth
-      ? (JSON.parse(this.headers.userauth) as User)
-      : undefined;
-  }
-  get driveAuth() {
-    return this.headers.driveauth
-      ? (JSON.parse(this.headers.driveauth) as DriveAuth)
-      : undefined;
+  get accountId() {
+    return this.auth.accountId;
   }
 
   /**
@@ -45,12 +40,10 @@ export class ApiHelper {
     url: string,
     config?: AxiosRequestConfig<any>
   ): Promise<T> {
-    const driveAuth = this.driveAuth as any;
-
     const res = await axiosRequest<T>(method, url, {
       ...config,
       headers: {
-        Authorization: `Bearer ${(driveAuth as DriveAuth)?.access_token}`,
+        Authorization: `Bearer ${this.auth.accessToken}`,
       },
     });
 
@@ -64,10 +57,14 @@ export class ApiHelper {
     delete?: () => Promise<void>;
     error?: () => never;
   }): Promise<void> {
+    ContextHolder.initContext();
+
     const { get, post, patch, delete: Delete, error } = p;
     console.log(`⭐ ${this.req.method} ${this.req.url}`);
 
     try {
+      await middleware(this.req);
+
       switch (this.req.method) {
         case "GET":
           await get?.();
@@ -86,26 +83,42 @@ export class ApiHelper {
           break;
       }
       console.log(`🔵 ${this.req.method} ${this.req.url}`);
-    } catch (e) {
+    } catch (e: any) {
+      console.error(`❌ ${this.req.method} ${this.req.url}`);
+
+      let customError: CustomError, status, msg, customErrorCode;
+
+      customError = {
+        status: status ?? e.status ?? 500,
+        msg: msg ?? e.message ?? `Unknown error occurred`,
+        customErrorCode,
+      };
+
       if (error) {
         error();
       } else {
         if (
-          (e as any).constructor.name === HttpsError.name ||
+          e.constructor.name === HttpsError.name ||
           (e as HttpsError).httpErrorCode?.canonicalName
         ) {
           const httpsError = e as HttpsError;
 
-          console.log(`❌ ${this.req.method} ${this.req.url}`);
-
-          this.res.status(httpsError.httpErrorCode.status).send({
-            status: httpsError.httpErrorCode.canonicalName,
-            msg: httpsError.message,
-            customErrorCode: httpsError.customErrorCode ?? undefined,
-          });
+          status = httpsError.httpErrorCode.canonicalName;
+          msg = httpsError.message;
+          customErrorCode = httpsError.customErrorCode;
         }
-        this.res.status(500);
       }
+
+      customError = {
+        status: status ?? e.status ?? 500,
+        msg: msg ?? e.message ?? `Unknown error occurred`,
+        customErrorCode,
+      };
+
+      console.error(`${customError.msg}`);
+
+      this.res.status(500);
+      this.res.status(status ?? e.status ?? 500).send(customError);
       this.res.end();
     }
   }
