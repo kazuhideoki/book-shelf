@@ -19,7 +19,8 @@ export const fetchImageSets = selector<ImageSet[]>({
 
     // TODO ここでのエラー後 再fetchしてくれない 導線を考える必要ある
     if (!selectedDisplaySets) {
-      throw "Display set must be set";
+      // throw "Display set must be set";
+      return [];
     }
 
     const { auth } = get(authState);
