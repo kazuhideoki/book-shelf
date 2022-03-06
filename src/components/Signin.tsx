@@ -36,11 +36,6 @@ export const SignIn: NextComponentType<
       },
       initialized: true,
     });
-
-    //   - （結果）Topへ飛ばす
-
-    // 検証
-    // - 時間が立ったときにアクセスできるかどうか？
   };
 
   return (

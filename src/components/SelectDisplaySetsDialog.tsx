@@ -6,8 +6,6 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { displaySetsAtom } from "../recoil/atom/display-set";
 import { fetchDisplaySets } from "../recoil/selector/display-set";
 import { FrontPath } from "../server/helper/const";
-import { useRequest } from "../utils/axios";
-import { useWithLoading } from "../utils/with-loading";
 interface P {
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
@@ -22,8 +20,6 @@ export const SelectDisplaySetsDialog: NextComponentType<
   const displaySets = useRecoilValue(fetchDisplaySets);
   const setDisplaySets = useSetRecoilState(displaySetsAtom);
   const router = useRouter();
-  const request = useRequest();
-  const withLoading = useWithLoading();
 
   return (
     <>
@@ -33,14 +29,6 @@ export const SelectDisplaySetsDialog: NextComponentType<
             key={i}
             value={displaySet.displaySetId}
             onClick={async (e) => {
-              // const res = Promise.all([
-              //   ...displaySet.files.map((e) =>
-              //     withLoading(
-              //       request<ImageSet>("GET", ServerPath.file(e.fileId))
-              //     )
-              //   ),
-              // ]);
-
               setDisplaySets((prev) => ({ ...prev, selected: displaySet }));
 
               setShowDialog(false);

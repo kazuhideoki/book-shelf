@@ -7,6 +7,7 @@ export type DisplaySetsState = {
   initilized: boolean;
 };
 
+// 読み込んだ displaySet
 export const displaySetsAtom = atom<DisplaySetsState>({
   key: "displaySets",
   default: { displaySets: [], initilized: false },

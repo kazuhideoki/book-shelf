@@ -6,6 +6,7 @@ export type ImageSetsState = {
   initilized: boolean;
 };
 
+// 読み込んだイメージセット
 export const imageSetsAtom = atom<ImageSetsState>({
   key: "imageSets",
   default: { imageSets: [], initilized: false },
