@@ -4,15 +4,20 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  Checkbox,
+  FormControlLabel,
   Grid,
   Icon,
   Typography,
 } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useRecoilState } from "recoil";
+import { selectedFilesAtom } from "../recoil/atom/selected-files";
 import { ServerPath } from "../server/helper/const";
 import { IFile } from "../type/domain/file";
 import { IFolder } from "../type/domain/folder";
+import { ImageSet } from "../type/model/firestore-image-set.type";
 import { DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
 
@@ -26,6 +31,7 @@ export const Folder: NextComponentType<
   P
 > = ({ folder }) => {
   const request = useRequest();
+  const [loading, setLoading] = useState(false);
   const [folders, setFolders] = useState<IFolder>(folder);
 
   const handleOpen = (id: string, open: boolean) => {
@@ -66,7 +72,6 @@ export const Folder: NextComponentType<
     const newFiles: IFile[] = driveFiles.map((e) => ({
       id: e.id,
       name: e.name,
-      path: "", // TODO 修正 resから入れる,
     }));
 
     setFolders((prev) => ({
@@ -85,9 +90,35 @@ export const Folder: NextComponentType<
     }));
   };
 
+  const [selectedFiles, setSelectedFiles] = useRecoilState(selectedFilesAtom);
+  const handleSelectFile = useCallback(
+    async (file: IFile) => {
+      // TODO グローバルで持っている selectedFiles から exsistingをチェック
+      const index = selectedFiles.length + 1;
+      const exsisting = selectedFiles.find((e) => e.file.id === file.id);
+
+      if (exsisting) {
+      } else if (!exsisting) {
+        const imageSet = await request<ImageSet>(
+          "GET",
+          ServerPath.file(file.id)
+        );
+        file = { ...file, path: imageSet.path };
+      }
+
+      setSelectedFiles((prev) =>
+        exsisting ? prev : [...prev, { file, index }]
+      );
+    },
+    [request, selectedFiles, setSelectedFiles]
+  );
+  const handleUnSelectFile = async (file: IFile) => {
+    setSelectedFiles((prev) => prev.filter((e) => e.file.id !== file.id));
+  };
+
   return (
     <>
-      {folder.item?.folders?.map((folder, i) => (
+      {folders?.item?.folders?.map((folder, i) => (
         <Accordion key={i}>
           <AccordionSummary onClick={() => handleOpen(folder.id, !folder.open)}>
             <Grid container>
@@ -108,6 +139,30 @@ export const Folder: NextComponentType<
             <Folder folder={folder} />
           </AccordionDetails>
         </Accordion>
+      ))}
+      {folders?.item?.files?.map((file, i) => (
+        <Grid key={i} container>
+          <Grid item>
+            {/* <Icon>
+              <Book />
+            </Icon> */}
+            <FormControlLabel
+              key={i}
+              control={<Checkbox />}
+              onClick={async (e) => {
+                if ((e.target as any).checked) {
+                  handleUnSelectFile(file);
+                } else {
+                  await handleSelectFile(file);
+                }
+              }}
+              label={file.name}
+            />
+          </Grid>
+          <Grid item>
+            <Typography variant="h5">{file.name}</Typography>
+          </Grid>
+        </Grid>
       ))}
     </>
   );

@@ -1,100 +1,27 @@
-import { FolderOpen } from "@mui/icons-material";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Icon,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Grid, Icon, TextField, Typography } from "@mui/material";
 import type { NextPage } from "next";
 // import Link from 'next/link';
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { useSetRecoilState } from "recoil";
+import { Folder } from "../components/Folder";
 import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
-import { ListDriveFiles } from "../type/api/google-drive-api.type";
-import { File } from "../type/domain/file";
-import { Folder } from "../type/domain/folder";
-import { ImageSet } from "../type/model/firestore-image-set.type";
-import { DriveFile, DriveFiles } from "../type/model/google-drive-file.type";
+import { DriveFile } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-interface P {
-  folder: Folder;
-}
+interface P {}
 
-const Settings: NextPage<P> = ({ folder }) => {
+const Settings: NextPage<P> = ({}) => {
   const router = useRouter();
   const request = useRequest();
   const withLoading = useWithLoading();
   const setSnackbar = useSetRecoilState(snackbarState);
-
-  const [folders, setFolders] = useState<Folder>(folder);
-
-  const handleOpen = (id: string, open: boolean) => {
-    setFolders((prev) => ({
-      ...prev,
-      item: {
-        ...prev?.item,
-        ...prev?.item?.folders?.map((e) => {
-          if (e.id === id) {
-            return { ...e, open };
-          }
-          return e;
-        }),
-      },
-    }));
-  };
-
-  const handleFetchItems = async () => {
-    const res = await request<DriveFiles>("GET", ServerPath.files, {
-      data: {
-        token: folders?.meta?.nextPageToken, // ここ確認
-      },
-    });
-
-    const driveFolders = res.files.filter(
-      (e) => e.mimeType === "application/vnd.google-apps.folder"
-    );
-    const newFolders: Folder[] = driveFolders.map((e) => ({
-      id: e.id,
-      name: e.name,
-      open: false,
-    }));
-
-    const driveFiles = res.files.filter(
-      (e) => e.mimeType === "application/pdf"
-    );
-    const newFiles: File[] = driveFiles.map((e) => ({
-      id: e.id,
-      name: e.name,
-      path,
-    }));
-
-    setFolders((prev) => ({
-      ...prev,
-      meta: {
-        nextPageToken: res.nextPageToken,
-        incompleteSearch: res.incompleteSearch,
-      },
-      item: {
-        ...prev.item,
-        folders: prev.item?.folders
-          ? [...prev.item?.folders, ...newFolders]
-          : newFolders,
-        files: prev.item?.files ? [...prev.item?.files, ...newFiles] : newFiles,
-      },
-    }));
-  };
 
   const [values, setValues] = useState<{
     name: string;
@@ -108,105 +35,6 @@ const Settings: NextPage<P> = ({ folder }) => {
     folderData: null,
     selectedFiles: [],
   });
-
-  const handleSelectFile = async (file: DriveFile, e: any) => {
-    const index = values.selectedFiles.length + 1;
-    const checked = (e.target as any).checked;
-    const exsisting = values.selectedFiles.find((e) => e.file.id === file.id);
-
-    let imageSet: ImageSet | undefined = undefined;
-    if (checked && !exsisting) {
-      imageSet = await request<ImageSet>("GET", ServerPath.file(file.id));
-    }
-
-    setValues({
-      ...values,
-      selectedFiles: exsisting
-        ? values.selectedFiles
-        : [...values.selectedFiles, { file, index, imagePath: imageSet?.path }],
-    });
-  };
-
-  console.log({ values });
-
-  // 取得の部分
-  const handleFetchFolderList = useCallback(async () => {
-    try {
-      const res = await withLoading(
-        request<DriveFiles, ListDriveFiles>("GET", ServerPath.files, {
-          params: {
-            q: "mimeType = 'application/vnd.google-apps.folder'",
-            pageToken: values.folderData?.pageToken,
-          },
-        })
-      );
-
-      setValues({
-        ...values,
-        folderData: {
-          folders: values.folderData?.folders
-            ? [...values.folderData?.folders, ...res.files]
-            : res.files,
-          pageToken: res.nextPageToken,
-        },
-      });
-    } catch (error) {
-      console.log({ error });
-
-      console.log(`Error occurred ${error}`);
-    }
-  }, [values]);
-
-  const handleFetchFileList = useCallback(
-    async (folder: DriveFile) => {
-      const targetFolder = values.folderData?.folders.find(
-        (e) => e.id === folder.id
-      )!;
-
-      try {
-        const res = await request<DriveFiles, ListDriveFiles>(
-          "GET",
-          ServerPath.files,
-          {
-            params: {
-              q: `mimeType = 'application/pdf' and '${folder.id}' in parents`,
-              pageToken: targetFolder?.pageToken,
-            },
-          }
-        );
-
-        const files = targetFolder?.files
-          ? [...targetFolder.files, ...res.files]
-          : res.files;
-
-        // folderのfileを追加
-        const updatedFolders: (DriveFile & {
-          files?: DriveFile[];
-          pageToken?: string;
-        })[] = values.folderData?.folders.map((folder) => {
-          if (folder.id === targetFolder.id) {
-            return {
-              ...folder,
-              files: files,
-              pageToken: res.nextPageToken,
-            };
-          }
-          return folder;
-        })!;
-
-        setValues({
-          ...values,
-          folderData: {
-            ...values.folderData!,
-            folders: updatedFolders,
-          },
-        });
-      } catch (error) {
-        console.log(`Error occurred: ${error}`);
-      }
-    },
-    [values]
-  );
 
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
@@ -252,71 +80,17 @@ const Settings: NextPage<P> = ({ folder }) => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item>
-        <Button variant="contained" onClick={handleFetchFolderList}>
-          フォルダーの読み込み
-        </Button>
-      </Grid>
-      <Grid item container direction="column" spacing={1}>
-        {values.folderData &&
-          values.folderData.folders.map((folder, i) => {
-            const files = values.folderData?.folders.find(
-              (e) => e.id === folder.id
-            )?.files;
-            return (
-              <Grid item container key={i} spacing={2}>
-                <Grid item>
-                  <Icon>
-                    <FolderOpen />
-                  </Icon>
-                </Grid>
-                <Grid item>
-                  <Typography variant="h5">{folder.name}</Typography>
-                </Grid>
-                <Grid item>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleFetchFileList(folder)}
-                  >
-                    ファイルの読み込み
-                  </Button>
-                </Grid>
-                {files?.length && (
-                  <Grid item container direction="column">
-                    <FormGroup>
-                      {files?.map((file, i) => {
-                        const imagePath = values.selectedFiles.find(
-                          (e) => e.file.id === file.id
-                        )?.imagePath;
 
-                        return (
-                          <Grid item key={i}>
-                            <FormControlLabel
-                              key={i}
-                              control={<Checkbox />}
-                              onClick={async (e) => {
-                                await handleSelectFile(file, e as any);
-                              }}
-                              label={file.name}
-                            />
-                            {imagePath ? (
-                              <img
-                                src={imagePath}
-                                style={{ maxWidth: 200, maxHeight: 200 }}
-                              />
-                            ) : (
-                              <></>
-                            )}
-                          </Grid>
-                        );
-                      })}
-                    </FormGroup>
-                  </Grid>
-                )}
-              </Grid>
-            );
-          })}
+      <Grid item>
+        <Folder
+          folder={{
+            id: "root",
+            name: "root",
+            open: false,
+          }}
+        />
       </Grid>
+
       <Grid>
         <TextField
           value={values.name}
