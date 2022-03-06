@@ -10,13 +10,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   return api.handler({
     get: async () => {
-      const { q, pageSize, pageToken, mimeType } = api.query as ListDriveFiles &
-        any;
+      const { q, pageSize, pageToken } = api.query as ListDriveFiles & any;
 
       const response = await new DriveFileService(AuthContext.instance)
         .list({
           q,
-          pageSize,
+          pageSize: pageSize ?? 20,
           pageToken,
         })
         .catch((e) => console.log(`error daxios files ${e}`));

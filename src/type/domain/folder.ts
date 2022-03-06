@@ -6,7 +6,7 @@ export type IFolder = {
   open: boolean;
   meta?: {
     nextPageToken: string;
-    incompleteSearch: string;
+    incompleteSearch: boolean;
   };
   item?: {
     folders?: IFolder[];

@@ -1,7 +1,7 @@
 export type DriveFiles = {
   kind: string;
   nextPageToken: string;
-  incompleteSearch: string;
+  incompleteSearch: boolean;
   files: DriveFile[];
 };
 

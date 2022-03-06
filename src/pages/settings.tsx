@@ -83,10 +83,10 @@ const Settings: NextPage<P> = ({}) => {
 
       <Grid item>
         <Folder
-          folder={{
-            id: "root",
+          parentFolder={{
+            id: "drive",
             name: "root",
-            open: false,
+            open: true,
           }}
         />
       </Grid>

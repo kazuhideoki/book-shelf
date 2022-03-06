@@ -22,17 +22,19 @@ import { DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
 
 interface P {
-  folder: IFolder;
+  parentFolder: IFolder;
 }
 
 export const Folder: NextComponentType<
   NextPageContext,
   Record<string, unknown>,
   P
-> = ({ folder }) => {
+> = ({ parentFolder }) => {
   const request = useRequest();
   const [loading, setLoading] = useState(false);
-  const [folders, setFolders] = useState<IFolder>(folder);
+  const [folder, setFolders] = useState<IFolder>(parentFolder);
+
+  console.log({ valueOfFolder: folder });
 
   const handleOpen = (id: string, open: boolean) => {
     setFolders((prev) => ({
@@ -52,10 +54,13 @@ export const Folder: NextComponentType<
   const handleFetchItems = async () => {
     const res = await request<DriveFiles>("GET", ServerPath.files, {
       params: {
-        q: `mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf' and ${folder.id} in parents`,
+        q: `mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf' and '${folder.id}' in parents and trashed = false`,
+        // q: `mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf' and trashed = false`,
         pageToken: folder.meta?.nextPageToken,
       },
     });
+
+    console.log({ resServerPathFiles: res });
 
     const driveFolders = res.files.filter(
       (e) => e.mimeType === "application/vnd.google-apps.folder"
@@ -118,52 +123,59 @@ export const Folder: NextComponentType<
 
   return (
     <>
-      {folders?.item?.folders?.map((folder, i) => (
-        <Accordion key={i}>
-          <AccordionSummary onClick={() => handleOpen(folder.id, !folder.open)}>
-            <Grid container>
-              <Grid item>
-                <Icon>{folder.open ? <FolderOpen /> : <FolderIcon />}</Icon>
-              </Grid>
-              <Grid item>
-                <Typography variant="h5">{folder.name}</Typography>
-              </Grid>
-              <Grid item>
-                <Button variant="outlined" onClick={() => handleFetchItems()}>
-                  ファイルの読み込み
-                </Button>
-              </Grid>
+      <Accordion>
+        <AccordionSummary onClick={() => handleOpen(folder.id, !folder.open)}>
+          <Grid container>
+            <Grid item>
+              <Icon>{folder.open ? <FolderOpen /> : <FolderIcon />}</Icon>
             </Grid>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Folder folder={folder} />
-          </AccordionDetails>
-        </Accordion>
-      ))}
-      {folders?.item?.files?.map((file, i) => (
-        <Grid key={i} container>
-          <Grid item>
-            {/* <Icon>
+            <Grid item>
+              <Typography variant="h5">{folder.name}</Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="outlined"
+                onClick={() => handleFetchItems()}
+                // disabled={folder.meta?.incompleteSearch === false}
+              >
+                ファイルの読み込み
+              </Button>
+            </Grid>
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails>
+          {folder?.item?.folders?.map((folder, i) => (
+            <Folder key={i} parentFolder={folder} />
+          ))}
+          {folder?.item?.files?.map((file, i) => (
+            <Grid key={i} container>
+              <Grid item>
+                {/* <Icon>
               <Book />
             </Icon> */}
-            <FormControlLabel
-              key={i}
-              control={<Checkbox />}
-              onClick={async (e) => {
-                if ((e.target as any).checked) {
-                  handleUnSelectFile(file);
-                } else {
-                  await handleSelectFile(file);
-                }
-              }}
-              label={file.name}
-            />
-          </Grid>
-          <Grid item>
-            <Typography variant="h5">{file.name}</Typography>
-          </Grid>
-        </Grid>
-      ))}
+                <FormControlLabel
+                  key={i}
+                  control={<Checkbox />}
+                  onClick={async (e) => {
+                    if ((e.target as any).checked) {
+                      await handleSelectFile(file);
+                    } else {
+                      handleUnSelectFile(file);
+                    }
+                  }}
+                  label={file.name}
+                />
+              </Grid>
+              <Grid item>
+                <Typography variant="h5">{file.name}</Typography>
+              </Grid>
+              <Grid item>
+                <img width={100} height={100} src={file.path} />
+              </Grid>
+            </Grid>
+          ))}
+        </AccordionDetails>
+      </Accordion>
     </>
   );
 };

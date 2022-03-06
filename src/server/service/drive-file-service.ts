@@ -20,7 +20,7 @@ export class DriveFileService extends BaseService {
       ExternalPath.files,
       {
         params: {
-          pageSize: pageSize ?? 10,
+          pageSize,
           orderBy: orderBy?.join(","),
           q,
           pageToken,
