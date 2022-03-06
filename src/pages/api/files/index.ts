@@ -15,7 +15,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const response = await new DriveFileService(AuthContext.instance)
         .list({
           q,
-          pageSize: pageSize ?? 20,
+          pageSize: pageSize ?? 10,
           pageToken,
         })
         .catch((e) => console.log(`error daxios files ${e}`));

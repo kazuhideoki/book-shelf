@@ -40,22 +40,10 @@ export const FolderComponent: NextComponentType<
 
   const [folder, setFolders] = useState<IFolder>(parentFolder);
 
-  if (rootSettings) {
-    console.log({ folder });
-  }
-  const handleOpen = (id: string, open: boolean) => {
-    setFolders((prev) => ({
-      ...prev,
-      item: {
-        ...prev?.item,
-        ...prev?.item?.folders?.map((e) => {
-          if (e.id === id) {
-            return { ...e, open };
-          }
-          return e;
-        }),
-      },
-    }));
+  console.log({ folder });
+
+  const handleOpen = () => {
+    setFolders((prev) => ({ ...prev, open: !prev.open }));
   };
 
   const handleFetchItems = useCallback(async () => {
@@ -70,7 +58,6 @@ export const FolderComponent: NextComponentType<
     const res = await request<DriveFiles>("GET", ServerPath.files, {
       params: {
         q,
-        // q: `mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf' and trashed = false`,
         pageToken: folder.meta?.nextPageToken,
       },
     });
@@ -78,31 +65,30 @@ export const FolderComponent: NextComponentType<
     console.log({ resServerPathFiles: res });
 
     if (!res) {
+      setFolders((prev) => ({
+        id: prev.id,
+        name: prev.name,
+        open: prev.open,
+      }));
+
       return;
     }
 
-    const driveFolders = res.files.filter(
-      (e) => e.mimeType === "application/vnd.google-apps.folder"
-    );
-    const newFolders: IFolder[] = driveFolders.map((e) => ({
-      id: e.id,
-      name: e.name,
-      open: false,
-    }));
-    // .filter(
-    //   (e) => !folder.item?.folders?.map((folder) => folder.id)?.includes(e.id)
-    // );
+    const newFolders: IFolder[] = res.files
+      .filter((e) => e.mimeType === "application/vnd.google-apps.folder")
+      .map((e) => ({
+        id: e.id,
+        name: e.name,
+        open: false,
+      }));
 
-    const driveFiles = res.files.filter(
-      (e) => e.mimeType === "application/pdf"
-    );
-    const newFiles: IFile[] = driveFiles.map((e) => ({
-      id: e.id,
-      name: e.name,
-    }));
-    // .filter(
-    //   (e) => !folder.item?.files?.map((file) => file.id)?.includes(e.id)
-    // );
+    const newFiles: IFile[] = res.files
+      .filter((e) => e.mimeType === "application/pdf")
+      .map((e) => ({
+        id: e.id,
+        name: e.name,
+      }));
+
     if (rootSettings) {
       setFolders((prev) => ({
         ...prev,
@@ -116,21 +102,35 @@ export const FolderComponent: NextComponentType<
         },
       }));
     } else {
-      setFolders((prev) => ({
-        ...prev,
-        meta: {
-          nextPageToken: res.nextPageToken,
-          incompleteSearch: res.incompleteSearch,
-        },
-        item: {
-          folders: prev.item?.folders
-            ? [...prev.item?.folders, ...newFolders]
-            : newFolders,
-          files: prev.item?.files
-            ? [...prev.item?.files, ...newFiles]
-            : newFiles,
-        },
-      }));
+      setFolders((prev) => {
+        const folders = prev.item?.folders
+          ? [
+              ...prev.item?.folders,
+              ...newFolders.filter(
+                (e) =>
+                  !prev.item?.folders?.map((folder) => folder.id).includes(e.id)
+              ),
+            ]
+          : newFolders;
+
+        const files = prev.item?.files
+          ? [...prev.item?.files, ...newFiles]
+          : newFiles.filter(
+              (e) => !prev.item?.files?.map((file) => file.id).includes(e.id)
+            );
+
+        return {
+          ...prev,
+          meta: {
+            nextPageToken: res.nextPageToken,
+            incompleteSearch: res.incompleteSearch,
+          },
+          item: {
+            folders,
+            files,
+          },
+        };
+      });
     }
   }, [fileQuery, folder.id, folder.meta?.nextPageToken, request, rootSettings]);
 
@@ -141,31 +141,49 @@ export const FolderComponent: NextComponentType<
           <TextField
             value={query}
             label="ファイル/フォルダー検索"
-            placeholder="カンマ(,)区切りで入力"
+            placeholder="スペース区切りで入力"
             onChange={(e) => onSetQuery!(e.target.value)}
             onKeyPress={(e) => {
-              if (e.key === "Enter") handleFetchItems();
+              if (e.key === "Enter") {
+                handleFetchItems();
+                if (!folder.open) handleOpen();
+              }
             }}
           />
         </Grid>
       )}
       <Grid item>
-        <Accordion>
-          <AccordionSummary onClick={() => handleOpen(folder.id, !folder.open)}>
-            <Grid container>
+        <Accordion
+          expanded={folder.open}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpen();
+          }}
+        >
+          <AccordionSummary>
+            <Grid container spacing={1}>
               <Grid item>
                 <Icon>{folder.open ? <FolderOpen /> : <FolderIcon />}</Icon>
               </Grid>
               <Grid item>
                 <Typography variant="h5">{folder.name}</Typography>
               </Grid>
+
               <Grid item>
                 <Button
                   variant="outlined"
-                  onClick={() => handleFetchItems()}
-                  // disabled={folder.meta?.incompleteSearch === false}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFetchItems();
+                    if (!folder.open) handleOpen();
+                  }}
+                  disabled={
+                    folder.meta && folder.meta?.nextPageToken === undefined
+                  }
                 >
-                  ファイルの読み込み
+                  {folder.meta && folder.meta?.nextPageToken === undefined
+                    ? "読み込み済み"
+                    : "読み込む"}
                 </Button>
               </Grid>
             </Grid>

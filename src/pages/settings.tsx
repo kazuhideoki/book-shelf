@@ -10,8 +10,6 @@ import { FolderComponent } from "../components/FolderComponent";
 import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
-import { IFolder } from "../type/domain/folder";
-import { DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -32,33 +30,14 @@ const Settings: NextPage<P> = ({}) => {
     name: "",
   });
 
-  const [folder, setFolder] = useState<IFolder>({
-    id: "",
-    name: "root",
-    open: true,
-  });
-
   const folderNameQuery = useMemo(
     () =>
       `(${values.folderNames
-        .split(",")
+        .split(" ")
         .map((folderName) => `name contains '${folderName}'`)
         .join(" or ")})`,
     [values.folderNames]
   );
-
-  console.log({ folderNameQuery });
-
-  const handleFetchItems = async () => {
-    const res = await request<DriveFiles>("GET", ServerPath.files, {
-      params: {
-        q: `(mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf') and trashed = false and ${folderNameQuery}`,
-        pageToken: folder.meta?.nextPageToken,
-      },
-    });
-
-    setFolder((prev) => ({ ...prev, items: {} }));
-  };
 
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
@@ -106,7 +85,11 @@ const Settings: NextPage<P> = ({}) => {
 
       <Grid item>
         <FolderComponent
-          parentFolder={folder}
+          parentFolder={{
+            id: "",
+            name: "root",
+            open: false,
+          }}
           rootSettings={{
             fileQuery: `(mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf') and trashed = false and ${folderNameQuery}`,
             query: values.folderNames,
