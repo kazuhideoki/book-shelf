@@ -3,14 +3,15 @@ import { Button, Grid, Icon, TextField, Typography } from "@mui/material";
 import type { NextPage } from "next";
 // import Link from 'next/link';
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { useSetRecoilState } from "recoil";
-import { Folder } from "../components/Folder";
+import { FolderComponent } from "../components/FolderComponent";
 import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
-import { DriveFile } from "../type/model/google-drive-file.type";
+import { IFolder } from "../type/domain/folder";
+import { DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -24,17 +25,40 @@ const Settings: NextPage<P> = ({}) => {
   const setSnackbar = useSetRecoilState(snackbarState);
 
   const [values, setValues] = useState<{
+    folderNames: string;
     name: string;
-    folderData: {
-      folders: (DriveFile & { files?: DriveFile[]; pageToken?: string })[];
-      pageToken: string;
-    } | null;
-    selectedFiles: { file: DriveFile; index: number; imagePath?: string }[]; // imagePathはimageSetにしていいか
   }>({
+    folderNames: "",
     name: "",
-    folderData: null,
-    selectedFiles: [],
   });
+
+  const [folder, setFolder] = useState<IFolder>({
+    id: "",
+    name: "root",
+    open: true,
+  });
+
+  const folderNameQuery = useMemo(
+    () =>
+      `(${values.folderNames
+        .split(",")
+        .map((folderName) => `name contains '${folderName}'`)
+        .join(" or ")})`,
+    [values.folderNames]
+  );
+
+  console.log({ folderNameQuery });
+
+  const handleFetchItems = async () => {
+    const res = await request<DriveFiles>("GET", ServerPath.files, {
+      params: {
+        q: `(mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf') and trashed = false and ${folderNameQuery}`,
+        pageToken: folder.meta?.nextPageToken,
+      },
+    });
+
+    setFolder((prev) => ({ ...prev, items: {} }));
+  };
 
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
@@ -42,10 +66,9 @@ const Settings: NextPage<P> = ({}) => {
         request<any, RegisterDispalySet>("POST", ServerPath.displaySets, {
           data: {
             name: values.name,
-            files: values.selectedFiles.map((e) => ({
-              fileId: e.file.id,
-              index: e.index,
-            })),
+
+            // TODO selectedFilesからもってくる
+            files: [],
           },
         })
       );
@@ -82,11 +105,13 @@ const Settings: NextPage<P> = ({}) => {
       </Grid>
 
       <Grid item>
-        <Folder
-          parentFolder={{
-            id: "drive",
-            name: "root",
-            open: true,
+        <FolderComponent
+          parentFolder={folder}
+          rootSettings={{
+            fileQuery: `(mimeType = 'application/vnd.google-apps.folder' or mimeType = 'application/pdf') and trashed = false and ${folderNameQuery}`,
+            query: values.folderNames,
+            onSetQuery: (value) =>
+              setValues((prev) => ({ ...prev, folderNames: value })),
           }}
         />
       </Grid>
