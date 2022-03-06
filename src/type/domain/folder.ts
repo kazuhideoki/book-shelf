@@ -1,15 +1,15 @@
-import { File } from "./file";
+import { IFile } from "./file";
 
-export type Folder = {
+export type IFolder = {
   id: string;
   name: string;
   open: boolean;
-  meta: {
+  meta?: {
     nextPageToken: string;
     incompleteSearch: string;
   };
-  item: {
-    folders: Folder[];
-    files: File[];
+  item?: {
+    folders?: IFolder[];
+    files?: IFile[];
   };
 };

@@ -20,6 +20,8 @@ import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { ListDriveFiles } from "../type/api/google-drive-api.type";
+import { File } from "../type/domain/file";
+import { Folder } from "../type/domain/folder";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 import { DriveFile, DriveFiles } from "../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
@@ -27,14 +29,72 @@ import { useWithLoading } from "../utils/with-loading";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {
-  code?: string;
+  folder: Folder;
 }
 
-const Settings: NextPage<P> = () => {
+const Settings: NextPage<P> = ({ folder }) => {
   const router = useRouter();
   const request = useRequest();
   const withLoading = useWithLoading();
   const setSnackbar = useSetRecoilState(snackbarState);
+
+  const [folders, setFolders] = useState<Folder>(folder);
+
+  const handleOpen = (id: string, open: boolean) => {
+    setFolders((prev) => ({
+      ...prev,
+      item: {
+        ...prev?.item,
+        ...prev?.item?.folders?.map((e) => {
+          if (e.id === id) {
+            return { ...e, open };
+          }
+          return e;
+        }),
+      },
+    }));
+  };
+
+  const handleFetchItems = async () => {
+    const res = await request<DriveFiles>("GET", ServerPath.files, {
+      data: {
+        token: folders?.meta?.nextPageToken, // ここ確認
+      },
+    });
+
+    const driveFolders = res.files.filter(
+      (e) => e.mimeType === "application/vnd.google-apps.folder"
+    );
+    const newFolders: Folder[] = driveFolders.map((e) => ({
+      id: e.id,
+      name: e.name,
+      open: false,
+    }));
+
+    const driveFiles = res.files.filter(
+      (e) => e.mimeType === "application/pdf"
+    );
+    const newFiles: File[] = driveFiles.map((e) => ({
+      id: e.id,
+      name: e.name,
+      path,
+    }));
+
+    setFolders((prev) => ({
+      ...prev,
+      meta: {
+        nextPageToken: res.nextPageToken,
+        incompleteSearch: res.incompleteSearch,
+      },
+      item: {
+        ...prev.item,
+        folders: prev.item?.folders
+          ? [...prev.item?.folders, ...newFolders]
+          : newFolders,
+        files: prev.item?.files ? [...prev.item?.files, ...newFiles] : newFiles,
+      },
+    }));
+  };
 
   const [values, setValues] = useState<{
     name: string;
@@ -69,6 +129,7 @@ const Settings: NextPage<P> = () => {
 
   console.log({ values });
 
+  // 取得の部分
   const handleFetchFolderList = useCallback(async () => {
     try {
       const res = await withLoading(

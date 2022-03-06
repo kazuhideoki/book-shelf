@@ -1,7 +1,7 @@
 import { atom } from "recoil";
-import { Folder } from "../../type/domain/folder";
+import { IFolder } from "../../type/domain/folder";
 
-export type DirectoryState = Folder & {
+export type DirectoryState = IFolder & {
   initilized: boolean;
 };
 
