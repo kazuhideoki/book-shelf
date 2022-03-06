@@ -1,8 +1,7 @@
 import { atom } from "recoil";
-import { IFile } from "../../type/domain/file";
 
 export type SelectedFiles = {
-  file: IFile;
+  fileId: string;
   index: number;
 }[];
 

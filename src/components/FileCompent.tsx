@@ -1,6 +1,6 @@
 import { Checkbox, FormControlLabel, Grid, Typography } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
 import { selectedFilesAtom } from "../recoil/atom/selected-files";
 import { ServerPath } from "../server/helper/const";
@@ -19,12 +19,14 @@ export const FileComponent: NextComponentType<
 > = ({ file }) => {
   const request = useRequest();
 
+  const [path, setPath] = useState("");
+
   const [selectedFiles, setSelectedFiles] = useRecoilState(selectedFilesAtom);
   const handleSelectFile = useCallback(
     async (file: IFile) => {
       // TODO グローバルで持っている selectedFiles から exsistingをチェック
       const index = selectedFiles.length + 1;
-      const exsisting = selectedFiles.find((e) => e.file.id === file.id);
+      const exsisting = selectedFiles.find((e) => e.fileId === file.id);
 
       if (exsisting) {
       } else if (!exsisting) {
@@ -32,17 +34,18 @@ export const FileComponent: NextComponentType<
           "GET",
           ServerPath.file(file.id)
         );
-        file = { ...file, path: imageSet.path };
+
+        setPath(imageSet.path);
       }
 
       setSelectedFiles((prev) =>
-        exsisting ? prev : [...prev, { file, index }]
+        exsisting ? prev : [...prev, { fileId: file.id, index }]
       );
     },
     [request, selectedFiles, setSelectedFiles]
   );
   const handleUnSelectFile = async (file: IFile) => {
-    setSelectedFiles((prev) => prev.filter((e) => e.file.id !== file.id));
+    setSelectedFiles((prev) => prev.filter((e) => e.fileId !== file.id));
   };
 
   return (
@@ -51,6 +54,7 @@ export const FileComponent: NextComponentType<
         <FormControlLabel
           control={<Checkbox />}
           onClick={async (e) => {
+            e.stopPropagation();
             if ((e.target as any).checked) {
               await handleSelectFile(file);
             } else {
@@ -64,7 +68,7 @@ export const FileComponent: NextComponentType<
         <Typography variant="h5">{file.name}</Typography>
       </Grid>
       <Grid item>
-        <img width={100} height={100} src={file.path} />
+        <img width={100} height={100} src={path} />
       </Grid>
     </Grid>
   );

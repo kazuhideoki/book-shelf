@@ -5,8 +5,9 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import { pdfjs } from "react-pdf";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { FolderComponent } from "../components/FolderComponent";
+import { selectedFilesAtom } from "../recoil/atom/selected-files";
 import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
@@ -39,6 +40,7 @@ const Settings: NextPage<P> = ({}) => {
     [values.folderNames]
   );
 
+  const selectedFiles = useRecoilValue(selectedFilesAtom);
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
       await withLoading(
@@ -47,7 +49,7 @@ const Settings: NextPage<P> = ({}) => {
             name: values.name,
 
             // TODO selectedFilesからもってくる
-            files: [],
+            files: [...selectedFiles],
           },
         })
       );
@@ -109,6 +111,11 @@ const Settings: NextPage<P> = ({}) => {
       <Grid item>
         <Button variant="contained" onClick={handleSubmitDisplaySets}>
           設定を登録
+        </Button>
+      </Grid>
+      <Grid item>
+        <Button onClick={() => router.push(FrontPath.top)}>
+          <Typography variant="h5">ディスプレイページに戻る</Typography>
         </Button>
       </Grid>
     </Grid>
