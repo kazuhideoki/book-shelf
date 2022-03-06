@@ -15,11 +15,9 @@ export const fetchImageSets = selector<ImageSet[]>({
       return imageSetsState.imageSets;
     }
 
-    const selectedDisplaySets = get(displaySetsAtom).selected;
+    const displaySet = get(displaySetsAtom).selected;
 
-    // TODO ここでのエラー後 再fetchしてくれない 導線を考える必要ある
-    if (!selectedDisplaySets) {
-      // throw "Display set must be set";
+    if (!displaySet) {
       return [];
     }
 
@@ -29,7 +27,7 @@ export const fetchImageSets = selector<ImageSet[]>({
 
     try {
       const res = await Promise.all(
-        selectedDisplaySets?.files.map((e) =>
+        displaySet?.files.map((e) =>
           request<ImageSet>("GET", ServerPath.file(e.fileId))
         )
       );

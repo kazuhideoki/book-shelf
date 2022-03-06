@@ -19,7 +19,7 @@ export class DisplaySetService extends BaseService {
     return response;
   }
 
-  async register(data: RegisterDispalySet): Promise<void> {
+  async register(data: RegisterDispalySet): Promise<DisplaySet> {
     const ref = collection("displaySets").doc();
 
     const firebaseData: DisplaySet = {
@@ -34,5 +34,7 @@ export class DisplaySetService extends BaseService {
     await ref
       .set(firebaseData)
       .catch((e) => console.log(`error occurred in firestore: ${e}`));
+
+    return firebaseData;
   }
 }

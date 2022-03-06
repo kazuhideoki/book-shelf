@@ -7,6 +7,7 @@ import { useCallback, useMemo, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { FolderComponent } from "../components/FolderComponent";
+import { displaySetsAtom } from "../recoil/atom/display-set";
 import { selectedFilesAtom } from "../recoil/atom/selected-files";
 import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
@@ -22,6 +23,7 @@ const Settings: NextPage<P> = ({}) => {
   const request = useRequest();
   const withLoading = useWithLoading();
   const setSnackbar = useSetRecoilState(snackbarState);
+  const setDisplaySets = useSetRecoilState(displaySetsAtom);
 
   const [values, setValues] = useState<{
     folderNames: string;
@@ -43,16 +45,19 @@ const Settings: NextPage<P> = ({}) => {
   const selectedFiles = useRecoilValue(selectedFilesAtom);
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
-      await withLoading(
+      const res = await withLoading(
         request<any, RegisterDispalySet>("POST", ServerPath.displaySets, {
           data: {
             name: values.name,
-
-            // TODO selectedFilesからもってくる
             files: [...selectedFiles],
           },
         })
       );
+
+      setDisplaySets((prev) => ({
+        ...prev,
+        displaySets: [...prev.displaySets, res],
+      }));
 
       setSnackbar({
         open: true,
@@ -63,7 +68,7 @@ const Settings: NextPage<P> = ({}) => {
     } catch (error) {
       console.log(`Error occurred: ${error}`);
     }
-  }, [values]);
+  }, [request, selectedFiles, setSnackbar, values.name, withLoading]);
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -106,10 +111,20 @@ const Settings: NextPage<P> = ({}) => {
           value={values.name}
           label={"ディスプレイセットの名前"}
           onChange={(e) => setValues({ ...values, name: e.target.value })}
+          onKeyPress={async (e) => {
+            if (e.key === "Enter") {
+              await handleSubmitDisplaySets();
+            }
+          }}
         />
       </Grid>
       <Grid item>
-        <Button variant="contained" onClick={handleSubmitDisplaySets}>
+        <Button
+          variant="contained"
+          onClick={async () => {
+            await handleSubmitDisplaySets();
+          }}
+        >
           設定を登録
         </Button>
       </Grid>
