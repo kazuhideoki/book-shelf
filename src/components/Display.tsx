@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { NextComponentType, NextPageContext } from "next";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { fetchImageSets } from "../recoil/selector/image-set";
+import { ImageSetsSelector } from "../recoil/selector/image-set";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 
 const useStyles = makeStyles(() => ({
@@ -21,7 +21,7 @@ export const Display: NextComponentType<
   P
 > = ({}) => {
   const classes = useStyles();
-  const imageSets = useRecoilValue(fetchImageSets);
+  const imageSets = useRecoilValue(ImageSetsSelector);
 
   const [targetImg, setTargetImg] = useState<ImageSet | null>(null);
 

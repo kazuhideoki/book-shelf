@@ -6,7 +6,7 @@ export type SelectedFiles = {
 }[];
 
 // /settings で選択したファイル
-export const selectedFilesAtom = atom<SelectedFiles>({
-  key: "selectedFiles",
+export const selectedFilesState = atom<SelectedFiles>({
+  key: "selectedFilesState",
   default: [],
 });

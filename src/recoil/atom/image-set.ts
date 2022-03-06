@@ -7,7 +7,7 @@ export type ImageSetsState = {
 };
 
 // 読み込んだイメージセット
-export const imageSetsAtom = atom<ImageSetsState>({
-  key: "imageSets",
+export const imageSetsState = atom<ImageSetsState>({
+  key: "imageSetsState",
   default: { imageSets: [], initilized: false },
 });

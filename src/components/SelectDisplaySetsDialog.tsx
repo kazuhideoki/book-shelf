@@ -3,8 +3,8 @@ import { NextComponentType, NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { displaySetsAtom } from "../recoil/atom/display-set";
-import { fetchDisplaySets } from "../recoil/selector/display-set";
+import { displaySetsState } from "../recoil/atom/display-set";
+import { displaySetsSelector } from "../recoil/selector/display-set";
 import { FrontPath } from "../server/helper/const";
 interface P {
   setShowDialog: Dispatch<SetStateAction<boolean>>;
@@ -17,8 +17,8 @@ export const SelectDisplaySetsDialog: NextComponentType<
 > = ({ setShowDialog }) => {
   console.log("SelectDisplaySetsDialog");
 
-  const displaySets = useRecoilValue(fetchDisplaySets);
-  const setDisplaySets = useSetRecoilState(displaySetsAtom);
+  const displaySets = useRecoilValue(displaySetsSelector);
+  const setDisplaySets = useSetRecoilState(displaySetsState);
   const router = useRouter();
 
   return (

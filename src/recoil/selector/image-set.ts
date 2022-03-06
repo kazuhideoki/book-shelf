@@ -1,28 +1,26 @@
 import { selector } from "recoil";
 import { ServerPath } from "../../server/helper/const";
 import { ImageSet } from "../../type/model/firestore-image-set.type";
-import { axiosRequestToServer } from "../../utils/axios";
-import { authState } from "../atom/auth";
-import { displaySetsAtom } from "../atom/display-set";
+import { displaySetsState } from "../atom/display-set";
 import { guardRecoilDefaultValue } from "../atom/helper/guard-recoil-default-value";
-import { imageSetsAtom } from "../atom/image-set";
+import { imageSetsState } from "../atom/image-set";
+import { requestSelector } from "./helper/request";
 
-export const fetchImageSets = selector<ImageSet[]>({
-  key: "imageSetsFetch",
+export const ImageSetsSelector = selector<ImageSet[]>({
+  key: "ImageSetsSelector",
   get: async ({ get }) => {
-    const imageSetsState = get(imageSetsAtom);
-    if (imageSetsState.initilized) {
-      return imageSetsState.imageSets;
+    const { imageSets, initilized } = get(imageSetsState);
+    if (initilized) {
+      return imageSets;
     }
 
-    const displaySet = get(displaySetsAtom).selected;
+    const displaySet = get(displaySetsState).selected;
 
     if (!displaySet) {
       return [];
     }
 
-    const { auth } = get(authState);
-    const request = axiosRequestToServer(auth);
+    const request = get(requestSelector);
     console.log(`init imageSetsState`);
 
     try {
@@ -44,6 +42,6 @@ export const fetchImageSets = selector<ImageSet[]>({
   set: ({ set }, newValue) => {
     if (guardRecoilDefaultValue(newValue)) return;
 
-    set(imageSetsAtom, { imageSets: newValue, initilized: true });
+    set(imageSetsState, { imageSets: newValue, initilized: true });
   },
 });

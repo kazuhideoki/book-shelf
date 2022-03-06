@@ -1,21 +1,19 @@
 import { selector } from "recoil";
 import { ServerPath } from "../../server/helper/const";
 import { DisplaySet } from "../../type/model/firestore-display-set.type";
-import { axiosRequestToServer } from "../../utils/axios";
-import { authState } from "../atom/auth";
-import { displaySetsAtom } from "../atom/display-set";
+import { displaySetsState } from "../atom/display-set";
 import { guardRecoilDefaultValue } from "../atom/helper/guard-recoil-default-value";
+import { requestSelector } from "./helper/request";
 
-export const fetchDisplaySets = selector<DisplaySet[]>({
-  key: "displaySetsFetch",
+export const displaySetsSelector = selector<DisplaySet[]>({
+  key: "displaySetsSelector",
   get: async ({ get }) => {
-    const displaySetsState = get(displaySetsAtom);
-    if (displaySetsState.initilized) {
-      return displaySetsState.displaySets;
+    const { displaySets, initilized } = get(displaySetsState);
+    if (initilized) {
+      return displaySets;
     }
 
-    const { auth } = get(authState);
-    const request = axiosRequestToServer(auth);
+    const request = get(requestSelector);
     console.log(`init displaySetsState`);
 
     try {
@@ -33,6 +31,6 @@ export const fetchDisplaySets = selector<DisplaySet[]>({
   set: ({ set }, newValue) => {
     if (guardRecoilDefaultValue(newValue)) return;
 
-    set(displaySetsAtom, { displaySets: newValue, initilized: true });
+    set(displaySetsState, { displaySets: newValue, initilized: true });
   },
 });

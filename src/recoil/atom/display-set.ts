@@ -8,7 +8,7 @@ export type DisplaySetsState = {
 };
 
 // 読み込んだ displaySet
-export const displaySetsAtom = atom<DisplaySetsState>({
-  key: "displaySets",
+export const displaySetsState = atom<DisplaySetsState>({
+  key: "displaySetsState",
   default: { displaySets: [], initilized: false },
 });

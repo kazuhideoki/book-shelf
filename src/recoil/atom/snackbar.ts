@@ -6,6 +6,6 @@ export type SnackbarState = {
 };
 
 export const snackbarState = atom<SnackbarState>({
-  key: "snackBar",
+  key: "snackbarState",
   default: { open: false, message: "" },
 });

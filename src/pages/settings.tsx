@@ -7,8 +7,8 @@ import { useCallback, useMemo, useState } from "react";
 import { pdfjs } from "react-pdf";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { FolderComponent } from "../components/FolderComponent";
-import { displaySetsAtom } from "../recoil/atom/display-set";
-import { selectedFilesAtom } from "../recoil/atom/selected-files";
+import { displaySetsState } from "../recoil/atom/display-set";
+import { selectedFilesState } from "../recoil/atom/selected-files";
 import { snackbarState } from "../recoil/atom/snackbar";
 import { FrontPath, ServerPath } from "../server/helper/const";
 import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
@@ -23,7 +23,7 @@ const Settings: NextPage<P> = ({}) => {
   const request = useRequest();
   const withLoading = useWithLoading();
   const setSnackbar = useSetRecoilState(snackbarState);
-  const setDisplaySets = useSetRecoilState(displaySetsAtom);
+  const setDisplaySets = useSetRecoilState(displaySetsState);
 
   const [values, setValues] = useState<{
     folderNames: string;
@@ -42,7 +42,7 @@ const Settings: NextPage<P> = ({}) => {
     [values.folderNames]
   );
 
-  const selectedFiles = useRecoilValue(selectedFilesAtom);
+  const selectedFiles = useRecoilValue(selectedFilesState);
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
       const res = await withLoading(
