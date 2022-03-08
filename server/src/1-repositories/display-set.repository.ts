@@ -3,7 +3,7 @@ import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 import { collection, toData } from '../0-base/server-firebase';
 
 export class DisplaySetRepository {
-  async list(q: { accountId?: string }): Promise<DisplaySet[]> {
+  async list(q?: { accountId?: string }): Promise<DisplaySet[]> {
     const cr = collection('displaySets');
     let qr: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
 

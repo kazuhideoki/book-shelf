@@ -2,10 +2,14 @@ import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ImageSet } from '../../../type/model/firestore-image-set.type';
 import { DriveFiles } from '../../../type/model/google-drive-file.type';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
+import { FileService } from '../2-services/file.service';
 
 @Controller('files')
-export class AppController {
-  constructor(private readonly driveFileService: DriveFileRepository) {}
+export class FileController {
+  constructor(
+    private readonly driveFileService: DriveFileRepository,
+    private readonly fileService: FileService,
+  ) {}
 
   @Get()
   getFiles(
@@ -20,8 +24,8 @@ export class AppController {
     });
   }
 
-  @Post(':id')
-  registerDisplaySet(@Param('id ') id: string): Promise<ImageSet> {
-    // return this.driveFileService.hoge
+  @Post(':fileId')
+  registerDisplaySet(@Param('fileId ') fileId: string): Promise<ImageSet> {
+    return this.fileService.findImageSet(fileId);
   }
 }
