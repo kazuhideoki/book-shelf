@@ -1,9 +1,8 @@
 import { AuthContext } from '../../../front/src/server/helper/auth-context';
 import { StoragePath } from '../../../front/src/server/helper/const';
 import { bucket } from '../0-base/server-firebase';
-import { BaseService } from '../2-services/base.service';
 
-export class StorageService extends BaseService {
+export class StorageRepository {
   async save(fileId: string, data: Buffer) {
     await bucket
       .file(StoragePath.imageFile(AuthContext.instance.auth.accountId, fileId))

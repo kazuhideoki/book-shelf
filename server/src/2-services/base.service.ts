@@ -1,5 +1,6 @@
 import { AxiosRequestConfig, Method } from 'axios';
 import { AuthContext } from '../../../front/src/server/helper/auth-context';
+import { axiosRequest } from '../0-base/axios';
 
 export abstract class BaseService {
   constructor(readonly authContext: AuthContext) {

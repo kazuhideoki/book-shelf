@@ -1,21 +1,21 @@
 import { BaseQuery } from '../../../front/src/server/helper/base-query';
 import { ExternalPath } from '../../../front/src/server/helper/const';
 import { DriveFiles } from '../../../type/model/google-drive-file.type';
-import { BaseService } from '../2-services/base.service';
+import { daxiosRequest } from './helper.ts/request-to-drive';
 
 export type DriveFileQuery = {
   q?: string;
   pageToken?: string;
 } & BaseQuery;
 
-export class DriveFileService extends BaseService {
+export class DriveFileRepository {
   async list({
     q,
     pageToken,
     pageSize,
     orderBy,
   }: DriveFileQuery): Promise<DriveFiles> {
-    const response = await this.daxiosRequest<DriveFiles>(
+    const response = await daxiosRequest<DriveFiles>(
       'GET',
       ExternalPath.files,
       {
@@ -35,7 +35,7 @@ export class DriveFileService extends BaseService {
   }
 
   async fetchMedia(fileId: string): Promise<Buffer> {
-    return await this.daxiosRequest<Buffer>('GET', ExternalPath.file(fileId), {
+    return await daxiosRequest<Buffer>('GET', ExternalPath.file(fileId), {
       params: {
         alt: 'media',
       },
@@ -44,7 +44,7 @@ export class DriveFileService extends BaseService {
   }
 
   async fetchMediaBase64(fileId: string): Promise<string> {
-    return await this.daxiosRequest<string>('GET', ExternalPath.file(fileId), {
+    return await daxiosRequest<string>('GET', ExternalPath.file(fileId), {
       params: {
         alt: 'media',
       },

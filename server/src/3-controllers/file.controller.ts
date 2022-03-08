@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ImageSet } from '../../../type/model/firestore-image-set.type';
 import { DriveFiles } from '../../../type/model/google-drive-file.type';
-import { DriveFileService } from '../1-repositories/drive-file-service';
+import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 
 @Controller('files')
 export class AppController {
-  constructor(private readonly driveFileService: DriveFileService) {}
+  constructor(private readonly driveFileService: DriveFileRepository) {}
 
   @Get()
   getFiles(

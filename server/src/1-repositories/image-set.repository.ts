@@ -4,9 +4,8 @@ import {
   timestampFromDateRecursively,
   toData,
 } from '../0-base/server-firebase';
-import { BaseService } from '../2-services/base.service';
 
-export class ImageSetService extends BaseService {
+export class ImageSetRepository {
   async find(fileId: string): Promise<ImageSet> {
     const response = await toData<ImageSet>(
       collection('imageSets').doc(fileId).get(),

@@ -4,8 +4,8 @@ import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
 import PdfParse from "pdf-parse";
-import { ImageSetService } from "../../../../../../server/src/1-repositories/image-set.service";
-import { StorageService } from "../../../../../../server/src/1-repositories/storage-service";
+import { ImageSetRepository } from "../../../../../../server/src/1-repositories/image-set.repository";
+import { StorageRepository } from "../../../../../../server/src/1-repositories/storage-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { AuthContext } from "../../../../server/helper/auth-context";
 import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-image";
@@ -24,7 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     get: async () => {
       const { fileId } = api.query;
 
-      const imageSet = await new ImageSetService(AuthContext.instance).find(
+      const imageSet = await new ImageSetRepository(AuthContext.instance).find(
         fileId
       );
 
@@ -69,17 +69,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         height,
       });
 
-      await new StorageService(AuthContext.instance).save(fileId, image);
+      await new StorageRepository(AuthContext.instance).save(fileId, image);
 
       const expires = DateTime.fromJSDate(new Date())
         .plus({
           seconds: expiryTime,
         })
         .toJSDate();
-      const url = await new StorageService(AuthContext.instance).getSignedUrl(
-        fileId,
-        expires
-      );
+      const url = await new StorageRepository(
+        AuthContext.instance
+      ).getSignedUrl(fileId, expires);
 
       const meta: ImageSetMeta = {
         pages: parseResult.numpages,
@@ -97,7 +96,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         updatedAt: new Date(),
       };
 
-      await new ImageSetService(AuthContext.instance).register(fileId, data);
+      await new ImageSetRepository(AuthContext.instance).register(fileId, data);
       console.log(`cache path saved in Firestore`);
 
       return res.status(200).json(data);

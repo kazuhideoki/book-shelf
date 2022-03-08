@@ -4,9 +4,8 @@ import {
   timestampFromDateRecursively,
   toData,
 } from '../0-base/server-firebase';
-import { BaseService } from '../2-services/base.service';
 
-export class AccountService extends BaseService {
+export class AccountRepository {
   static async initFind(email: string) {
     const response = await toData<Account>(
       collection('accounts').where('email', '==', email).get(),
@@ -43,7 +42,7 @@ export class AccountService extends BaseService {
     return response;
   }
 
-  async register(data: Account): Promise<void> {
+  async create(data: Account): Promise<void> {
     await collection('accounts')
       .doc()
       .set(timestampFromDateRecursively(data))

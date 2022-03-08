@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
-import { DisplaySetService } from '../1-repositories/display-set.service';
+import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 
 @Controller('display-sets')
 export class AppController {
-  constructor(private readonly displaySetService: DisplaySetService) {}
+  constructor(private readonly displaySetService: DisplaySetRepository) {}
 
   @Get()
   getDisplaySets(): Promise<DisplaySet[]> {

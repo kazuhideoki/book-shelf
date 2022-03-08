@@ -1,29 +1,27 @@
 import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 import { collection, toData } from '../0-base/server-firebase';
-import { BaseService } from '../2-services/base.service';
 
-export class DisplaySetService extends BaseService {
-  async list(): Promise<DisplaySet[]> {
-    const auht = this.authContext;
+export class DisplaySetRepository {
+  async list(q: { accountId?: string }): Promise<DisplaySet[]> {
+    const cr = collection('displaySets');
+    let qr: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
 
-    const response = await toData<DisplaySet>(
-      collection('displaySets')
-        .where('accountId', '==', this.authContext.auth.accountId)
-        .get(),
-    ).catch((e) => {
-      console.log({ e });
-      throw e;
-    });
+    if (q.accountId) {
+      qr = cr.where('accountId', '==', q.accountId);
+    }
 
-    return response;
+    return await toData<DisplaySet>((qr ?? cr).get());
   }
 
-  async register(data: RegisterDispalySet): Promise<DisplaySet> {
+  async register(
+    accountId: string,
+    data: RegisterDispalySet,
+  ): Promise<DisplaySet> {
     const ref = collection('displaySets').doc();
 
     const firebaseData: DisplaySet = {
-      accountId: this.authContext.auth.accountId,
+      accountId,
       displaySetId: ref.id,
       name: data.name,
       files: data.files,

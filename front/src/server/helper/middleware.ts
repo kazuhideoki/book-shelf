@@ -1,6 +1,6 @@
 import { OAuth2Client } from "google-auth-library";
 import { NextApiRequest } from "next";
-import { AccountService } from "../../../../server/src/1-repositories/account.service";
+import { AccountRepository } from "../../../../server/src/1-repositories/account.repository";
 import { AuthContext } from "../../server/helper/auth-context";
 import { ContextHolder } from "../../server/helper/context";
 
@@ -31,7 +31,7 @@ export async function middleware(req: NextApiRequest) {
 
   console.log({ payload });
 
-  let account = await AccountService.initFind(payload.email);
+  let account = await AccountRepository.initFind(payload.email);
   console.log(account);
 
   const authContext = new AuthContext({
@@ -48,6 +48,6 @@ export async function middleware(req: NextApiRequest) {
       picture: payload.picture,
     };
 
-    await new AccountService(authContext).register(data);
+    await new AccountRepository(authContext).create(data);
   }
 }
