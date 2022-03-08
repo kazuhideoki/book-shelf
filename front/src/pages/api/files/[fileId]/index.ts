@@ -6,10 +6,10 @@ import { PDFDocument } from "pdf-lib";
 import PdfParse from "pdf-parse";
 import { ImageSetRepository } from "../../../../../../server/src/1-repositories/image-set.repository";
 import { StorageRepository } from "../../../../../../server/src/1-repositories/storage-service";
-import { ApiHelper } from "../../../../server/helper/api-helper";
-import { AuthContext } from "../../../../server/helper/auth-context";
-import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-image";
-import { DriveFileService } from "../../../../server/service/drive-file-service";
+import { ApiHelper } from "../../../../old-server/helper/api-helper";
+import { AuthContext } from "../../../../old-server/helper/auth-context";
+import { convertPDFToImage } from "../../../../old-server/service/convert-pdf-to-image";
+import { DriveFileService } from "../../../../old-server/service/drive-file-service";
 import {
   ImageSet,
   ImageSetMeta,

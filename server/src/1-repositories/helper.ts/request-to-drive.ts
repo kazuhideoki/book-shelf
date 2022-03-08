@@ -1,5 +1,5 @@
 import { AxiosRequestConfig, Method } from 'axios';
-import { AuthContext } from '../../../../front/src/server/helper/auth-context';
+import { AuthContext } from '../../../../front/src/old-server/helper/auth-context';
 import { axiosRequest } from '../../0-base/axios';
 
 export const daxiosRequest = async <T>(

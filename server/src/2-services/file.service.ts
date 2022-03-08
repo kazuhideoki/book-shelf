@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
 import PdfParse from 'pdf-parse';
-import { AuthContext } from '../../../front/src/server/helper/auth-context';
+import { AuthContext } from '../../../front/src/old-server/helper/auth-context';
 import {
   ImageSet,
   ImageSetMeta,

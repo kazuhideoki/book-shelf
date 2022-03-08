@@ -1,8 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ApiHelper } from "../../../server/helper/api-helper";
-import { AuthContext } from "../../../server/helper/auth-context";
-import { DriveFileService } from "../../../server/service/drive-file-service";
+import { ApiHelper } from "../../../old-server/helper/api-helper";
+import { AuthContext } from "../../../old-server/helper/auth-context";
+import { DriveFileService } from "../../../old-server/service/drive-file-service";
 import { ListDriveFiles } from "../../../type/api/google-drive-api.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

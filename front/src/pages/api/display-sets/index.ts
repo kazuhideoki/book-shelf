@@ -1,8 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ApiHelper } from "../../../server/helper/api-helper";
-import { AuthContext } from "../../../server/helper/auth-context";
-import { DisplaySetService } from "../../../server/service/display-set.service";
+import { ApiHelper } from "../../../old-server/helper/api-helper";
+import { AuthContext } from "../../../old-server/helper/auth-context";
+import { DisplaySetService } from "../../../old-server/service/display-set.service";
 import { RegisterDispalySet } from "../../../type/api/firestore-display-set-api.type";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

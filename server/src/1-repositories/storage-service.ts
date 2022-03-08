@@ -1,5 +1,5 @@
-import { AuthContext } from '../../../front/src/server/helper/auth-context';
-import { StoragePath } from '../../../front/src/server/helper/const';
+import { AuthContext } from '../../../front/src/old-server/helper/auth-context';
+import { StoragePath } from '../../../front/src/old-server/helper/const';
 import { bucket } from '../0-base/server-firebase';
 
 export class StorageRepository {
