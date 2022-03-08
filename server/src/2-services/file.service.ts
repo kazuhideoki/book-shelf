@@ -9,7 +9,7 @@ import {
 } from '../../../type/model/firestore-image-set.type';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
-import { StorageRepository } from '../1-repositories/storage-service';
+import { StorageRepository } from '../1-repositories/storage-repository';
 import { BaseService } from './helper/base.service';
 import { convertPDFToImage } from './helper/convert-pdf-to-image';
 

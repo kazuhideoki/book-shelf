@@ -1,45 +1,26 @@
-import admin, { firestore as firebaseFirestore } from "firebase-admin";
-
-// var serviceAccount = require("/credentials.json");
-var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT!);
-
-const app = !admin.apps.length
-  ? admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET_NAME,
-    })
-  : admin.app();
-
-// if (!admin.apps.length) {
-//   admin.firestore().settings({ ignoreUndefinedProperties: true });
-// }
-
-type CollectionName = "imageSets" | "displaySets" | "accounts";
-
-export const collection = (collectionName: CollectionName) =>
-  admin.firestore(app).collection(collectionName);
+import { firestore as firebaseFirestore } from 'firebase-admin';
 
 export function toData<T>(
-  qss: firebaseFirestore.QuerySnapshot
+  qss: firebaseFirestore.QuerySnapshot,
 ): (T & { id: string })[];
 export function toData<T>(
-  pqss: Promise<firebaseFirestore.QuerySnapshot>
+  pqss: Promise<firebaseFirestore.QuerySnapshot>,
 ): Promise<(T & { id: string })[]>;
 export function toData<T>(
-  dss: firebaseFirestore.DocumentSnapshot
+  dss: firebaseFirestore.DocumentSnapshot,
 ): T & { id: string };
 export function toData<T>(
-  pdss: Promise<firebaseFirestore.DocumentSnapshot>
+  pdss: Promise<firebaseFirestore.DocumentSnapshot>,
 ): Promise<T & { id: string }>;
 export function toData<T>(
   ss:
     | firebaseFirestore.QuerySnapshot
     | Promise<firebaseFirestore.QuerySnapshot>
     | firebaseFirestore.DocumentSnapshot
-    | Promise<firebaseFirestore.DocumentSnapshot>
+    | Promise<firebaseFirestore.DocumentSnapshot>,
 ): T[] | T {
   const process = (
-    ss: firebaseFirestore.QuerySnapshot | firebaseFirestore.DocumentSnapshot
+    ss: firebaseFirestore.QuerySnapshot | firebaseFirestore.DocumentSnapshot,
   ) => {
     if (ss instanceof firebaseFirestore.QuerySnapshot) {
       return ss.docs.map((dss) => ({
@@ -55,7 +36,7 @@ export function toData<T>(
     }
   };
 
-  if (ss.constructor?.name.match("Promise")) {
+  if (ss.constructor?.name.match('Promise')) {
     return (ss as Promise<any>).then(process) as any;
   } else {
     return process(ss as any);
@@ -97,7 +78,3 @@ export function timestampFromDateRecursively(value: any): any {
     return value;
   }
 }
-
-export const bucket = app
-  .storage()
-  .bucket(process.env.FIREBASE_STORAGE_BUCKET_NAME);

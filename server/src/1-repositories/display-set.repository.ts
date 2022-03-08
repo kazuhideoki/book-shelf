@@ -1,10 +1,13 @@
 import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
-import { collection, toData } from '../0-base/server-firebase';
+import { toData } from '../0-base/server-firebase';
+import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 
 export class DisplaySetRepository {
+  constructor(private firebase: SettingServerFirebase) {}
+
   async list(q?: { accountId?: string }): Promise<DisplaySet[]> {
-    const cr = collection('displaySets');
+    const cr = this.firebase.collection('displaySets');
     let qr: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
 
     if (q.accountId) {
@@ -18,7 +21,7 @@ export class DisplaySetRepository {
     accountId: string,
     data: RegisterDispalySet,
   ): Promise<DisplaySet> {
-    const ref = collection('displaySets').doc();
+    const ref = this.firebase.collection('displaySets').doc();
 
     const firebaseData: DisplaySet = {
       accountId,
