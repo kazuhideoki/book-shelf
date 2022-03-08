@@ -1,16 +1,16 @@
-import { RegisterDispalySet } from "../../type/api/firestore-display-set-api.type";
-import { DisplaySet } from "../../type/model/firestore-display-set.type";
-import { BaseService } from "./base.service";
-import { collection, toData } from "./server-firebase";
+import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
+import { DisplaySet } from '../../../type/model/firestore-display-set.type';
+import { collection, toData } from '../0-base/server-firebase';
+import { BaseService } from '../2-services/base.service';
 
 export class DisplaySetService extends BaseService {
   async list(): Promise<DisplaySet[]> {
     const auht = this.authContext;
 
     const response = await toData<DisplaySet>(
-      collection("displaySets")
-        .where("accountId", "==", this.authContext.auth.accountId)
-        .get()
+      collection('displaySets')
+        .where('accountId', '==', this.authContext.auth.accountId)
+        .get(),
     ).catch((e) => {
       console.log({ e });
       throw e;
@@ -20,7 +20,7 @@ export class DisplaySetService extends BaseService {
   }
 
   async register(data: RegisterDispalySet): Promise<DisplaySet> {
-    const ref = collection("displaySets").doc();
+    const ref = collection('displaySets').doc();
 
     const firebaseData: DisplaySet = {
       accountId: this.authContext.auth.accountId,

@@ -16,10 +16,15 @@
     "incremental": true
   },
   "include": [
+    "./front",
+    "./server",
+    "./type",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/pages/api/._middleware.ts"
+    "src/pages/api/._middleware.ts",
+    "../server/src/0-base/server-firebase.ts",
+    "../server/src/1-repositories/storage-service.ts"
   ],
   "exclude": ["node_modules"]
 }

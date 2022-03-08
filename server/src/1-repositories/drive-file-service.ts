@@ -1,7 +1,7 @@
-import { DriveFiles } from "../../type/model/google-drive-file.type";
-import { BaseQuery } from "../helper/base-query";
-import { ExternalPath } from "../helper/const";
-import { BaseService } from "./base.service";
+import { BaseQuery } from '../../../front/src/server/helper/base-query';
+import { ExternalPath } from '../../../front/src/server/helper/const';
+import { DriveFiles } from '../../../type/model/google-drive-file.type';
+import { BaseService } from '../2-services/base.service';
 
 export type DriveFileQuery = {
   q?: string;
@@ -16,16 +16,16 @@ export class DriveFileService extends BaseService {
     orderBy,
   }: DriveFileQuery): Promise<DriveFiles> {
     const response = await this.daxiosRequest<DriveFiles>(
-      "GET",
+      'GET',
       ExternalPath.files,
       {
         params: {
           pageSize,
-          orderBy: orderBy?.join(","),
+          orderBy: orderBy?.join(','),
           q,
           pageToken,
         },
-      }
+      },
     ).catch((e) => {
       console.log({ e });
       throw e;
@@ -35,20 +35,20 @@ export class DriveFileService extends BaseService {
   }
 
   async fetchMedia(fileId: string): Promise<Buffer> {
-    return await this.daxiosRequest<Buffer>("GET", ExternalPath.file(fileId), {
+    return await this.daxiosRequest<Buffer>('GET', ExternalPath.file(fileId), {
       params: {
-        alt: "media",
+        alt: 'media',
       },
-      responseType: "arraybuffer",
+      responseType: 'arraybuffer',
     });
   }
 
   async fetchMediaBase64(fileId: string): Promise<string> {
-    return await this.daxiosRequest<string>("GET", ExternalPath.file(fileId), {
+    return await this.daxiosRequest<string>('GET', ExternalPath.file(fileId), {
       params: {
-        alt: "media",
+        alt: 'media',
       },
-      responseEncoding: "base64",
+      responseEncoding: 'base64',
     });
   }
 }

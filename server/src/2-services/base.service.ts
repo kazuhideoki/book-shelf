@@ -1,6 +1,5 @@
-import { AxiosRequestConfig, Method } from "axios";
-import { axiosRequest } from "../../utils/axios";
-import { AuthContext } from "../helper/auth-context";
+import { AxiosRequestConfig, Method } from 'axios';
+import { AuthContext } from '../../../front/src/server/helper/auth-context';
 
 export abstract class BaseService {
   constructor(readonly authContext: AuthContext) {
@@ -14,7 +13,7 @@ export abstract class BaseService {
   async daxiosRequest<T>(
     method: Method,
     url: string,
-    config?: AxiosRequestConfig<any>
+    config?: AxiosRequestConfig<any>,
   ): Promise<T> {
     const res = await axiosRequest<T>(method, url, {
       ...config,

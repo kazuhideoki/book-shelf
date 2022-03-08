@@ -1,15 +1,15 @@
-import { Account } from "../../type/model/account";
-import { BaseService } from "./base.service";
+import { Account } from '../../../type/model/account';
 import {
   collection,
   timestampFromDateRecursively,
   toData,
-} from "./server-firebase";
+} from '../0-base/server-firebase';
+import { BaseService } from '../2-services/base.service';
 
 export class AccountService extends BaseService {
   static async initFind(email: string) {
     const response = await toData<Account>(
-      collection("accounts").where("email", "==", email).get()
+      collection('accounts').where('email', '==', email).get(),
     )
       .catch((e) => {
         console.log({ e });
@@ -21,7 +21,7 @@ export class AccountService extends BaseService {
   }
   async find(accountId: string): Promise<Account> {
     const response = await toData<Account>(
-      collection("accounts").doc(accountId).get()
+      collection('accounts').doc(accountId).get(),
     ).catch((e) => {
       console.log({ e });
       throw e;
@@ -32,7 +32,7 @@ export class AccountService extends BaseService {
 
   async findByEmail(email: string) {
     const response = await toData<Account>(
-      collection("accounts").where("email", "==", email).get()
+      collection('accounts').where('email', '==', email).get(),
     )
       .catch((e) => {
         console.log({ e });
@@ -44,7 +44,7 @@ export class AccountService extends BaseService {
   }
 
   async register(data: Account): Promise<void> {
-    await collection("accounts")
+    await collection('accounts')
       .doc()
       .set(timestampFromDateRecursively(data))
       .catch((e) => console.log(`error occurred in firestore: ${e}`));

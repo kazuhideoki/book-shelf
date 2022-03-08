@@ -1,4 +1,4 @@
-import { ServerAuth } from "../../type/model/auth";
+import { ServerAuth } from "../../../../type/model/auth";
 import { Context, ContextHolder } from "./context";
 
 /**

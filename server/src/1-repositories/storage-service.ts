@@ -1,7 +1,7 @@
-import { AuthContext } from "../helper/auth-context";
-import { StoragePath } from "../helper/const";
-import { BaseService } from "./base.service";
-import { bucket } from "./server-firebase";
+import { AuthContext } from '../../../front/src/server/helper/auth-context';
+import { StoragePath } from '../../../front/src/server/helper/const';
+import { bucket } from '../0-base/server-firebase';
+import { BaseService } from '../2-services/base.service';
 
 export class StorageService extends BaseService {
   async save(fileId: string, data: Buffer) {
@@ -15,10 +15,10 @@ export class StorageService extends BaseService {
     return (
       await bucket
         .file(
-          StoragePath.imageFile(AuthContext.instance.auth.accountId, fileId)
+          StoragePath.imageFile(AuthContext.instance.auth.accountId, fileId),
         )
         .getSignedUrl({
-          action: "read",
+          action: 'read',
           expires,
         })
         .catch((e) => {

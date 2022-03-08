@@ -4,12 +4,12 @@ import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
 import PdfParse from "pdf-parse";
+import { ImageSetService } from "../../../../../../server/src/1-repositories/image-set.service";
+import { StorageService } from "../../../../../../server/src/1-repositories/storage-service";
 import { ApiHelper } from "../../../../server/helper/api-helper";
 import { AuthContext } from "../../../../server/helper/auth-context";
 import { convertPDFToImage } from "../../../../server/service/convert-pdf-to-image";
 import { DriveFileService } from "../../../../server/service/drive-file-service";
-import { ImageSetService } from "../../../../server/service/image-set.service";
-import { StorageService } from "../../../../server/service/storage-service";
 import {
   ImageSet,
   ImageSetMeta,

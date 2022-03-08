@@ -1,8 +1,8 @@
 import { OAuth2Client } from "google-auth-library";
 import { NextApiRequest } from "next";
+import { AccountService } from "../../../../server/src/1-repositories/account.service";
 import { AuthContext } from "../../server/helper/auth-context";
 import { ContextHolder } from "../../server/helper/context";
-import { AccountService } from "../../server/service/account.service";
 
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
