@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ServerAuth } from '../../../type/model/auth';
 import { HttpsError } from './https-error';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthContext {
   private static _instance: AuthContext;
   constructor(@Inject('AUTH_CONTEXT_INIT') auth: ServerAuth) {

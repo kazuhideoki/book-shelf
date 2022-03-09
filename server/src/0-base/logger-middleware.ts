@@ -1,7 +1,7 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const path = req.path;

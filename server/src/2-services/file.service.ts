@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
@@ -15,7 +15,7 @@ import { convertPDFToImage } from './helper/convert-pdf-to-image';
 
 const expiryTime = 60 * 60 * 24 * 7; // 1 week
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class FileService extends BaseService {
   constructor(
     private readonly imageSetRepository: ImageSetRepository,

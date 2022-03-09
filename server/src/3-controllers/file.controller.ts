@@ -4,6 +4,7 @@ import {
   Injectable,
   Param,
   Query,
+  Scope,
   UseGuards,
 } from '@nestjs/common';
 import { ImageSet } from '../../../type/model/firestore-image-set.type';
@@ -14,7 +15,7 @@ import { FileService } from '../2-services/file.service';
 import { AuthGuard } from '../security/auth-guard';
 
 @Controller('files')
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 @UseGuards(AuthGuard)
 export class FileController {
   constructor(
