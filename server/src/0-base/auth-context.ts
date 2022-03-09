@@ -6,13 +6,21 @@ import { HttpsError } from './https-error';
 export class AuthContext {
   private static _instance: AuthContext;
   constructor(@Inject('AUTH_CONTEXT_INIT') auth: ServerAuth) {
-    this.auth = auth;
+    this._auth = auth;
   }
-  auth?: ServerAuth;
-  initialized: boolean;
+
+  _auth?: ServerAuth;
+  _initialized: boolean;
+
+  get auth() {
+    return this.instance()._auth;
+  }
+  get initialized() {
+    return this.instance()._initialized;
+  }
 
   instance() {
-    if (!AuthContext._instance.auth) {
+    if (!AuthContext._instance._auth) {
       throw new HttpsError('internal', `AuthContext is not set`);
     }
     return AuthContext._instance;
@@ -23,17 +31,17 @@ export class AuthContext {
   }
 
   set(v: ServerAuth) {
-    if (AuthContext._instance?.auth) {
+    if (AuthContext._instance?._auth) {
       throw new HttpsError('internal', `AuthContext is already set`);
     }
 
     AuthContext._instance = new AuthContext(v);
-    this.initialized = true;
+    this._initialized = true;
     return AuthContext._instance;
   }
 
   destroy() {
-    this.initialized = false;
-    this.auth = undefined;
+    this._initialized = false;
+    this._auth = undefined;
   }
 }

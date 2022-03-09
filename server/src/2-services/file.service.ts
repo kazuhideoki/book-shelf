@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
-import PdfParse from 'pdf-parse';
 import {
   ImageSet,
   ImageSetMeta,
@@ -14,7 +13,7 @@ import { StorageRepository } from '../1-repositories/storage-repository';
 import { BaseService } from './helper/base.service';
 import { convertPDFToImage } from './helper/convert-pdf-to-image';
 
-const expiryTime = 60 * 60 * 24 * 7;
+const expiryTime = 60 * 60 * 24 * 7; // 1 week
 
 @Injectable()
 export class FileService extends BaseService {
@@ -45,17 +44,20 @@ export class FileService extends BaseService {
 
     const media = await this.driveFileRepository.fetchMedia(
       fileId,
-      this.authContext.instance().auth.accessToken,
+      this.authContext.auth.accessToken,
     );
     console.log({ media });
 
     const buf = Buffer.from(media);
     writeFileSync(`./tmp/${fileId}.pdf`, buf);
 
-    const parseResult = await PdfParse(buf); // 文字、メタデータなど取れる。注釈は取れない。。。
+    // const parseResult = await PdfParse(buf); // 文字、メタデータなど取れる。注釈は取れない。。。
 
     const base64 = buf.toString('base64');
-    const page = (await PDFDocument.load(base64)).getPage(0);
+
+    const doc = await PDFDocument.load(base64);
+    const pages = doc.getPages().length;
+    const page = doc.getPage(0);
 
     const width = page.getWidth();
     const height = page.getHeight();
@@ -79,10 +81,11 @@ export class FileService extends BaseService {
     const url = await this.storageRepository.getSignedUrl(fileId, expires);
 
     const meta: ImageSetMeta = {
-      pages: parseResult.numpages,
+      // pages: parseResult.numpages,555
+      pages,
     };
 
-    if (parseResult.info.Title) meta.title = parseResult.info.Title;
+    // if (parseResult.info.Title) meta.title = parseResult.info.Title;
 
     const data: ImageSet = {
       accountId: this.authContext.auth.accountId,
@@ -93,6 +96,8 @@ export class FileService extends BaseService {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+
+    console.log({ data });
 
     await this.imageSetRepository.register(fileId, data);
     console.log(`cache path saved in Firestore`);

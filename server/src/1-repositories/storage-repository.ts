@@ -13,32 +13,22 @@ export class StorageRepository {
   async save(fileId: string, data: Buffer) {
     await this.firebase
       .bucket()
-      .file(
-        StoragePath.imageFile(
-          this.authContext.instance().auth.accountId,
-          fileId,
-        ),
-      )
+      .file(StoragePath.imageFile(this.authContext.auth.accountId, fileId))
       .save(data)
       .catch((e) => console.log(`error occurred in bucket.file: ${e}`));
   }
 
   async getSignedUrl(fileId: string, expires: Date): Promise<string> {
-    return await this.firebase
-      .bucket()
-      .file(
-        StoragePath.imageFile(
-          this.authContext.instance().auth.accountId,
-          fileId,
-        ),
-      )
-      .getSignedUrl({
-        action: 'read',
-        expires,
-      })
-      .catch((e) => {
-        console.log(`error occurred in getSignedUrl: ${e}`);
-        throw e;
-      })[0];
+    const response = (
+      await this.firebase
+        .bucket()
+        .file(StoragePath.imageFile(this.authContext.auth.accountId, fileId))
+        .getSignedUrl({
+          action: 'read',
+          expires,
+        })
+    )[0];
+
+    return response;
   }
 }

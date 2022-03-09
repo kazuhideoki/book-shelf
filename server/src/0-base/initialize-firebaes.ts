@@ -16,8 +16,6 @@ export class FirebaseSetting {
       this.configService.get<string>('FIREBASE_SERVICE_ACCOUNT'),
     );
 
-    console.log({ serviceAccount });
-
     this.defaultApp = admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       storageBucket: this.configService.get<string>(
