@@ -2,11 +2,11 @@ FROM node:16.13.2-alpine
 
 WORKDIR /usr/src/app
 
-COPY ./server ./server
-COPY ./type ./type
+COPY ./server ./
+COPY ./type ./
 
-RUN cd server && npm i --force && npm run build
+RUN npm i --force && npm run build
 
 EXPOSE 8080
 
-CMD cd server && npm run start:prod
+CMD npm run start:prod
