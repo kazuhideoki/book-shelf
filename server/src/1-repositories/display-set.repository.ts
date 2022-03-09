@@ -1,12 +1,15 @@
+import { Injectable } from '@nestjs/common';
 import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 // import { collection } from '../main';
-import { collection } from '../0-base/initialize-firebaes';
+import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import { toData } from '../0-base/server-firebase';
 
+@Injectable()
 export class DisplaySetRepository {
+  constructor(readonly firebase: FirebaseSetting) {}
   async list(q?: { accountId?: string }): Promise<DisplaySet[]> {
-    const cr = collection('displaySets');
+    const cr = this.firebase.collection('displaySets');
     let qr: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
 
     if (q?.accountId) {
@@ -20,7 +23,7 @@ export class DisplaySetRepository {
     accountId: string,
     data: RegisterDispalySet,
   ): Promise<DisplaySet> {
-    const ref = collection('displaySets').doc();
+    const ref = this.firebase.collection('displaySets').doc();
 
     const firebaseData: DisplaySet = {
       accountId,

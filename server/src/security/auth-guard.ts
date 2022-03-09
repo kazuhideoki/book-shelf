@@ -1,18 +1,14 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Scope,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { AuthContext } from '../0-base/auth-context';
 import { AccountRepository } from '../1-repositories/account.repository';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     readonly configService: ConfigService,
+    readonly accountRepository: AccountRepository,
     readonly authContext: AuthContext,
   ) {}
 
@@ -40,7 +36,7 @@ export class AuthGuard implements CanActivate {
     const payload: { name: string; email: string; picture?: string } =
       ticket.getPayload() as any;
 
-    const account = await new AccountRepository().initFind(payload.email);
+    const account = await this.accountRepository.initFind(payload.email);
 
     this.authContext.set({
       ...account,
@@ -55,7 +51,7 @@ export class AuthGuard implements CanActivate {
         picture: payload.picture,
       };
 
-      await new AccountRepository().create(data);
+      await this.accountRepository.create(data);
     }
 
     const a = this.authContext.instance();

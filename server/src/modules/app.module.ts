@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthContext } from '../0-base/auth-context';
+import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import { LoggerMiddleware } from '../0-base/logger-middleware';
-import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 import { AccountRepository } from '../1-repositories/account.repository';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
@@ -30,7 +30,6 @@ console.log('app.module.ts');
     DriveFileRepository,
     ImageSetRepository,
     StorageRepository,
-    SettingServerFirebase,
     FileService,
     AuthContext,
     {
@@ -38,6 +37,7 @@ console.log('app.module.ts');
       useValue: {},
       scope: Scope.REQUEST,
     },
+    FirebaseSetting,
   ],
 })
 export class AppModule implements NestModule {

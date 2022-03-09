@@ -1,15 +1,18 @@
+import { Injectable } from '@nestjs/common';
 import { StoragePath } from '../../../front/src/utils/const';
 import { AuthContext } from '../0-base/auth-context';
-import { SettingServerFirebase } from '../0-base/setting-server-firebase';
+import { FirebaseSetting } from '../0-base/initialize-firebaes';
 
+@Injectable()
 export class StorageRepository {
   constructor(
-    private readonly firebase: SettingServerFirebase,
+    private readonly firebase: FirebaseSetting,
     private readonly authContext: AuthContext,
   ) {}
 
   async save(fileId: string, data: Buffer) {
-    await this.firebase.bucket
+    await this.firebase
+      .bucket()
       .file(
         StoragePath.imageFile(
           this.authContext.instance().auth.accountId,
@@ -21,7 +24,8 @@ export class StorageRepository {
   }
 
   async getSignedUrl(fileId: string, expires: Date): Promise<string> {
-    return await this.firebase.bucket
+    return await this.firebase
+      .bucket()
       .file(
         StoragePath.imageFile(
           this.authContext.instance().auth.accountId,

@@ -1,13 +1,15 @@
-import { DriveFiles } from '../../../type/model/google-drive-file.type';
-import { daxiosRequest } from './helper.ts/request-to-drive';
+import { Injectable } from '@nestjs/common';
 import { BaseQuery } from '../../../front/src/utils/base-query';
 import { ExternalPath } from '../../../front/src/utils/const';
+import { DriveFiles } from '../../../type/model/google-drive-file.type';
+import { daxiosRequest } from './helper.ts/request-to-drive';
 
 export type DriveFileQuery = {
   q?: string;
   pageToken?: string;
 } & BaseQuery;
 
+@Injectable()
 export class DriveFileRepository {
   async list(
     { q, pageToken, pageSize, orderBy }: DriveFileQuery,
