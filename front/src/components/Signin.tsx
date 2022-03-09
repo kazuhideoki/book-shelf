@@ -18,29 +18,33 @@ export const SignIn: NextComponentType<
   const handleGoogleAuth = async (googleData: GoogleLoginResponse) => {
     console.log({ googleData });
 
-    const res = await withLoading(
-      axiosRequest<Account>(
-        "GET",
-        `${process.env.NEXT_PUBLIC_WEB_SERVICE_URL}${ServerPath.self}`,
-        {
-          headers: {
-            Authorization: `Bearer ${googleData?.tokenId}/${googleData.accessToken}`,
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      )
-    );
+    try {
+      const res = await withLoading(
+        axiosRequest<Account>(
+          "GET",
+          `${process.env.NEXT_PUBLIC_WEB_SERVICE_URL}${ServerPath.self}`,
+          {
+            headers: {
+              Authorization: `Bearer ${googleData?.tokenId}/${googleData.accessToken}`,
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        )
+      );
 
-    console.log({ res });
+      console.log({ res });
 
-    setAuth({
-      auth: {
-        ...res,
-        tokenId: googleData.tokenId,
-        accessToken: googleData.accessToken,
-      },
-      initialized: true,
-    });
+      setAuth({
+        auth: {
+          ...res,
+          tokenId: googleData.tokenId,
+          accessToken: googleData.accessToken,
+        },
+        initialized: true,
+      });
+    } catch (error) {
+      console.log({ error });
+    }
   };
 
   return (

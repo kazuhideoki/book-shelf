@@ -8,12 +8,15 @@ export class LoggerMiddleware implements NestMiddleware {
     const method = req.method;
     console.log(`⭐ ${method} ${path}`);
 
-    res.on('finish', () => {
-      console.log(`🔵 ${method} ${path}`);
-    });
-
-    res.on('error', (error: Error) => {
-      console.log(`❌ ${method} ${path} error:${error}`);
+    res.on('finish', (error) => {
+      if (
+        res.statusCode.toString().startsWith('2') ||
+        res.statusCode.toString().startsWith('3')
+      ) {
+        console.log(`🔵 ${method} ${path}`);
+      } else {
+        console.error(`❌ ${method} ${path} `);
+      }
     });
 
     next();
