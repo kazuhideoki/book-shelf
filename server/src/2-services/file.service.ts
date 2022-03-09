@@ -2,11 +2,11 @@ import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
 import PdfParse from 'pdf-parse';
-import { AuthContext } from '../../../front/src/old-server/helper/auth-context';
 import {
   ImageSet,
   ImageSetMeta,
 } from '../../../type/model/firestore-image-set.type';
+import { AuthContext } from '../0-base/auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';

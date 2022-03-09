@@ -1,5 +1,5 @@
-import { ServerAuth } from "../../../../type/model/auth";
-import { Context, ContextHolder } from "./context";
+import { ServerAuth } from '../../../type/model/auth';
+import { Context, ContextHolder } from './context';
 
 /**
  * 1 APIリクエストの中で不変なインスタンス

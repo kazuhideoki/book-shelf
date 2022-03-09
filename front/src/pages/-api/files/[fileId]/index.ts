@@ -4,10 +4,10 @@ import { DateTime } from "luxon";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
 import PdfParse from "pdf-parse";
+import { AuthContext } from "../../../../../../server/src/0-base/auth-context";
 import { ImageSetRepository } from "../../../../../../server/src/1-repositories/image-set.repository";
 import { StorageRepository } from "../../../../../../server/src/1-repositories/storage-service";
 import { ApiHelper } from "../../../../old-server/helper/api-helper";
-import { AuthContext } from "../../../../old-server/helper/auth-context";
 import { convertPDFToImage } from "../../../../old-server/service/convert-pdf-to-image";
 import { DriveFileService } from "../../../../old-server/service/drive-file-service";
 import {

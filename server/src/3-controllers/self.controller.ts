@@ -1,11 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { AuthContext } from '../../../front/src/old-server/helper/auth-context';
 import { ServerAuth } from '../../../type/model/auth';
+import { NewAuthContext } from '../0-base/new-auth-context';
 
 @Controller('self')
 export class SelfController {
   @Get()
   self(): ServerAuth {
-    return AuthContext.instance.auth;
+    // return AuthContext.instance.auth;
+    return NewAuthContext.instance().auth;
   }
 }

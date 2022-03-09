@@ -23,10 +23,6 @@ const app = admin.initializeApp({
 console.log({ app });
 
 export const collection = (collectionName: CollectionName) => {
-  const e = admin.firestore(app);
-  const apps = admin.app();
-  const env = process.env;
-
   return admin.firestore(admin.app()).collection(collectionName);
 };
 

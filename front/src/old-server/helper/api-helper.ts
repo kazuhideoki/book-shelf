@@ -1,9 +1,9 @@
 import { AxiosRequestConfig, Method } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import { AuthContext } from "../../../../server/src/0-base/auth-context";
+import { ContextHolder } from "../../../../server/src/0-base/context";
 import { CustomError } from "../../type/model/error";
 import { axiosRequest } from "../../utils/axios";
-import { AuthContext } from "./auth-context";
-import { ContextHolder } from "./context";
 import { HttpsError } from "./https-error";
 import { middleware } from "./middleware";
 

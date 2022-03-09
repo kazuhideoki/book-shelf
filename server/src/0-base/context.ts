@@ -1,9 +1,9 @@
 import AsyncHooks, {
   executionAsyncId,
   executionAsyncResource,
-} from "async_hooks";
-import { v4 } from "uuid";
-import { Constructor } from "./type-helper";
+} from 'async_hooks';
+import { v4 } from 'uuid';
+import { Constructor } from '../../../type/type-helper';
 
 /**
  * どういった文脈でプログラムが実行されているか (dataset) を保持する構造体
@@ -35,7 +35,7 @@ type Structure = { [name: string]: any };
  * Context だけではく他のデータも保持できる
  */
 export class ContextHolder {
-  static PROP_NAME = "APP_STRUCTURE";
+  static PROP_NAME = 'APP_STRUCTURE';
   private static hook: AsyncHooks.AsyncHook;
 
   /**
@@ -48,6 +48,7 @@ export class ContextHolder {
           const parentCR: any = AsyncHooks.executionAsyncResource() || {};
           childCR[ContextHolder.PROP_NAME] = parentCR[ContextHolder.PROP_NAME];
         },
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         destroy: (asyncId) => {},
       }).enable();
     }
@@ -79,7 +80,7 @@ export class ContextHolder {
     const base: BaseContext = new BaseContext(
       executionAsyncId(),
       v4(),
-      parentStructure?.BaseContext
+      parentStructure?.BaseContext,
     );
 
     const structure = (cr[ContextHolder.PROP_NAME] = {
@@ -152,13 +153,13 @@ export class ContextHolder {
 
 export class BaseContext {
   readonly root?: BaseContext;
-  private _rootNextSeq: number = -1;
+  private _rootNextSeq = -1;
   readonly seq: number;
 
   constructor(
     readonly asyncId: number,
     readonly execId: string,
-    source?: BaseContext
+    source?: BaseContext,
   ) {
     this.root = source?.root || source;
 

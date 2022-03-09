@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
-import { AuthContext } from '../../../front/src/old-server/helper/auth-context';
-import { ContextHolder } from '../../../front/src/old-server/helper/context';
+import { NewAuthContext } from '../0-base/new-auth-context';
 import { AccountRepository } from '../1-repositories/account.repository';
 
 @Injectable()
@@ -10,6 +9,8 @@ export class AuthGuard implements CanActivate {
   constructor(readonly configService = new ConfigService()) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // ContextHolder.initContext();
+
     // const client = new OAuth2Client(process.env.CLIENT_ID);
     const client = new OAuth2Client(this.configService.get('CLIENT_ID'));
 
@@ -39,13 +40,20 @@ export class AuthGuard implements CanActivate {
     const account = await new AccountRepository().initFind(payload.email);
     console.log(account);
 
-    const authContext = new AuthContext({
+    // const authContext = new AuthContext({
+    //   ...account,
+    //   accountId: account?.id,
+    //   accessToken,
+    // });
+    const authContext = NewAuthContext.set({
       ...account,
       accountId: account?.id,
       accessToken,
     });
 
-    ContextHolder.set(authContext);
+    const auth = NewAuthContext.instance();
+
+    // ContextHolder.set(authContext);
 
     if (!account) {
       const data = {
