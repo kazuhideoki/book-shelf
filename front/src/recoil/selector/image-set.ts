@@ -1,6 +1,6 @@
 import { selector } from "recoil";
-import { ImageSet } from "../../type/model/firestore-image-set.type";
-import { ServerPath } from "../../utils/const";
+import { ServerPath } from "../../../../type/const";
+import { ImageSet } from "../../../../type/model/firestore-image-set.type";
 import { displaySetsState } from "../atom/display-set";
 import { guardRecoilDefaultValue } from "../atom/helper/guard-recoil-default-value";
 import { imageSetsState } from "../atom/image-set";
@@ -25,7 +25,7 @@ export const ImageSetsSelector = selector<ImageSet[]>({
 
     try {
       const res = await Promise.all(
-        displaySet?.files.map((e) =>
+        displaySet?.files.map((e: any) =>
           request<ImageSet>("GET", ServerPath.file(e.fileId))
         )
       );

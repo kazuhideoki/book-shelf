@@ -3,8 +3,8 @@ import { makeStyles } from "@mui/styles";
 import { NextComponentType, NextPageContext } from "next";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
+import { ImageSet } from "../../../type/model/firestore-image-set.type";
 import { ImageSetsSelector } from "../recoil/selector/image-set";
-import { ImageSet } from "../type/model/firestore-image-set.type";
 
 const useStyles = makeStyles(() => ({
   root: {

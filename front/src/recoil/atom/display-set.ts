@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { DisplaySet } from "../../type/model/firestore-display-set.type";
+import { DisplaySet } from "../../../../type/model/firestore-display-set.type";
 
 export type DisplaySetsState = {
   displaySets: DisplaySet[];
