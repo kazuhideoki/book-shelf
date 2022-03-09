@@ -6,6 +6,7 @@ module.exports = (phase, { defaultConfig, isServer }) => {
     reactStrictMode: true,
     experimental: {
       esmExternals: false,
+      externalDir: true,
     },
     // webpack: (config, { isServer }) => {
     //   if (!isServer) {
