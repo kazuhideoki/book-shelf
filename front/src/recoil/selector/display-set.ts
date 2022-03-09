@@ -1,6 +1,6 @@
 import { selector } from "recoil";
-import { DisplaySet } from "../../type/model/firestore-display-set.type";
-import { ServerPath } from "../../utils/const";
+import { ServerPath } from "../../../../type/const";
+import { DisplaySet } from "../../../../type/model/firestore-display-set.type";
 import { displaySetsState } from "../atom/display-set";
 import { guardRecoilDefaultValue } from "../atom/helper/guard-recoil-default-value";
 import { requestSelector } from "./helper/request";

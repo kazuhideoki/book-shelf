@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
 import { useCallback, useState } from "react";
-import { IFile } from "../type/domain/file";
-import { IFolder } from "../type/domain/folder";
-import { DriveFiles } from "../type/model/google-drive-file.type";
+import { ServerPath } from "../../../type/const";
+import { IFile } from "../../../type/domain/file";
+import { IFolder } from "../../../type/domain/folder";
+import { DriveFiles } from "../../../type/model/google-drive-file.type";
 import { useRequest } from "../utils/axios";
-import { ServerPath } from "../utils/const";
 import { FileComponent } from "./FileCompent";
 
 interface P {

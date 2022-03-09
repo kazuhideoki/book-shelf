@@ -4,17 +4,15 @@ import type { NextPage } from "next";
 // import Link from 'next/link';
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
-import { pdfjs } from "react-pdf";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { RegisterDispalySet } from "../../../type/api/firestore-display-set-api.type";
+import { FrontPath, ServerPath } from "../../../type/const";
 import { FolderComponent } from "../components/FolderComponent";
 import { displaySetsState } from "../recoil/atom/display-set";
 import { selectedFilesState } from "../recoil/atom/selected-files";
 import { snackbarState } from "../recoil/atom/snackbar";
-import { RegisterDispalySet } from "../type/api/firestore-display-set-api.type";
 import { useRequest } from "../utils/axios";
-import { FrontPath, ServerPath } from "../utils/const";
 import { useWithLoading } from "../utils/with-loading";
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface P {}
 

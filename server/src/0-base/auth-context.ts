@@ -5,7 +5,7 @@ import { ServerAuth } from '../../../type/model/auth';
 export class AuthContext {
   _auth: ServerAuth;
 
-  set(auth) {
+  set(auth: ServerAuth) {
     if (this._auth) {
       throw new HttpException(
         {

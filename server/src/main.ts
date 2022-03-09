@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new CustomExceptionFilter());
 
-  const port = Number(process.env.PORT) || 3000;
+  const port = Number(process.env.PORT) || 8080;
 
   await app.listen(port);
   console.log(`listen port: ${port}`);

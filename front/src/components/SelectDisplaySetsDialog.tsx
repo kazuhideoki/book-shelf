@@ -3,9 +3,9 @@ import { NextComponentType, NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { FrontPath } from "../../../type/const";
 import { displaySetsState } from "../recoil/atom/display-set";
 import { displaySetsSelector } from "../recoil/selector/display-set";
-import { FrontPath } from "../utils/const";
 interface P {
   setShowDialog: Dispatch<SetStateAction<boolean>>;
 }
