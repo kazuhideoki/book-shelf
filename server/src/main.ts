@@ -19,8 +19,9 @@ export const bucket = admin
   .bucket(process.env.FIREBASE_STORAGE_BUCKET_NAME);
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
-  // app.useGlobalGuards(new AuthGuard());
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+  });
 
   const port = Number(process.env.PORT) || 3000;
 

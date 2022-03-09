@@ -1,5 +1,12 @@
-import { Module, Scope } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  Scope,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerMiddleware } from '../0-base/middleware';
 import { NewAuthContext } from '../0-base/new-auth-context';
 import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 import { AccountRepository } from '../1-repositories/account.repository';
@@ -33,4 +40,17 @@ console.log('app.module.ts');
     },
   ],
 })
-export class AppModule {}
+// export class AppModule {
+//   // configure(consumer: MiddlewareConsumer) {
+//   //   consumer
+//   //     .apply(LoggerMiddleware)
+//   //     .forRoutes({ path: '*', method: RequestMethod.ALL });
+//   // }
+// }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
