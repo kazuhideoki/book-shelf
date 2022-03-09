@@ -1,4 +1,4 @@
-import { CustomErrorCode } from "../server/src/0-base/custom-error-code";
+import { CustomErrorCode } from "./custom-error-code";
 export type CustomError = {
   statusCode: number;
   timestamp: string;
