@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
@@ -15,6 +16,7 @@ import { convertPDFToImage } from './helper/convert-pdf-to-image';
 
 const expiryTime = 60 * 60 * 24 * 7;
 
+@Injectable()
 export class FileService extends BaseService {
   constructor(
     private readonly imageSetRepository: ImageSetRepository,
@@ -35,21 +37,24 @@ export class FileService extends BaseService {
       return imageSet;
     }
 
-    if (!imageSet) console.log(`imageSet not found`);
-    if (imageSet && !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt)))
+    if (
+      !imageSet ||
+      !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt))
+    )
       console.log(`imageSet not found`);
 
     const media = await this.driveFileRepository.fetchMedia(
       fileId,
-      this.authContext.auth.accountId,
+      this.authContext.instance().auth.accessToken,
     );
     console.log({ media });
 
-    writeFileSync(`./tmp/${fileId}.pdf`, Buffer.from(media));
+    const buf = Buffer.from(media);
+    writeFileSync(`./tmp/${fileId}.pdf`, buf);
 
-    const parseResult = await PdfParse(Buffer.from(media)); // 文字、メタデータなど取れる。注釈は取れない。。。
+    const parseResult = await PdfParse(buf); // 文字、メタデータなど取れる。注釈は取れない。。。
 
-    const base64 = Buffer.from(media).toString('base64');
+    const base64 = buf.toString('base64');
     const page = (await PDFDocument.load(base64)).getPage(0);
 
     const width = page.getWidth();

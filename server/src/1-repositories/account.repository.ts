@@ -10,29 +10,6 @@ import {
 export class AccountRepository {
   constructor(readonly firebase: FirebaseSetting) {}
 
-  async initFind(email: string) {
-    const response = await toData<Account>(
-      this.firebase.collection('accounts').where('email', '==', email).get(),
-    )
-      .catch((e) => {
-        console.log({ e });
-        throw e;
-      })
-      .then((e) => e?.[0]);
-
-    return response;
-  }
-  async find(accountId: string): Promise<Account> {
-    const response = await toData<Account>(
-      this.firebase.collection('accounts').doc(accountId).get(),
-    ).catch((e) => {
-      console.log({ e });
-      throw e;
-    });
-
-    return response;
-  }
-
   async findByEmail(email: string) {
     const response = await toData<Account>(
       this.firebase.collection('accounts').where('email', '==', email).get(),

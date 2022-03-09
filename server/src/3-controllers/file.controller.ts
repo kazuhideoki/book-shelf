@@ -3,9 +3,7 @@ import {
   Get,
   Injectable,
   Param,
-  Post,
   Query,
-  Scope,
   UseGuards,
 } from '@nestjs/common';
 import { ImageSet } from '../../../type/model/firestore-image-set.type';
@@ -16,7 +14,7 @@ import { FileService } from '../2-services/file.service';
 import { AuthGuard } from '../security/auth-guard';
 
 @Controller('files')
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 @UseGuards(AuthGuard)
 export class FileController {
   constructor(
@@ -53,8 +51,8 @@ export class FileController {
     );
   }
 
-  @Post(':fileId')
-  registerDisplaySet(@Param('fileId ') fileId: string): Promise<ImageSet> {
+  @Get(':fileId')
+  getFile(@Param('fileId') fileId: string): Promise<ImageSet> {
     return this.fileService.findImageSet(fileId);
   }
 }

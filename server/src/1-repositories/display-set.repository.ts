@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 // import { collection } from '../main';
 import { FirebaseSetting } from '../0-base/initialize-firebaes';
@@ -19,25 +18,13 @@ export class DisplaySetRepository {
     return await toData<DisplaySet>((qr ?? cr).get());
   }
 
-  async register(
-    accountId: string,
-    data: RegisterDispalySet,
-  ): Promise<DisplaySet> {
-    const ref = this.firebase.collection('displaySets').doc();
-
-    const firebaseData: DisplaySet = {
-      accountId,
-      displaySetId: ref.id,
-      name: data.name,
-      files: data.files,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    await ref
-      .set(firebaseData)
+  async register(data: DisplaySet): Promise<DisplaySet> {
+    await this.firebase
+      .collection('displaySets')
+      .doc(data.displaySetId)
+      .create(data)
       .catch((e) => console.log(`error occurred in firestore: ${e}`));
 
-    return firebaseData;
+    return data;
   }
 }

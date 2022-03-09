@@ -1,11 +1,11 @@
-import { Controller, Get, Injectable, Scope, UseGuards } from '@nestjs/common';
+import { Controller, Get, Injectable, UseGuards } from '@nestjs/common';
 import { ServerAuth } from '../../../type/model/auth';
 import { AuthContext } from '../0-base/auth-context';
 import { AuthGuard } from '../security/auth-guard';
 
 @Controller('self')
 @UseGuards(AuthGuard)
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class SelfController {
   constructor(readonly authContext: AuthContext) {}
 

@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
     const payload: { name: string; email: string; picture?: string } =
       ticket.getPayload() as any;
 
-    const account = await this.accountRepository.initFind(payload.email);
+    const account = await this.accountRepository.findByEmail(payload.email);
 
     this.authContext.set({
       ...account,
