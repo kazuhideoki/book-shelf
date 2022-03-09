@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { NewAuthContext } from '../0-base/new-auth-context';
 import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 import { AccountRepository } from '../1-repositories/account.repository';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
@@ -24,6 +25,12 @@ console.log('app.module.ts');
     StorageRepository,
     SettingServerFirebase,
     FileService,
+    NewAuthContext,
+    {
+      provide: 'AUTH_CONTEXT_INIT',
+      useValue: {},
+      scope: Scope.REQUEST,
+    },
   ],
 })
 export class AppModule {}

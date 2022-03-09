@@ -1,17 +1,24 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Scope,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { NewAuthContext } from '../0-base/new-auth-context';
 import { AccountRepository } from '../1-repositories/account.repository';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthGuard implements CanActivate {
-  constructor(readonly configService = new ConfigService()) {}
+  constructor(
+    readonly configService: ConfigService,
+    readonly authContext: NewAuthContext,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // ContextHolder.initContext();
+    this.authContext.init();
 
-    // const client = new OAuth2Client(process.env.CLIENT_ID);
     const client = new OAuth2Client(this.configService.get('CLIENT_ID'));
 
     const req = context.switchToHttp().getRequest();
@@ -40,20 +47,11 @@ export class AuthGuard implements CanActivate {
     const account = await new AccountRepository().initFind(payload.email);
     console.log(account);
 
-    // const authContext = new AuthContext({
-    //   ...account,
-    //   accountId: account?.id,
-    //   accessToken,
-    // });
-    const authContext = NewAuthContext.set({
+    this.authContext.set({
       ...account,
       accountId: account?.id,
       accessToken,
     });
-
-    const auth = NewAuthContext.instance();
-
-    // ContextHolder.set(authContext);
 
     if (!account) {
       const data = {

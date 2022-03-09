@@ -6,7 +6,7 @@ import {
 import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 
 export class ImageSetRepository {
-  constructor(private firebase: SettingServerFirebase) {}
+  constructor(private readonly firebase: SettingServerFirebase) {}
 
   async find(fileId: string): Promise<ImageSet> {
     const response = await toData<ImageSet>(

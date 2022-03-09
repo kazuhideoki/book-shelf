@@ -9,15 +9,14 @@ export type DriveFileQuery = {
 } & BaseQuery;
 
 export class DriveFileRepository {
-  async list({
-    q,
-    pageToken,
-    pageSize,
-    orderBy,
-  }: DriveFileQuery): Promise<DriveFiles> {
+  async list(
+    { q, pageToken, pageSize, orderBy }: DriveFileQuery,
+    accessToken: string,
+  ): Promise<DriveFiles> {
     const response = await daxiosRequest<DriveFiles>(
       'GET',
       ExternalPath.files,
+      accessToken,
       {
         params: {
           pageSize,
@@ -34,21 +33,31 @@ export class DriveFileRepository {
     return response;
   }
 
-  async fetchMedia(fileId: string): Promise<Buffer> {
-    return await daxiosRequest<Buffer>('GET', ExternalPath.file(fileId), {
-      params: {
-        alt: 'media',
+  async fetchMedia(fileId: string, accessToken: string): Promise<Buffer> {
+    return await daxiosRequest<Buffer>(
+      'GET',
+      ExternalPath.file(fileId),
+      accessToken,
+      {
+        params: {
+          alt: 'media',
+        },
+        responseType: 'arraybuffer',
       },
-      responseType: 'arraybuffer',
-    });
+    );
   }
 
-  async fetchMediaBase64(fileId: string): Promise<string> {
-    return await daxiosRequest<string>('GET', ExternalPath.file(fileId), {
-      params: {
-        alt: 'media',
+  async fetchMediaBase64(fileId: string, accessToken: string): Promise<string> {
+    return await daxiosRequest<string>(
+      'GET',
+      ExternalPath.file(fileId),
+      accessToken,
+      {
+        params: {
+          alt: 'media',
+        },
+        responseEncoding: 'base64',
       },
-      responseEncoding: 'base64',
-    });
+    );
   }
 }

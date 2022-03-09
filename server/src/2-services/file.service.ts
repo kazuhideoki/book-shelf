@@ -6,7 +6,7 @@ import {
   ImageSet,
   ImageSetMeta,
 } from '../../../type/model/firestore-image-set.type';
-import { AuthContext } from '../0-base/auth-context';
+import { NewAuthContext } from '../0-base/new-auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
@@ -17,12 +17,12 @@ const expiryTime = 60 * 60 * 24 * 7;
 
 export class FileService extends BaseService {
   constructor(
-    auth: AuthContext,
-    private imageSetRepository: ImageSetRepository,
-    private driveFileRepository: DriveFileRepository,
-    private storageRepository: StorageRepository,
+    private readonly imageSetRepository: ImageSetRepository,
+    private readonly driveFileRepository: DriveFileRepository,
+    private readonly storageRepository: StorageRepository,
+    private readonly authContext: NewAuthContext,
   ) {
-    super(auth);
+    super();
   }
 
   async findImageSet(fileId: string): Promise<ImageSet> {
@@ -39,7 +39,10 @@ export class FileService extends BaseService {
     if (imageSet && !(DateTime.now() < DateTime.fromJSDate(imageSet.expiredAt)))
       console.log(`imageSet not found`);
 
-    const media = await this.driveFileRepository.fetchMedia(fileId);
+    const media = await this.driveFileRepository.fetchMedia(
+      fileId,
+      this.authContext.auth.accountId,
+    );
     console.log({ media });
 
     writeFileSync(`./tmp/${fileId}.pdf`, Buffer.from(media));
@@ -77,7 +80,7 @@ export class FileService extends BaseService {
     if (parseResult.info.Title) meta.title = parseResult.info.Title;
 
     const data: ImageSet = {
-      accountId: this.accountId,
+      accountId: this.authContext.auth.accountId,
       fileId,
       path: url,
       meta: meta,

@@ -4,7 +4,7 @@ import admin from 'firebase-admin';
 export type CollectionName = 'imageSets' | 'displaySets' | 'accounts';
 
 export class SettingServerFirebase {
-  constructor(readonly configService = new ConfigService()) {}
+  constructor(private readonly configService = new ConfigService()) {}
 
   collection(collectionName: CollectionName) {
     return admin.firestore().collection(collectionName);
