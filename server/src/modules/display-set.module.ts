@@ -1,6 +1,5 @@
 import { Module, Scope } from '@nestjs/common';
 import { AuthContext } from '../0-base/auth-context';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import { AccountRepository } from '../1-repositories/account.repository';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 import { DisplaySetController } from '../3-controllers/display-set.controller';
@@ -10,7 +9,6 @@ import { DisplaySetController } from '../3-controllers/display-set.controller';
   providers: [
     DisplaySetRepository,
     AccountRepository,
-    FirebaseSetting,
     AuthContext,
     {
       provide: 'AUTH_CONTEXT_INIT',
@@ -18,5 +16,6 @@ import { DisplaySetController } from '../3-controllers/display-set.controller';
       scope: Scope.REQUEST,
     },
   ],
+  // exports: [DisplaySetController],
 })
 export class DisplaySetModule {}

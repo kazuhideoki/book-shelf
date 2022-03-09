@@ -1,6 +1,5 @@
 import { Module, Scope } from '@nestjs/common';
 import { AuthContext } from '../0-base/auth-context';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import { AccountRepository } from '../1-repositories/account.repository';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
@@ -16,7 +15,6 @@ import { FileController } from '../3-controllers/file.controller';
     ImageSetRepository,
     StorageRepository,
     FileService,
-    FirebaseSetting,
     AuthContext,
     {
       provide: 'AUTH_CONTEXT_INIT',
@@ -24,5 +22,6 @@ import { FileController } from '../3-controllers/file.controller';
       scope: Scope.REQUEST,
     },
   ],
+  // exports: [FileController],
 })
 export class FileModule {}

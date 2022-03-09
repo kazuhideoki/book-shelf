@@ -5,7 +5,6 @@ import { AccountRepository } from '../1-repositories/account.repository';
 import { SelfController } from '../3-controllers/self.controller';
 
 @Module({
-  imports: [FirebaseSetting],
   controllers: [SelfController],
   providers: [
     AccountRepository,

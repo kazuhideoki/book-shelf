@@ -15,16 +15,22 @@ import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
 import { FileService } from '../2-services/file.service';
+import { DisplaySetController } from '../3-controllers/display-set.controller';
+import { FileController } from '../3-controllers/file.controller';
+import { SelfController } from '../3-controllers/self.controller';
 
 console.log('app.module.ts');
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    // うまくいかない
+
     // SelfModule,
     // FileModule,
     // DisplaySetModule,
   ],
+  controllers: [SelfController, FileController, DisplaySetController],
   providers: [
     AccountRepository,
     DisplaySetRepository,
