@@ -48,7 +48,7 @@ export class FileController {
         q,
         pageToken,
       },
-      this.authContext.instance().auth.accessToken,
+      this.authContext.auth.accessToken,
     );
   }
 

@@ -31,7 +31,7 @@ export class DisplaySetController {
   @Post()
   registerDisplaySet(@Body() data: RegisterDispalySet): Promise<DisplaySet> {
     const displaySet: DisplaySet = {
-      accountId: this.authContext.instance().auth.accountId,
+      accountId: this.authContext.auth.accountId,
       displaySetId: `dpset_${v4()}`,
       name: data.name,
       files: data.files,

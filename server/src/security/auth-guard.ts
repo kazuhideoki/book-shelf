@@ -18,8 +18,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    this.authContext.init();
-
     const client = new OAuth2Client(this.configService.get('CLIENT_ID'));
 
     const req = context.switchToHttp().getRequest();
@@ -58,8 +56,6 @@ export class AuthGuard implements CanActivate {
 
       await this.accountRepository.create(data);
     }
-
-    const a = this.authContext.instance();
 
     return true;
   }
