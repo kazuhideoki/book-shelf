@@ -4,6 +4,7 @@ import {
   Get,
   Injectable,
   Post,
+  Scope,
   UseGuards,
 } from '@nestjs/common';
 import { v4 } from 'uuid';
@@ -14,7 +15,7 @@ import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 import { AuthGuard } from '../security/auth-guard';
 
 @Controller('display-sets')
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 @UseGuards(AuthGuard)
 export class DisplaySetController {
   constructor(

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { Account } from '../../../type/model/account';
 import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import {
@@ -6,7 +6,7 @@ import {
   toData,
 } from '../0-base/server-firebase';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AccountRepository {
   constructor(readonly firebase: FirebaseSetting) {}
 

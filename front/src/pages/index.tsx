@@ -15,13 +15,14 @@ import { Suspense, useState } from "react";
 import { useGoogleLogout } from "react-google-login";
 import { pdfjs } from "react-pdf";
 import { useRecoilState } from "recoil";
+import { ImageSet } from "../../../type/model/firestore-image-set.type";
 import { Display } from "../components/Display";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SelectDisplaySetsDialog } from "../components/SelectDisplaySetsDialog";
 import { authState } from "../recoil/atom/auth";
-import { ImageSet } from "../type/model/firestore-image-set.type";
 import { useRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const useStyles = makeStyles(() => ({
@@ -58,7 +59,7 @@ const Home: NextPage<P> = () => {
       >
         <Grid item>
           <Typography variant="h6">
-            <Link href={process.env.NEXT_PUBLIC_WEB_SERVICE_URL}>
+            <Link href={process.env.NEXT_PUBLIC_WEB_FRONT_URL}>
               E Book Shelf
             </Link>
           </Typography>

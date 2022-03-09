@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ImageSet } from '../../../type/model/firestore-image-set.type';
 import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import {
@@ -6,7 +6,7 @@ import {
   toData,
 } from '../0-base/server-firebase';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ImageSetRepository {
   constructor(private readonly firebase: FirebaseSetting) {}
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { BaseQuery } from '../../../front/src/utils/base-query';
 import { ExternalPath } from '../../../front/src/utils/const';
 import { DriveFiles } from '../../../type/model/google-drive-file.type';
@@ -9,7 +9,7 @@ export type DriveFileQuery = {
   pageToken?: string;
 } & BaseQuery;
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class DriveFileRepository {
   async list(
     { q, pageToken, pageSize, orderBy }: DriveFileQuery,
