@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/-api/._middleware.tss",
+    "../server/src/0-base/auth-context.ts",
+    "../server/src/0-base/context.ts",
+    "../type/type-helper.ts",
+    "../type/mime-type-helper.ts",
+    "../server/src/0-base/get-auth-url.ts",
+    "../server/src/0-base/https-error.ts",
+    "../server/src/0-base/custom-error-code.ts"
+  ],
+  "exclude": ["node_modules"]
+}
