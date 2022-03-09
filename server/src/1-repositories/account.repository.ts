@@ -3,14 +3,12 @@ import {
   timestampFromDateRecursively,
   toData,
 } from '../0-base/server-firebase';
-import { SettingServerFirebase } from '../0-base/setting-server-firebase';
+import { collection } from '../main';
 
 export class AccountRepository {
-  constructor(private firebase: SettingServerFirebase) {}
-
   async initFind(email: string) {
     const response = await toData<Account>(
-      this.firebase.collection('accounts').where('email', '==', email).get(),
+      collection('accounts').where('email', '==', email).get(),
     )
       .catch((e) => {
         console.log({ e });
@@ -22,7 +20,7 @@ export class AccountRepository {
   }
   async find(accountId: string): Promise<Account> {
     const response = await toData<Account>(
-      this.firebase.collection('accounts').doc(accountId).get(),
+      collection('accounts').doc(accountId).get(),
     ).catch((e) => {
       console.log({ e });
       throw e;
@@ -33,7 +31,7 @@ export class AccountRepository {
 
   async findByEmail(email: string) {
     const response = await toData<Account>(
-      this.firebase.collection('accounts').where('email', '==', email).get(),
+      collection('accounts').where('email', '==', email).get(),
     )
       .catch((e) => {
         console.log({ e });
@@ -45,8 +43,7 @@ export class AccountRepository {
   }
 
   async create(data: Account): Promise<void> {
-    await this.firebase
-      .collection('accounts')
+    await collection('accounts')
       .doc()
       .set(timestampFromDateRecursively(data))
       .catch((e) => console.log(`error occurred in firestore: ${e}`));

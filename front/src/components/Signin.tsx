@@ -1,9 +1,9 @@
 import { NextComponentType, NextPageContext } from "next";
 import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
 import { useRecoilState } from "recoil";
+import { Account } from "../../../type/model/account";
 import { ServerPath } from "../old-server/helper/const";
 import { authState } from "../recoil/atom/auth";
-import { Account } from "../type/model/account";
 import { axiosRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";
 
@@ -19,11 +19,16 @@ export const SignIn: NextComponentType<
     console.log({ googleData });
 
     const res = await withLoading(
-      axiosRequest<Account>("POST", ServerPath.self, {
-        headers: {
-          Authorization: `Bearer ${googleData?.tokenId}/${googleData.accessToken}`,
-        },
-      })
+      axiosRequest<Account>(
+        "GET",
+        `${process.env.NEXT_PUBLIC_WEB_SERVICE_URL}${ServerPath.self}`,
+        {
+          headers: {
+            Authorization: `Bearer ${googleData?.tokenId}/${googleData.accessToken}`,
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      )
     );
 
     console.log({ res });

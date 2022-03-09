@@ -22,7 +22,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/pages/api/._middleware.ts"
+    "src/pages/-api/._middleware.tss"
     // "../server/src/0-base/server-firebase.ts",
     // "../server/src/1-repositories/storage-service.ts"
   ],

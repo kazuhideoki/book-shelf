@@ -3,13 +3,22 @@ import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { FrontAuth } from "../../../type/model/auth";
 import { authState } from "../recoil/atom/auth";
+
 const instance = axios.create();
+
+// axios.defaults.baseURL = "http://localhost:8080";
+// axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
+// axios.defaults.headers.get["Content-Type"] = "application/json;charset=utf-8";
+// axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
+// axios.defaults.headers.get["Access-Control-Allow-Origin"] = "*";
 
 export async function axiosRequest<T>(
   method: Method,
   url: string,
   config?: AxiosRequestConfig<any>
 ): Promise<T> {
+  console.log({ method, config, url });
+
   let res: T = await instance
     .request<T>({
       method,
@@ -36,14 +45,17 @@ export const axiosRequestToServer =
     let headers: any = {
       ...config?.headers,
       Authorization: `Bearer ${auth?.tokenId}/${auth?.accessToken}`,
+      "Access-Control-Allow-Origin": "*",
     };
 
-    console.log({ headers });
-
-    return await axiosRequest<T>(method, url, {
-      ...config,
-      headers,
-    });
+    return await axiosRequest<T>(
+      method,
+      `${process.env.NEXT_PUBLIC_WEB_SERVICE_URL}${url}`,
+      {
+        ...config,
+        headers,
+      }
+    );
   };
 
 export const useRequest = () => {

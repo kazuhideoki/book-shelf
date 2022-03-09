@@ -10,19 +10,11 @@ import { FileService } from '../2-services/file.service';
 import { DisplaySetController } from '../3-controllers/display-set.controller';
 import { FileController } from '../3-controllers/file.controller';
 import { SelfController } from '../3-controllers/self.controller';
-import { BaseModule } from './base.module';
-import { RepositoryModule } from './repository.module';
-import { ServiceModule } from './service.module';
 
 console.log('app.module.ts');
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    ServiceModule,
-    RepositoryModule,
-    BaseModule,
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true })],
   controllers: [DisplaySetController, FileController, SelfController],
   providers: [
     AccountRepository,

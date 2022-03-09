@@ -4,11 +4,11 @@ export class FrontPath {
 }
 
 export class ServerPath {
-  static self = `/api/self`;
+  static self = `/self`;
 
-  static files = `/api/files`;
+  static files = `/files`;
   static file = (fileId: string) => `${ServerPath.files}/${fileId}`;
-  static displaySets = `/api/display-sets`;
+  static displaySets = `/display-sets`;
 }
 
 export class ExternalPath {
