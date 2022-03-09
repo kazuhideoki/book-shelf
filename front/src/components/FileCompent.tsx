@@ -2,11 +2,11 @@ import { Checkbox, FormControlLabel, Grid, Typography } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
 import { useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
-import { ServerPath } from "../old-server/helper/const";
 import { selectedFilesState } from "../recoil/atom/selected-files";
 import { IFile } from "../type/domain/file";
 import { ImageSet } from "../type/model/firestore-image-set.type";
 import { useRequest } from "../utils/axios";
+import { ServerPath } from "../utils/const";
 
 interface P {
   file: IFile;

@@ -1,6 +1,6 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { HttpsError } from '../../../front/src/old-server/helper/https-error';
 import { ServerAuth } from '../../../type/model/auth';
+import { HttpsError } from './https-error';
 
 @Injectable({ scope: Scope.REQUEST })
 export class NewAuthContext {

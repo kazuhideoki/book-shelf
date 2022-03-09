@@ -28,6 +28,7 @@
     "async_hooks": "^1.0.0",
     "axios": "^0.26.0",
     "firebase-admin": "^10.0.2",
+    "googleapis": "^95.0.0",
     "luxon": "^2.3.1",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",

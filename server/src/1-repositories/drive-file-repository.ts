@@ -1,7 +1,7 @@
-import { BaseQuery } from '../../../front/src/old-server/helper/base-query';
-import { ExternalPath } from '../../../front/src/old-server/helper/const';
 import { DriveFiles } from '../../../type/model/google-drive-file.type';
 import { daxiosRequest } from './helper.ts/request-to-drive';
+import { BaseQuery } from '../../../front/src/utils/base-query';
+import { ExternalPath } from '../../../front/src/utils/const';
 
 export type DriveFileQuery = {
   q?: string;
