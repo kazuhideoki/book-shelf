@@ -37,15 +37,10 @@ export class AuthGuard implements CanActivate {
       }),
     ]);
 
-    console.log({ ticket });
-
     const payload: { name: string; email: string; picture?: string } =
       ticket.getPayload() as any;
 
-    console.log({ payload });
-
     const account = await new AccountRepository().initFind(payload.email);
-    console.log(account);
 
     this.authContext.set({
       ...account,
@@ -62,6 +57,8 @@ export class AuthGuard implements CanActivate {
 
       await new AccountRepository().create(data);
     }
+
+    const a = this.authContext.instance();
 
     return true;
   }

@@ -11,7 +11,7 @@ import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 import { NewAuthContext } from '../0-base/new-auth-context';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
-import { AuthGuard } from '../security/authentication';
+import { AuthGuard } from '../security/auth-guard';
 
 @Controller('display-sets')
 @Injectable({ scope: Scope.REQUEST })

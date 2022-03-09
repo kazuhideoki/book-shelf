@@ -12,6 +12,9 @@ export const daxiosRequest = async <T>(
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+  }).catch((e) => {
+    const d = e;
+    throw `error occurred: ${e}`;
   });
 
   return res;

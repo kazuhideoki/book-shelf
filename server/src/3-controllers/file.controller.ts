@@ -13,7 +13,7 @@ import { DriveFiles } from '../../../type/model/google-drive-file.type';
 import { NewAuthContext } from '../0-base/new-auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { FileService } from '../2-services/file.service';
-import { AuthGuard } from '../security/authentication';
+import { AuthGuard } from '../security/auth-guard';
 
 @Controller('files')
 @Injectable({ scope: Scope.REQUEST })
@@ -27,17 +27,29 @@ export class FileController {
 
   @Get()
   getFiles(
-    @Query() pageSize?: number,
-    @Query() q?: string,
-    @Query() pageToken?: string,
+    @Query()
+    {
+      pageSize,
+      q,
+      pageToken,
+    }: {
+      pageSize?: number;
+      q?: string;
+      pageToken?: string;
+    },
   ): Promise<DriveFiles> {
+    const d = {
+      pageSize,
+      q,
+      pageToken,
+    };
     return this.driveFileService.list(
       {
         pageSize: pageSize ?? 10,
         q,
         pageToken,
       },
-      this.authContext.auth.accessToken,
+      this.authContext.instance().auth.accessToken,
     );
   }
 
