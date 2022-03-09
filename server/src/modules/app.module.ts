@@ -6,8 +6,8 @@ import {
   Scope,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from '../0-base/middleware';
-import { NewAuthContext } from '../0-base/new-auth-context';
+import { AuthContext } from '../0-base/auth-context';
+import { LoggerMiddleware } from '../0-base/logger-middleware';
 import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 import { AccountRepository } from '../1-repositories/account.repository';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
@@ -32,7 +32,7 @@ console.log('app.module.ts');
     StorageRepository,
     SettingServerFirebase,
     FileService,
-    NewAuthContext,
+    AuthContext,
     {
       provide: 'AUTH_CONTEXT_INIT',
       useValue: {},
@@ -40,13 +40,6 @@ console.log('app.module.ts');
     },
   ],
 })
-// export class AppModule {
-//   // configure(consumer: MiddlewareConsumer) {
-//   //   consumer
-//   //     .apply(LoggerMiddleware)
-//   //     .forRoutes({ path: '*', method: RequestMethod.ALL });
-//   // }
-// }
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer

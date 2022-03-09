@@ -3,8 +3,8 @@ import { ServerAuth } from '../../../type/model/auth';
 import { HttpsError } from './https-error';
 
 @Injectable({ scope: Scope.REQUEST })
-export class NewAuthContext {
-  private static _instance: NewAuthContext;
+export class AuthContext {
+  private static _instance: AuthContext;
   constructor(@Inject('AUTH_CONTEXT_INIT') auth: ServerAuth) {
     this.auth = auth;
   }
@@ -12,24 +12,24 @@ export class NewAuthContext {
   initialized: boolean;
 
   instance() {
-    if (!NewAuthContext._instance.auth) {
+    if (!AuthContext._instance.auth) {
       throw new HttpsError('internal', `AuthContext is not set`);
     }
-    return NewAuthContext._instance;
+    return AuthContext._instance;
   }
 
   init() {
-    NewAuthContext._instance = undefined;
+    AuthContext._instance = undefined;
   }
 
   set(v: ServerAuth) {
-    if (NewAuthContext._instance?.auth) {
+    if (AuthContext._instance?.auth) {
       throw new HttpsError('internal', `AuthContext is already set`);
     }
 
-    NewAuthContext._instance = new NewAuthContext(v);
+    AuthContext._instance = new AuthContext(v);
     this.initialized = true;
-    return NewAuthContext._instance;
+    return AuthContext._instance;
   }
 
   destroy() {

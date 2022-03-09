@@ -6,7 +6,7 @@ import {
   ImageSet,
   ImageSetMeta,
 } from '../../../type/model/firestore-image-set.type';
-import { NewAuthContext } from '../0-base/new-auth-context';
+import { AuthContext } from '../0-base/auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
@@ -20,7 +20,7 @@ export class FileService extends BaseService {
     private readonly imageSetRepository: ImageSetRepository,
     private readonly driveFileRepository: DriveFileRepository,
     private readonly storageRepository: StorageRepository,
-    private readonly authContext: NewAuthContext,
+    private readonly authContext: AuthContext,
   ) {
     super();
   }

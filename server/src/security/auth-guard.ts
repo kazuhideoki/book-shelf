@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
-import { NewAuthContext } from '../0-base/new-auth-context';
+import { AuthContext } from '../0-base/auth-context';
 import { AccountRepository } from '../1-repositories/account.repository';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthGuard implements CanActivate {
   constructor(
     readonly configService: ConfigService,
-    readonly authContext: NewAuthContext,
+    readonly authContext: AuthContext,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

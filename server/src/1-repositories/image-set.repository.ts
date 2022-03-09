@@ -1,4 +1,5 @@
 import { ImageSet } from '../../../type/model/firestore-image-set.type';
+import { collection } from '../0-base/initialize-firebaes';
 import {
   timestampFromDateRecursively,
   toData,
@@ -10,7 +11,7 @@ export class ImageSetRepository {
 
   async find(fileId: string): Promise<ImageSet> {
     const response = await toData<ImageSet>(
-      this.firebase.collection('imageSets').doc(fileId).get(),
+      collection('imageSets').doc(fileId).get(),
     ).catch((e) => {
       console.log({ e });
       throw e;
@@ -20,8 +21,7 @@ export class ImageSetRepository {
   }
 
   async register(fileId: string, data: ImageSet): Promise<void> {
-    await this.firebase
-      .collection('imageSets')
+    await collection('imageSets')
       .doc(fileId)
       .set(timestampFromDateRecursively(data))
       .catch((e) => console.log(`error occurred in firestore: ${e}`));

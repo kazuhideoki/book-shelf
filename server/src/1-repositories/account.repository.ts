@@ -1,9 +1,9 @@
 import { Account } from '../../../type/model/account';
+import { collection } from '../0-base/initialize-firebaes';
 import {
   timestampFromDateRecursively,
   toData,
 } from '../0-base/server-firebase';
-import { collection } from '../main';
 
 export class AccountRepository {
   async initFind(email: string) {

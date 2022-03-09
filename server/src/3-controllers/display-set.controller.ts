@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
-import { NewAuthContext } from '../0-base/new-auth-context';
+import { AuthContext } from '../0-base/auth-context';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 import { AuthGuard } from '../security/auth-guard';
 
@@ -19,7 +19,7 @@ import { AuthGuard } from '../security/auth-guard';
 export class DisplaySetController {
   constructor(
     private readonly displaySetService: DisplaySetRepository,
-    private readonly authContext: NewAuthContext,
+    private readonly authContext: AuthContext,
   ) {}
 
   @Get()

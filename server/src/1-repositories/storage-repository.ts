@@ -1,11 +1,11 @@
 import { StoragePath } from '../../../front/src/utils/const';
-import { NewAuthContext } from '../0-base/new-auth-context';
+import { AuthContext } from '../0-base/auth-context';
 import { SettingServerFirebase } from '../0-base/setting-server-firebase';
 
 export class StorageRepository {
   constructor(
     private readonly firebase: SettingServerFirebase,
-    private readonly authContext: NewAuthContext,
+    private readonly authContext: AuthContext,
   ) {}
 
   async save(fileId: string, data: Buffer) {

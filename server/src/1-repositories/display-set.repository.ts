@@ -1,7 +1,8 @@
 import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
 import { DisplaySet } from '../../../type/model/firestore-display-set.type';
+// import { collection } from '../main';
+import { collection } from '../0-base/initialize-firebaes';
 import { toData } from '../0-base/server-firebase';
-import { collection } from '../main';
 
 export class DisplaySetRepository {
   async list(q?: { accountId?: string }): Promise<DisplaySet[]> {
