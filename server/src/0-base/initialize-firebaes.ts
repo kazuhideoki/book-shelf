@@ -12,6 +12,11 @@ export class FirebaseSetting {
   init() {
     console.log('init start');
 
+    console.log({ processEnv: process.env });
+    console.log({
+      configServiceEnvPORT: this.configService.get<string>('PORT'),
+    });
+
     const serviceAccount = JSON.parse(
       this.configService.get<string>('FIREBASE_SERVICE_ACCOUNT'),
     );
