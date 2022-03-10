@@ -7,7 +7,7 @@ ARG env_encryption
 RUN echo "code is $env_encryption"
 
 COPY ./front ./front
-COPY ./server/type ./server/type
+COPY ./server/src/type ./server/src/type
 
 RUN cd front && apk update \
     && apk add openssl && openssl enc -d -aes-256-cbc -salt -k $env_encryption -in ./.env.deploy.enc -out ./.env && npm i --force && npm run build
