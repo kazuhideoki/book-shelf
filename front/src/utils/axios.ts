@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, default as axios, Method } from "axios";
 import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { FrontAuth } from "../../../type/model/auth";
+import { FrontAuth } from "../../../server/src/type/model/auth";
 import { authState } from "../recoil/atom/auth";
 
 const instance = axios.create();

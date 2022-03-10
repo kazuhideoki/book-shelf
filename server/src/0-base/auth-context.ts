@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Scope } from '@nestjs/common';
-import { ServerAuth } from '../../../type/model/auth';
+import { ServerAuth } from '../type/model/auth';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthContext {

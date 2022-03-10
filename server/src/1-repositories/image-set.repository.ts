@@ -1,10 +1,10 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { ImageSet } from '../../../type/model/firestore-image-set.type';
 import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import {
   timestampFromDateRecursively,
   toData,
 } from '../0-base/server-firebase';
+import { ImageSet } from '../type/model/firestore-image-set.type';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ImageSetRepository {

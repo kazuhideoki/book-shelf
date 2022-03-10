@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { StoragePath } from '../../../type/const';
 import { AuthContext } from '../0-base/auth-context';
 import { FirebaseSetting } from '../0-base/initialize-firebaes';
+import { StoragePath } from '../type/const';
 
 @Injectable({ scope: Scope.REQUEST })
 export class StorageRepository {

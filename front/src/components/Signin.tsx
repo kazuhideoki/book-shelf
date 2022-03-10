@@ -1,8 +1,8 @@
 import { NextComponentType, NextPageContext } from "next";
 import GoogleLogin, { GoogleLoginResponse } from "react-google-login";
 import { useRecoilState } from "recoil";
-import { ServerPath } from "../../../type/const";
-import { Account } from "../../../type/model/account";
+import { ServerPath } from "../../../server/src/type/const";
+import { Account } from "../../../server/src/type/model/account";
 import { authState } from "../recoil/atom/auth";
 import { axiosRequest } from "../utils/axios";
 import { useWithLoading } from "../utils/with-loading";

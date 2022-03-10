@@ -2,14 +2,11 @@ import { Injectable, Scope } from '@nestjs/common';
 import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
-import {
-  ImageSet,
-  ImageSetMeta,
-} from '../../../type/model/firestore-image-set.type';
 import { AuthContext } from '../0-base/auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
+import { ImageSet, ImageSetMeta } from '../type/model/firestore-image-set.type';
 import { BaseService } from './helper/base.service';
 import { convertPDFToImage } from './helper/convert-pdf-to-image';
 

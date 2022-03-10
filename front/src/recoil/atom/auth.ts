@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { FrontAuth } from "../../../../type/model/auth";
+import { FrontAuth } from "../../../../server/src/type/model/auth";
 
 export type AuthState = { auth?: FrontAuth; initialized: boolean };
 

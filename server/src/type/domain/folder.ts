@@ -1,4 +1,4 @@
-import { IFile } from "./file";
+import { IFile } from './file';
 
 export type IFolder = {
   id: string;

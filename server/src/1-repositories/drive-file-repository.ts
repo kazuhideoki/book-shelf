@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { BaseQuery } from '../../../type/base-query';
-import { ExternalPath } from '../../../type/const';
-import { DriveFiles } from '../../../type/model/google-drive-file.type';
+import { BaseQuery } from '../type/base-query';
+import { ExternalPath } from '../type/const';
+import { DriveFiles } from '../type/model/google-drive-file.type';
 import { daxiosRequest } from './helper.ts/request-to-drive';
 
 export type DriveFileQuery = {

@@ -8,11 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { v4 } from 'uuid';
-import { RegisterDispalySet } from '../../../type/api/firestore-display-set-api.type';
-import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 import { AuthContext } from '../0-base/auth-context';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 import { AuthGuard } from '../security/auth-guard';
+import { RegisterDispalySet } from '../type/api/firestore-display-set-api.type';
+import { DisplaySet } from '../type/model/firestore-display-set.type';
 
 @Controller('display-sets')
 @Injectable({ scope: Scope.REQUEST })

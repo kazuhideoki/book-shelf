@@ -3,7 +3,7 @@ import { NextComponentType, NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { FrontPath } from "../../../type/const";
+import { FrontPath } from "../../../server/src/type/const";
 import { displaySetsState } from "../recoil/atom/display-set";
 import { displaySetsSelector } from "../recoil/selector/display-set";
 interface P {

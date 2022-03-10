@@ -7,12 +7,12 @@ import {
   Scope,
   UseGuards,
 } from '@nestjs/common';
-import { ImageSet } from '../../../type/model/firestore-image-set.type';
-import { DriveFiles } from '../../../type/model/google-drive-file.type';
 import { AuthContext } from '../0-base/auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { FileService } from '../2-services/file.service';
 import { AuthGuard } from '../security/auth-guard';
+import { ImageSet } from '../type/model/firestore-image-set.type';
+import { DriveFiles } from '../type/model/google-drive-file.type';
 
 @Controller('files')
 @Injectable({ scope: Scope.REQUEST })

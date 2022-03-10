@@ -19,6 +19,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "../server/src/type/*",
     "src/pages/-api/._middleware.tss",
     "../server/src/0-base/auth-context.ts",
     "../server/src/0-base/context.ts",

@@ -1,8 +1,8 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { DisplaySet } from '../../../type/model/firestore-display-set.type';
 // import { collection } from '../main';
 import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import { toData } from '../0-base/server-firebase';
+import { DisplaySet } from '../type/model/firestore-display-set.type';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DisplaySetRepository {
