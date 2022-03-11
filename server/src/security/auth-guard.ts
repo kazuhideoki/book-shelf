@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const client = new OAuth2Client(this.configService.get('CLIENT_ID'));
+    const client = new OAuth2Client();
 
     const req = context.switchToHttp().getRequest();
     const headers = req.headers as any;
@@ -32,7 +32,6 @@ export class AuthGuard implements CanActivate {
     const [ticket] = await Promise.all([
       client.verifyIdToken({
         idToken,
-        audience: process.env.CLIENT_ID,
       }),
     ]);
 

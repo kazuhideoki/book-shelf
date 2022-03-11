@@ -1,10 +1,11 @@
 import { google } from 'googleapis';
+import { ENV } from '../main';
 
 export const getAuthUrl = () => {
   const oauth2Client = new google.auth.OAuth2(
-    process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
-    process.env.GOOGLE_DRIVE_API_CLIENT_SECRET,
-    process.env.NEXT_PUBLIC_WEB_FRONT_URL,
+    ENV.NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID,
+    ENV.GOOGLE_DRIVE_API_CLIENT_SECRET,
+    ENV.NEXT_PUBLIC_WEB_FRONT_URL,
   );
 
   const scopes = [

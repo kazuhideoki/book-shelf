@@ -3,6 +3,25 @@ import { CustomExceptionFilter } from './0-base/http-exception-filter';
 import { FirebaseSetting } from './0-base/initialize-firebaes';
 import { AppModule } from './modules/app.module';
 
+type Env = {
+  PORT: string;
+
+  NEXT_PUBLIC_WEB_FRONT_URL: string;
+
+  GOOGLE_DRIVE_API_CLIENT_SECRET: string;
+  NEXT_PUBLIC_GOOGLE_DRIVE_API_CLIENT_ID: string;
+
+  FIREBASE_STORAGE_BUCKET_NAME: string;
+  FIREBASE_STORAGE_URL: string;
+
+  FIREBASE_SERVICE_ACCOUNT: string;
+};
+
+export const ENV: Env = process.env.RUN_ON_LOCAL
+  ? process.env
+  : // Cloud Run に環境変数を展開したもの
+    (process.env.ENV_IN_GCP_CLOUD_RUN as any);
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
@@ -13,8 +32,8 @@ async function bootstrap() {
 
   app.useGlobalFilters(new CustomExceptionFilter());
 
-  console.log({ envPort: process.env.PORT });
-  const port = Number(process.env.PORT) || 8080;
+  console.log({ envPort: ENV.PORT });
+  const port = Number(ENV.PORT) || 8080;
 
   await app.listen(port, '0.0.0.0');
   console.log(`listen port: ${port}`);
