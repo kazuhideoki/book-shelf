@@ -5,11 +5,11 @@ import { Env } from '../main';
 export const envConverter = (value: string): Env => {
   const pairs = value.split('\n');
 
-  let env: any = [];
+  let env: any = {};
   pairs.forEach((e) => {
     const [key, value] = e.split('=');
 
-    env = [...env, { [`${key}`]: value }];
+    env = { ...env, [`${key}`]: value };
   });
 
   return env;
