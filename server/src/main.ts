@@ -2,8 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { CustomExceptionFilter } from './0-base/http-exception-filter';
 import { FirebaseSetting } from './0-base/initialize-firebaes';
 import { AppModule } from './modules/app.module';
+import { envConverter } from './utils/env-converter';
 
-type Env = {
+export type Env = {
   PORT: string;
 
   NEXT_PUBLIC_WEB_FRONT_URL: string;
@@ -18,9 +19,9 @@ type Env = {
 };
 
 export const ENV: Env = process.env.RUN_ON_LOCAL
-  ? process.env
+  ? (process.env as any)
   : // Cloud Run に環境変数を展開したもの
-    (process.env.ENV_IN_GCP_CLOUD_RUN as any);
+    envConverter(process.env.ENV_IN_GCP_CLOUD_RUN as any);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

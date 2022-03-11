@@ -13,20 +13,10 @@ export class FirebaseSetting {
   init() {
     console.log('init start');
 
-    console.log({ processEnv: ENV });
-    console.log({
-      configServiceEnvPORT: this.configService.get<string>('PORT'),
-    });
-    console.log({
-      configServiceEnvFIREBASE_SERVICE_ACCOUNT: this.configService.get<string>(
-        'FIREBASE_SERVICE_ACCOUNT',
-      ),
-    });
+    console.log({ ENV: ENV });
+    console.log({ FIREBASE_SERVICE_ACCOUNT: ENV.FIREBASE_SERVICE_ACCOUNT });
 
-    const serviceAccount = JSON.parse(
-      // this.configService.get<string>('FIREBASE_SERVICE_ACCOUNT'),
-      ENV.FIREBASE_SERVICE_ACCOUNT,
-    );
+    const serviceAccount = JSON.parse(ENV.FIREBASE_SERVICE_ACCOUNT);
 
     this.defaultApp = admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
