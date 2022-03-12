@@ -20,4 +20,7 @@ export class AuthContext {
   get auth() {
     return this._auth;
   }
+  get accountId() {
+    return this._auth.accountId;
+  }
 }

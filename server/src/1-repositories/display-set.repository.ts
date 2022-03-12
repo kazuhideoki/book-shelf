@@ -7,6 +7,7 @@ import { DisplaySet } from '../type/model/firestore-display-set.type';
 @Injectable({ scope: Scope.REQUEST })
 export class DisplaySetRepository {
   constructor(readonly firebase: FirebaseSetting) {}
+
   async list(q?: { accountId?: string }): Promise<DisplaySet[]> {
     const cr = this.firebase.collection('displaySets');
     let qr: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;

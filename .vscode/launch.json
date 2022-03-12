@@ -5,9 +5,30 @@
       // server side debug
       "type": "node",
       "request": "attach",
-      "name": "Nextjs: Server",
+      "name": "Nestjs: Server",
+      "cwd": "${workspaceFolder}/server",
+      "program": "${workspaceRoot}/server/dist/main.js",
+      "runtimeArgs": ["start:debug"],
       "skipFiles": ["<node_internals>/**"],
       "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Nest Framework",
+      "cwd": "${workspaceFolder}/server",
+      "args": ["${workspaceFolder}/server/src/main.ts"],
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "sourceMaps": true,
+      // "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "protocol": "inspector"
     }
   ]
 }
