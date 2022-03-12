@@ -23,7 +23,7 @@ console.log('app.module.ts');
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: `config/.env` }),
     // うまくいかない
 
     // SelfModule,
