@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { CustomExceptionFilter } from './0-base/http-exception-filter';
 import { FirebaseSetting } from './0-base/initialize-firebaes';
 import { AppModule } from './modules/app.module';
-import { envConverter } from './utils/env-converter';
 
 export type Env = {
   PORT: string;
@@ -18,10 +17,11 @@ export type Env = {
   FIREBASE_SERVICE_ACCOUNT: string;
 };
 
-export const ENV: Env = process.env.RUN_ON_LOCAL
-  ? (process.env as any)
-  : // Cloud Run に環境変数を展開したもの
-    envConverter(process.env.ENV_IN_GCP_CLOUD_RUN as any);
+// export const ENV: Env = process.env.RUN_ON_LOCAL
+//   ? (process.env as any)
+//   : // Cloud Run に環境変数を展開したもの
+//     envConverter(process.env.ENV_IN_GCP_CLOUD_RUN as any);
+export const ENV: Env = process.env as Env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
