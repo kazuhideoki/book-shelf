@@ -2,12 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      // server side debug
       "type": "node",
-      "request": "attach",
-      "name": "Nextjs: Server",
-      "skipFiles": ["<node_internals>/**"],
-      "port": 9229
+      "request": "launch",
+      "name": "Nestjs debug",
+      "cwd": "${workspaceFolder}/server",
+      "runtimeExecutable": "nest",
+      "args": ["start", "--debug", "--watch"],
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "protocol": "inspector"
     }
   ]
 }
