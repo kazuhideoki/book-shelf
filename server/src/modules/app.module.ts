@@ -3,22 +3,18 @@ import {
   Module,
   NestModule,
   RequestMethod,
-  Scope,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthContext } from '../0-base/auth-context';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import { LoggerMiddleware } from '../0-base/logger-middleware';
-import { AccountRepository } from '../1-repositories/account.repository';
-import { DisplaySetRepository } from '../1-repositories/display-set.repository';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
 import { FileService } from '../2-services/file.service';
 import { FileController } from '../3-controllers/file.controller';
 import { SelfController } from '../3-controllers/self.controller';
-import { DisplaySetsController } from '../display-sets/display-sets.controller';
-import { DisplaySetsService } from '../display-sets/display-sets.service';
+import { DisplaySetsModule } from '../display-sets/display-sets.module';
+import { GlobalModule } from './global.module';
 
 console.log('app.module.ts');
 
@@ -29,24 +25,16 @@ console.log('app.module.ts');
 
     // SelfModule,
     // FileModule,
-    // DisplaySetModule,
+    DisplaySetsModule,
+    GlobalModule,
   ],
-  controllers: [SelfController, FileController, DisplaySetsController],
+  controllers: [SelfController, FileController],
   providers: [
-    AccountRepository,
-    DisplaySetsService,
-    DisplaySetRepository,
     DriveFileRepository,
     ImageSetRepository,
     StorageRepository,
     FileService,
     AuthContext,
-    {
-      provide: 'AUTH_CONTEXT_INIT',
-      useValue: {},
-      scope: Scope.REQUEST,
-    },
-    FirebaseSetting,
   ],
 })
 export class AppModule implements NestModule {

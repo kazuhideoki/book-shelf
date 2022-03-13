@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Global, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import admin from 'firebase-admin';
 import { ENV } from '../main';
@@ -6,6 +6,7 @@ import { ENV } from '../main';
 export type CollectionName = 'imageSets' | 'displaySets' | 'accounts';
 
 @Injectable()
+@Global()
 export class FirebaseSetting {
   constructor(readonly configService: ConfigService) {}
 
