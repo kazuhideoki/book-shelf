@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { CreateDisplaySetDto } from "../../../server/src/display-sets/dto/create-display-set.dto";
 import { RegisterDispalySet } from "../../../server/src/type/api/firestore-display-set-api.type";
 import { FrontPath, ServerPath } from "../../../server/src/type/const";
 import { FolderComponent } from "../components/FolderComponent";
@@ -43,12 +44,14 @@ const Settings: NextPage<P> = ({}) => {
   const selectedFiles = useRecoilValue(selectedFilesState);
   const handleSubmitDisplaySets = useCallback(async () => {
     try {
+      const data: CreateDisplaySetDto = {
+        name: values.name,
+        files: [...selectedFiles],
+      };
+
       const res = await withLoading(
         request<any, RegisterDispalySet>("POST", ServerPath.displaySets, {
-          data: {
-            name: values.name,
-            files: [...selectedFiles],
-          },
+          data,
         })
       );
 

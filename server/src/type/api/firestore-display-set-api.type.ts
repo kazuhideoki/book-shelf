@@ -1,5 +1,5 @@
-import { DisplaySet } from "../model/firestore-display-set.type";
+import { DisplaySet } from '../../display-sets/entities/display-set.entity';
 
-export type RegisterDispalySet = Pick<DisplaySet, "name"> & {
-  files: DisplaySet["files"];
+export type RegisterDispalySet = Pick<DisplaySet, 'name'> & {
+  files: DisplaySet['files'];
 };

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { AuthContext } from '../0-base/auth-context';
 import { DisplaySetRepository } from '../1-repositories/display-set.repository';
-import { DisplaySet } from '../type/model/firestore-display-set.type';
 import { CreateDisplaySetDto } from './dto/create-display-set.dto';
 import { UpdateDisplaySetDto } from './dto/update-display-set.dto';
+import { DisplaySet } from './entities/display-set.entity';
 
 @Injectable()
 export class DisplaySetsService {

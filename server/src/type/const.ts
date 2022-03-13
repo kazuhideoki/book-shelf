@@ -1,6 +1,6 @@
 export class FrontPath {
-  static top = "/";
-  static settings = "/settings";
+  static top = '/';
+  static settings = '/settings';
 }
 
 export class ServerPath {
