@@ -12,8 +12,8 @@ import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
 import { FileService } from '../2-services/file.service';
 import { FileController } from '../3-controllers/file.controller';
-import { SelfController } from '../3-controllers/self.controller';
 import { DisplaySetsModule } from '../display-sets/display-sets.module';
+import { SelfController } from '../self/self.controller';
 import { GlobalModule } from './global.module';
 
 console.log('app.module.ts');
