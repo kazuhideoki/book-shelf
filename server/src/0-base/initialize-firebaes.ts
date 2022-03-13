@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import admin from 'firebase-admin';
+import { ENV } from '../main';
 
 export type CollectionName = 'imageSets' | 'displaySets' | 'accounts';
 
@@ -13,10 +14,9 @@ export class FirebaseSetting {
   init() {
     console.log('init start');
 
-    // console.log({ ENV: ENV });
-    // console.log({ FIREBASE_SERVICE_ACCOUNT: ENV.FIREBASE_SERVICE_ACCOUNT });
+    console.log({ ENV: ENV });
+    console.log({ FIREBASE_SERVICE_ACCOUNT: ENV.FIREBASE_SERVICE_ACCOUNT });
 
-    // const serviceAccount = JSON.parse(ENV.FIREBASE_SERVICE_ACCOUNT);
     const serviceAccount = JSON.parse(
       this.configService.get<string>('FIREBASE_SERVICE_ACCOUNT'),
     );
