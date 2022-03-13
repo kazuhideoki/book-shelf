@@ -51,7 +51,7 @@ export const Display: NextComponentType<
           />
         </Grid>
         <Grid item>
-          <Typography>{targetImg?.meta.title}</Typography>
+          <Typography>{targetImg?.meta?.title}</Typography>
         </Grid>
       </Grid>
     </Box>

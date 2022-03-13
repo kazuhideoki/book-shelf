@@ -7,21 +7,18 @@ import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
 import { ImageSet, ImageSetMeta } from '../type/model/firestore-image-set.type';
-import { BaseService } from './helper/base.service';
 import { convertPDFToImage } from './helper/convert-pdf-to-image';
 
 const expiryTime = 60 * 60 * 24 * 7; // 1 week
 
 @Injectable({ scope: Scope.REQUEST })
-export class FileService extends BaseService {
+export class FileService {
   constructor(
     private readonly imageSetRepository: ImageSetRepository,
     private readonly driveFileRepository: DriveFileRepository,
     private readonly storageRepository: StorageRepository,
     private readonly authContext: AuthContext,
-  ) {
-    super();
-  }
+  ) {}
 
   async findImageSet(fileId: string): Promise<ImageSet> {
     const imageSet = await this.imageSetRepository.find(fileId);
