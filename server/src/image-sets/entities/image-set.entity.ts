@@ -3,7 +3,7 @@ export type ImageSetMeta = {
   pages: number;
 };
 
-export type ImageSet = {
+export class ImageSet {
   accountId: string;
   fileId: string;
   path: string;
@@ -11,4 +11,4 @@ export type ImageSet = {
   expiredAt: Date;
   createdAt: Date;
   updatedAt: Date;
-};
+}

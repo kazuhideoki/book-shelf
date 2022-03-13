@@ -5,14 +5,10 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AuthContext } from '../0-base/auth-context';
 import { LoggerMiddleware } from '../0-base/logger-middleware';
-import { DriveFileRepository } from '../1-repositories/drive-file-repository';
-import { ImageSetRepository } from '../1-repositories/image-set.repository';
-import { StorageRepository } from '../1-repositories/storage-repository';
-import { FileService } from '../2-services/file.service';
 import { DisplaySetsModule } from '../display-sets/display-sets.module';
 import { FilesModule } from '../files/files.module';
+import { ImageSetsModule } from '../image-sets/image-sets.module';
 import { SelfController } from '../self/self.controller';
 import { SelfModule } from '../self/self.module';
 import { GlobalModule } from './global.module';
@@ -26,17 +22,11 @@ console.log('app.module.ts');
 
     SelfModule,
     FilesModule,
+    ImageSetsModule,
     DisplaySetsModule,
     GlobalModule,
   ],
   controllers: [SelfController],
-  providers: [
-    DriveFileRepository,
-    ImageSetRepository,
-    StorageRepository,
-    FileService,
-    AuthContext,
-  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

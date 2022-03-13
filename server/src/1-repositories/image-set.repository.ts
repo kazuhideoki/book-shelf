@@ -4,7 +4,7 @@ import {
   timestampFromDateRecursively,
   toData,
 } from '../0-base/server-firebase';
-import { ImageSet } from '../type/model/firestore-image-set.type';
+import { ImageSet } from '../image-sets/entities/image-set.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ImageSetRepository {

@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { writeFileSync } from 'fs';
 import { DateTime } from 'luxon';
 import { PDFDocument } from 'pdf-lib';
@@ -6,22 +6,33 @@ import { AuthContext } from '../0-base/auth-context';
 import { DriveFileRepository } from '../1-repositories/drive-file-repository';
 import { ImageSetRepository } from '../1-repositories/image-set.repository';
 import { StorageRepository } from '../1-repositories/storage-repository';
-import {
-  ImageSet,
-  ImageSetMeta,
-} from '../image-sets/entities/image-set.entity';
-import { convertPDFToImage } from './helper/convert-pdf-to-image';
+import { convertPDFToImage } from '../2-services/helper/convert-pdf-to-image';
+import { CreateImageSetDto } from './dto/create-image-set.dto';
+import { UpdateImageSetDto } from './dto/update-image-set.dto';
+import { ImageSet, ImageSetMeta } from './entities/image-set.entity';
 
 const expiryTime = 60 * 60 * 24 * 7; // 1 week
 
-@Injectable({ scope: Scope.REQUEST })
-export class FileService {
+@Injectable()
+export class ImageSetsService {
   constructor(
+    private readonly authContext: AuthContext,
     private readonly imageSetRepository: ImageSetRepository,
     private readonly driveFileRepository: DriveFileRepository,
     private readonly storageRepository: StorageRepository,
-    private readonly authContext: AuthContext,
   ) {}
+
+  create(createImageSetDto: CreateImageSetDto) {
+    return 'This action adds a new imageSet';
+  }
+
+  findAll() {
+    return `This action returns all imageSets`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} imageSet`;
+  }
 
   async findImageSet(fileId: string): Promise<ImageSet> {
     const imageSet = await this.imageSetRepository.find(fileId);
@@ -100,5 +111,13 @@ export class FileService {
     console.log(`cache path saved in Firestore`);
 
     return data;
+  }
+
+  update(id: number, updateImageSetDto: UpdateImageSetDto) {
+    return `This action updates a #${id} imageSet`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} imageSet`;
   }
 }
