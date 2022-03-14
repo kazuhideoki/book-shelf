@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { ImageSet } from "../../../../server/src/type/model/firestore-image-set.type";
+import { ImageSet } from "../../../../server/src/type/model/image-set.entiry";
 
 export type ImageSetsState = {
   imageSets: ImageSet[];

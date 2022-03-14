@@ -25,7 +25,7 @@ export class ImageSetsController {
     return this.imageSetsService.findAll();
   }
 
-  @Get(':id')
+  @Get(':fileId')
   findOne(@Param('fileId') fileId: string) {
     return this.imageSetsService.findImageSet(fileId);
   }

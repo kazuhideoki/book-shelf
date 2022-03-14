@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { Suspense, useState } from "react";
 import { useGoogleLogout } from "react-google-login";
 import { useRecoilState } from "recoil";
-import { ImageSet } from "../../../server/src/type/model/firestore-image-set.type";
+import { ImageSet } from "../../../server/src/image-sets/entities/image-set.entity";
 import { Display } from "../components/Display";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SelectDisplaySetsDialog } from "../components/SelectDisplaySetsDialog";

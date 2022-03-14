@@ -2,11 +2,13 @@ import { Checkbox, FormControlLabel, Grid, Typography } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
 import { useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
+import { ImageSet } from "../../../server/src/imageimport { ImageSet } from ";
 import { ServerPath } from "../../../server/src/type/const";
 import { IFile } from "../../../server/src/type/domain/file";
-import { ImageSet } from "../../../server/src/type/model/firestore-image-set.type";
 import { selectedFilesState } from "../recoil/atom/selected-files";
 import { useRequest } from "../utils/axios";
+../../../server/src/image-sets/entities/image-set.entity";
+";
 
 interface P {
   file: IFile;
@@ -32,7 +34,7 @@ export const FileComponent: NextComponentType<
       } else if (!exsisting) {
         const imageSet = await request<ImageSet>(
           "GET",
-          ServerPath.file(file.id)
+          ServerPath.imageSet(file.id)
         );
 
         setPath(imageSet.path);

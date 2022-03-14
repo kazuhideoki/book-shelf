@@ -7,7 +7,8 @@ export class ServerPath {
   static self = `/self`;
 
   static files = `/files`;
-  static file = (fileId: string) => `${ServerPath.files}/${fileId}`;
+  static imageSets = `/image-sets`;
+  static imageSet = (fileId: string) => `${ServerPath.imageSets}/${fileId}`;
   static displaySets = `/display-sets`;
 }
 
