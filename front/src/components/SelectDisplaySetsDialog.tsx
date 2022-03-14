@@ -15,8 +15,6 @@ export const SelectDisplaySetsDialog: NextComponentType<
   Record<string, unknown>,
   P
 > = ({ setShowDialog }) => {
-  console.log("SelectDisplaySetsDialog");
-
   const displaySets = useRecoilValue(displaySetsSelector);
   const setDisplaySets = useSetRecoilState(displaySetsState);
   const router = useRouter();

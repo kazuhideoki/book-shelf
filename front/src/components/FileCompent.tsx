@@ -2,13 +2,11 @@ import { Checkbox, FormControlLabel, Grid, Typography } from "@mui/material";
 import { NextComponentType, NextPageContext } from "next";
 import { useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
-import { ImageSet } from "../../../server/src/imageimport { ImageSet } from ";
+import { ImageSet } from "../../../server/src/2-resources/controllers/image-sets/entities/image-set.entity";
 import { ServerPath } from "../../../server/src/type/const";
 import { IFile } from "../../../server/src/type/domain/file";
 import { selectedFilesState } from "../recoil/atom/selected-files";
 import { useRequest } from "../utils/axios";
-../../../server/src/image-sets/entities/image-set.entity";
-";
 
 interface P {
   file: IFile;
