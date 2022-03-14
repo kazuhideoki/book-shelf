@@ -1,4 +1,4 @@
-import { Account } from './account';
+import { Account } from '../../0.5-entities/account.entity';
 
 export type FrontAuth = Account & {
   tokenId: string;

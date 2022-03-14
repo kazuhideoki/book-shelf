@@ -7,8 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { AuthContext } from '../../0-base/auth-context';
+import { Account } from '../../0.5-entities/account.entity';
 import { AccountRepository } from '../../1-repositories/account.repository';
-import { Account } from '../../type/model/account';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthGuard implements CanActivate {
@@ -46,14 +46,16 @@ export class AuthGuard implements CanActivate {
         /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       )
     ) {
-      const account = await this.accountRepository.findOrRegister({
-        email: idToken,
-        name: `Dev ${idToken.split('@')[0]}`,
-      });
+      const account = await this.accountRepository.findOrRegister(
+        new Account({
+          email: idToken,
+          name: `Dev ${idToken.split('@')[0]}`,
+        }),
+      );
 
       this.authContext.set({
         ...account,
-        accountId: account?.id,
+        accountId: account?.accountId,
         accessToken,
       });
 
@@ -70,20 +72,22 @@ export class AuthGuard implements CanActivate {
     const payload: { name: string; email: string; picture?: string } =
       ticket.getPayload() as any;
 
-    const account = await this.accountRepository.findOrRegister(payload);
+    const account = await this.accountRepository.findOrRegister(
+      new Account(payload),
+    );
 
     this.authContext.set({
       ...account,
-      accountId: account?.id,
+      accountId: account?.accountId,
       accessToken,
     });
 
     if (!account) {
-      const data: Account = {
+      const data = new Account({
         name: payload.name,
         email: payload.email,
         picture: payload.picture,
-      };
+      });
 
       await this.accountRepository.create(data);
 

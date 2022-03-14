@@ -4,7 +4,7 @@ import {
   toData,
 } from '../0-base/firebase-helper';
 import { FirebaseSetting } from '../0-base/firebase-setting';
-import { Account } from '../type/model/account';
+import { Account } from '../0.5-entities/account.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AccountRepository {
