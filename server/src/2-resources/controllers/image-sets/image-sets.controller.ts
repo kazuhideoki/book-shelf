@@ -6,12 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '../../guards/auth-guard';
 import { CreateImageSetDto } from './dto/create-image-set.dto';
 import { UpdateImageSetDto } from './dto/update-image-set.dto';
 import { ImageSetsService } from './image-sets.service';
 
 @Controller('image-sets')
+@UseGuards(AuthGuard)
 export class ImageSetsController {
   constructor(private readonly imageSetsService: ImageSetsService) {}
 

@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { DisplaySet } from "../../../../server/src/display-sets/entities/display-set.entity";
+import { DisplaySet } from "../../../../server/src/2-resources/controllers/display-sets/entities/display-set.entity";
 
 export type DisplaySetsState = {
   displaySets: DisplaySet[];

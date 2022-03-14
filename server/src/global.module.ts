@@ -1,7 +1,7 @@
 import { Global, Module, Scope } from '@nestjs/common';
-import { AuthContext } from '../0-base/auth-context';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
-import { AccountRepository } from '../1-repositories/account.repository';
+import { AuthContext } from './0-base/auth-context';
+import { FirebaseSetting } from './0-base/firebase-setting';
+import { AccountRepository } from './1-repositories/account.repository';
 
 @Global()
 @Module({

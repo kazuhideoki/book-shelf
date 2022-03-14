@@ -5,12 +5,12 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from '../0-base/logger-middleware';
-import { DisplaySetsModule } from '../display-sets/display-sets.module';
-import { FilesModule } from '../files/files.module';
-import { ImageSetsModule } from '../image-sets/image-sets.module';
-import { SelfController } from '../self/self.controller';
-import { SelfModule } from '../self/self.module';
+import { DisplaySetsModule } from './2-resources/controllers/display-sets/display-sets.module';
+import { FilesModule } from './2-resources/controllers/files/files.module';
+import { ImageSetsModule } from './2-resources/controllers/image-sets/image-sets.module';
+import { SelfController } from './2-resources/controllers/self/self.controller';
+import { SelfModule } from './2-resources/controllers/self/self.module';
+import { LoggerMiddleware } from './2-resources/middleware/logger-middleware';
 import { GlobalModule } from './global.module';
 
 console.log('app.module.ts');

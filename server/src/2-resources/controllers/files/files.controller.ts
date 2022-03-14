@@ -8,8 +8,8 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ListDriveFiles } from '../type/api/google-drive-api.type';
-import { DriveFiles } from '../type/model/google-drive-file.type';
+import { ListDriveFiles } from '../../../type/api/google-drive-api.type';
+import { DriveFiles } from '../../../type/model/google-drive-file.type';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FilesService } from './files.service';

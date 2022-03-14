@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
-import { AuthContext } from '../0-base/auth-context';
-import { AccountRepository } from '../1-repositories/account.repository';
+import { AuthContext } from '../../0-base/auth-context';
+import { AccountRepository } from '../../1-repositories/account.repository';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthGuard implements CanActivate {

@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '../security/auth-guard';
+import { AuthGuard } from '../../guards/auth-guard';
 import { DisplaySetsService } from './display-sets.service';
 import { CreateDisplaySetDto } from './dto/create-display-set.dto';
 import { UpdateDisplaySetDto } from './dto/update-display-set.dto';

@@ -1,6 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { AuthContext } from '../0-base/auth-context';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
+import { FirebaseSetting } from '../0-base/firebase-setting';
 import { StoragePath } from '../type/const';
 
 @Injectable({ scope: Scope.REQUEST })
