@@ -27,6 +27,7 @@
     "@nestjs/core": "^8.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/swagger": "^5.2.0",
     "async_hooks": "^1.0.0",
     "axios": "^0.26.0",
     "firebase-admin": "^10.0.2",
@@ -38,6 +39,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "swagger-ui-express": "^4.3.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
