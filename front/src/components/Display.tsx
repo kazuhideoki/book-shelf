@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { NextComponentType, NextPageContext } from "next";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { ImageSet } from "../../../server/src/type/model/firestore-image-set.type";
+import { ImageSet } from "../../../server/src/2-resources/controllers/image-sets/entities/image-set.entity";
 import { ImageSetsSelector } from "../recoil/selector/image-set";
 
 const useStyles = makeStyles(() => ({
@@ -51,7 +51,7 @@ export const Display: NextComponentType<
           />
         </Grid>
         <Grid item>
-          <Typography>{targetImg?.meta.title}</Typography>
+          <Typography>{targetImg?.meta?.title}</Typography>
         </Grid>
       </Grid>
     </Box>

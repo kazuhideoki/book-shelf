@@ -1,9 +1,9 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
 import {
   timestampFromDateRecursively,
   toData,
-} from '../0-base/server-firebase';
+} from '../0-base/firebase-helper';
+import { FirebaseSetting } from '../0-base/firebase-setting';
 import { Account } from '../type/model/account';
 
 @Injectable({ scope: Scope.REQUEST })

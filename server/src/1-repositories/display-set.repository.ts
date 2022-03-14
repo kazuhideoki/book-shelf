@@ -1,8 +1,8 @@
 import { Injectable, Scope } from '@nestjs/common';
+import { toData } from '../0-base/firebase-helper';
 // import { collection } from '../main';
-import { FirebaseSetting } from '../0-base/initialize-firebaes';
-import { toData } from '../0-base/server-firebase';
-import { DisplaySet } from '../display-sets/entities/display-set.entity';
+import { FirebaseSetting } from '../0-base/firebase-setting';
+import { DisplaySet } from '../2-resources/controllers/display-sets/entities/display-set.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DisplaySetRepository {

@@ -6,12 +6,6 @@ import { authState } from "../recoil/atom/auth";
 
 const instance = axios.create();
 
-// axios.defaults.baseURL = "http://localhost:8080";
-// axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
-// axios.defaults.headers.get["Content-Type"] = "application/json;charset=utf-8";
-// axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
-// axios.defaults.headers.get["Access-Control-Allow-Origin"] = "*";
-
 export async function axiosRequest<T>(
   method: Method,
   url: string,
@@ -41,7 +35,6 @@ export const axiosRequestToServer =
       headers?: any;
     }
   ): Promise<T> => {
-    console.log({ config });
     let headers: any = {
       ...config?.headers,
       Authorization: `Bearer ${auth?.tokenId}/${auth?.accessToken}`,

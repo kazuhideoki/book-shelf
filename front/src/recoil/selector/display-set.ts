@@ -1,6 +1,6 @@
 import { selector } from "recoil";
+import { DisplaySet } from "../../../../server/src/2-resources/controllers/display-sets/entities/display-set.entity";
 import { ServerPath } from "../../../../server/src/type/const";
-import { DisplaySet } from "../../../../server/src/type/model/firestore-display-set.type";
 import { displaySetsState } from "../atom/display-set";
 import { guardRecoilDefaultValue } from "../atom/helper/guard-recoil-default-value";
 import { requestSelector } from "./helper/request";
@@ -14,11 +14,9 @@ export const displaySetsSelector = selector<DisplaySet[]>({
     }
 
     const request = get(requestSelector);
-    console.log(`init displaySetsState`);
 
     try {
       const res = await request<DisplaySet[]>("GET", ServerPath.displaySets);
-      console.log(`done fetched displaySets`);
 
       return res;
     } catch (error) {

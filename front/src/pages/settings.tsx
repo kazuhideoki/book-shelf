@@ -5,7 +5,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { CreateDisplaySetDto } from "../../../server/src/display-sets/dto/create-display-set.dto";
+import { CreateDisplaySetDto } from "../../../server/src/2-resources/controllers/display-sets/dto/create-display-set.dto";
 import { RegisterDispalySet } from "../../../server/src/type/api/firestore-display-set-api.type";
 import { FrontPath, ServerPath } from "../../../server/src/type/const";
 import { FolderComponent } from "../components/FolderComponent";
