@@ -14,7 +14,6 @@ describe('ImageSetsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [],
       providers: [
         ImageSetsService,
         ImageSetRepository,
