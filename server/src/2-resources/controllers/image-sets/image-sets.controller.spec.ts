@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { GlobalModule } from '../../../global.module';
 import { ImageSetsController } from './image-sets.controller';
-import { ImageSetsService } from './image-sets.service';
+import { ImageSetsModule } from './image-sets.module';
 
 describe('ImageSetsController', () => {
   let controller: ImageSetsController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ImageSetsController],
-      providers: [ImageSetsService],
+      imports: [ImageSetsModule, GlobalModule],
     }).compile();
 
     controller = module.get<ImageSetsController>(ImageSetsController);

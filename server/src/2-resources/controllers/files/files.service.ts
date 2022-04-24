@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthContext } from '../../../0-base/auth-context';
 import { DriveFileRepository } from '../../../1-repositories/drive-file-repository';
-import { ListDriveFiles } from '../../../type/api/google-drive-api.type';
+import { ListDriveFiles } from '../../../type/api/google-drive-api.dto';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 

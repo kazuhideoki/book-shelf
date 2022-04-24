@@ -19,7 +19,7 @@ export class ImageSetsController {
   constructor(private readonly imageSetsService: ImageSetsService) {}
 
   @Post()
-  create(@Body() createImageSetDto: CreateImageSetDto) {
+  create(@Body() createImageSetDto: CreateImageSetDto): string {
     return this.imageSetsService.create(createImageSetDto);
   }
 

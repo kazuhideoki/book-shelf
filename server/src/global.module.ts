@@ -1,4 +1,5 @@
 import { Global, Module, Scope } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthContext } from './0-base/auth-context';
 import { FirebaseSetting } from './0-base/firebase-setting';
 import { AccountRepository } from './1-repositories/account.repository';
@@ -9,6 +10,7 @@ import { AccountRepository } from './1-repositories/account.repository';
     AccountRepository,
     AuthContext,
     FirebaseSetting,
+    ConfigService,
     {
       provide: 'AUTH_CONTEXT_INIT',
       useValue: {},
@@ -19,6 +21,7 @@ import { AccountRepository } from './1-repositories/account.repository';
     AccountRepository,
     AuthContext,
     FirebaseSetting,
+    ConfigService,
     {
       provide: 'AUTH_CONTEXT_INIT',
       useValue: {},

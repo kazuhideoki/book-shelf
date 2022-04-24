@@ -14,12 +14,11 @@ import { LoggerMiddleware } from './2-resources/middleware/logger-middleware';
 import { GlobalModule } from './global.module';
 
 console.log('app.module.ts');
+console.log({ RUN_ON_LOCAL: process.env.RUN_ON_LOCAL });
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: `config/.env` }),
-    // うまくいかない
-
     SelfModule,
     FilesModule,
     ImageSetsModule,
