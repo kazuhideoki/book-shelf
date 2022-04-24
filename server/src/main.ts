@@ -16,6 +16,10 @@ async function bootstrap() {
 
   app.useGlobalFilters(new CustomExceptionFilter());
 
+  const NEXT_PUBLIC_WEB_FRONT_URL = configService.get(
+    'NEXT_PUBLIC_WEB_FRONT_URL',
+  );
+
   const port = configService.get('PORT') || 8080;
 
   const serverUrl = configService.get<string>('NEXT_PUBLIC_WEB_SERVICE_URL');

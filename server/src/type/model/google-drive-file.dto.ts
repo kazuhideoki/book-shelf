@@ -1,13 +1,13 @@
-export type DriveFiles = {
+export class DriveFiles {
   kind: string;
   nextPageToken: string;
   incompleteSearch: boolean;
   files: DriveFile[];
-};
+}
 
-export type DriveFile = {
+export class DriveFile {
   kind: string;
   id: string;
   name: string;
   mimeType: string;
-};
+}
